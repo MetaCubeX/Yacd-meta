@@ -1,5 +1,5 @@
-import { getURLAndInit } from 'src/misc/request-helper';
-import { ClashAPIConfig } from 'src/types';
+import { getURLAndInit } from '~/misc/request-helper';
+import { ClashAPIConfig } from '~/types';
 
 export type RuleProvider = RuleProviderAPIItem & { idx: number };
 
@@ -31,10 +31,7 @@ function normalizeAPIResponse(data: RuleProviderAPIData) {
   return { byName, names };
 }
 
-export async function fetchRuleProviders(
-  endpoint: string,
-  apiConfig: ClashAPIConfig
-) {
+export async function fetchRuleProviders(endpoint: string, apiConfig: ClashAPIConfig) {
   const { url, init } = getURLAndInit(apiConfig);
 
   let data = { providers: {} };

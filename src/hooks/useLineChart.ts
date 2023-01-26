@@ -1,6 +1,7 @@
 import type { ChartConfiguration } from 'chart.js';
 import React from 'react';
-import { commonChartOptions } from 'src/misc/chart';
+
+import { commonChartOptions } from '~/misc/chart';
 
 const { useEffect } = React;
 

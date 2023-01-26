@@ -1,7 +1,8 @@
 import { TooltipPopup, useTooltip } from '@reach/tooltip';
 import cx from 'clsx';
 import * as React from 'react';
-import { keyCodes } from 'src/misc/keycode';
+
+import { keyCodes } from '~/misc/keycode';
 
 import { getDelay, getProxies, NonProxyTypes } from '../../store/proxies';
 import { connect } from '../StateProvider';
@@ -179,7 +180,7 @@ function ProxyImpl({ now, name, proxy, latency, isSelectable, onClick }: ProxyPr
       className={className}
       onClick={doSelect}
       onKeyDown={handleKeyDown}
-      role={isSelectable && 'menuitem'}
+      role={isSelectable ? 'menuitem' : ''}
     >
       <div className={cx(s0.proxyName, s0.row)}>
         <ProxyNameTooltip label={name} aria-label={`proxy name: ${name}`}>

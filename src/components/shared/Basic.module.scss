@@ -1,3 +1,5 @@
+@import '~/styles/utils/custom-media';
+
 h2.sectionNameType {
   margin: 0;
   font-size: 1em;
@@ -12,29 +14,6 @@ h2.sectionNameType {
     margin: 0 0.3em;
   }
 }
-
-/**
- * loading dots
- *
- * light
- * dot color is #000 (black)
- *
- * transparency change:
- *          dot1  dot2  do3
- * phase1   0.1   0.3   0.5
- * phase2   0.5   0.1   0.3
- * phase3   0.3   0.5   0.1
- *
- * dark
- * dot color is #fff (white)
- *
- * transparency change:
- *          dot1  dot2  do3
- * phase1   0.5   0.3   0.1
- * phase2   0.1   0.5   0.3
- * phase3   0.3   0.1   0.5
- *
- */
 
 @mixin light {
   --loading-dot-1-1: rgba(0, 0, 0, 0.1);
@@ -113,21 +92,42 @@ h2.sectionNameType {
     animation: dot3 $d step-start infinite;
   }
 }
-/* prettier-ignore */
+
 @keyframes dot1 {
-  0%, 100% { background-color: var(--loading-dot-1-1) }
-  33% { background-color: var(--loading-dot-1-2) }
-  66% { background-color: var(--loading-dot-1-3) }
+  0%,
+  100% {
+    background-color: var(--loading-dot-1-1);
+  }
+  33% {
+    background-color: var(--loading-dot-1-2);
+  }
+  66% {
+    background-color: var(--loading-dot-1-3);
+  }
 }
-/* prettier-ignore */
+
 @keyframes dot2 {
-  0%, 100% { background-color: var(--loading-dot-2-1) }
-  33% { background-color: var(--loading-dot-2-2) }
-  66% { background-color: var(--loading-dot-2-3) }
+  0%,
+  100% {
+    background-color: var(--loading-dot-2-1);
+  }
+  33% {
+    background-color: var(--loading-dot-2-2);
+  }
+  66% {
+    background-color: var(--loading-dot-2-3);
+  }
 }
-/* prettier-ignore */
+
 @keyframes dot3 {
-  0%, 100% { background-color: var(--loading-dot-3-1) }
-  33% { background-color: var(--loading-dot-3-2) }
-  66% { background-color: var(--loading-dot-3-3) }
+  0%,
+  100% {
+    background-color: var(--loading-dot-3-1);
+  }
+  33% {
+    background-color: var(--loading-dot-3-2);
+  }
+  66% {
+    background-color: var(--loading-dot-3-3);
+  }
 }

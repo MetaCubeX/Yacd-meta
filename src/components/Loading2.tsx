@@ -6,7 +6,7 @@ import SvgYacd from './SvgYacd';
 function Loading() {
   return (
     <div className={s0.lo}>
-      <SvgYacd width={280} height={280} animate c0='transparent' c1='#646464' />
+      <SvgYacd width={280} height={280} animate c0="transparent" c1="#646464" />
     </div>
   );
 }

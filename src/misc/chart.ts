@@ -1,8 +1,8 @@
-import { createAsset } from 'use-asset'
+import { createAsset } from 'use-asset';
 
 import prettyBytes from './pretty-bytes';
 export const chartJSResource = createAsset(() => {
-  return import('$src/misc/chart-lib');
+  return import('~/misc/chart-lib');
 });
 
 export const commonDataSetProps = { borderWidth: 1, pointRadius: 0, tension: 0.2, fill: true };
@@ -11,7 +11,7 @@ export const commonChartOptions: import('chart.js').ChartOptions<'line'> = {
   responsive: true,
   maintainAspectRatio: true,
   plugins: {
-    legend: { labels: { boxWidth: 20 } }
+    legend: { labels: { boxWidth: 20 } },
   },
   scales: {
     x: { display: false, type: 'category' },

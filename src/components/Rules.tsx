@@ -1,13 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { areEqual, VariableSizeList } from 'react-window';
-import { RuleProviderItem } from 'src/components/rules/RuleProviderItem';
-import { useRuleAndProvider } from 'src/components/rules/rules.hooks';
-import { RulesPageFab } from 'src/components/rules/RulesPageFab';
-import { TextFilter } from 'src/components/shared/TextFitler';
-import { ruleFilterText } from 'src/store/rules';
-import { State } from 'src/store/types';
-import { ClashAPIConfig } from 'src/types';
+
+import { RuleProviderItem } from '~/components/rules/RuleProviderItem';
+import { useRuleAndProvider } from '~/components/rules/rules.hooks';
+import { RulesPageFab } from '~/components/rules/RulesPageFab';
+import { TextFilter } from '~/components/shared/TextFitler';
+import { ruleFilterText } from '~/store/rules';
+import { State } from '~/store/types';
+import { ClashAPIConfig } from '~/types';
 
 import useRemainingViewPortHeight from '../hooks/useRemainingViewPortHeight';
 import { getClashAPIConfig } from '../store/app';
@@ -92,12 +93,12 @@ function Rules({ apiConfig }: RulesProps) {
     <div>
       <div className={s.header}>
         <ContentHeader title={t('Rules')} />
-        <TextFilter placeholder='Filter' textAtom={ruleFilterText} />
+        <TextFilter placeholder="Filter" textAtom={ruleFilterText} />
       </div>
       <div ref={refRulesContainer} style={{ paddingBottom }}>
         <VariableSizeList
           height={containerHeight - paddingBottom}
-          width='100%'
+          width="100%"
           itemCount={rules.length + provider.names.length}
           itemSize={getItemSize}
           itemData={{ rules, provider, apiConfig }}

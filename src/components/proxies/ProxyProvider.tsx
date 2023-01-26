@@ -1,20 +1,21 @@
 import { formatDistance } from 'date-fns';
 import * as React from 'react';
 import { RotateCw, Zap } from 'react-feather';
-import Button from 'src/components/Button';
-import Collapsible from 'src/components/Collapsible';
-import CollapsibleSectionHeader from 'src/components/CollapsibleSectionHeader';
-import { useUpdateProviderItem } from 'src/components/proxies/proxies.hooks';
-import { connect, useStoreActions } from 'src/components/StateProvider';
-import { framerMotionResouce } from 'src/misc/motion';
+
+import Button from '~/components/Button';
+import Collapsible from '~/components/Collapsible';
+import CollapsibleSectionHeader from '~/components/CollapsibleSectionHeader';
+import { useUpdateProviderItem } from '~/components/proxies/proxies.hooks';
+import { connect, useStoreActions } from '~/components/StateProvider';
+import { framerMotionResouce } from '~/misc/motion';
 import {
   getClashAPIConfig,
   getCollapsibleIsOpen,
   getHideUnavailableProxies,
   getProxySortBy,
-} from 'src/store/app';
-import { getDelay, healthcheckProviderByName } from 'src/store/proxies';
-import { DelayMapping, SubscriptionInfo } from 'src/store/types';
+} from '~/store/app';
+import { getDelay, healthcheckProviderByName } from '~/store/proxies';
+import { DelayMapping, SubscriptionInfo } from '~/store/types';
 
 import { useFilteredAndSorted } from './hooks';
 import { ProxyList, ProxyListSummaryView } from './ProxyList';

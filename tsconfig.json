@@ -3,8 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "$src": ["src"],
-      "$src/*": ["src/*"]
+      "~/*": ["src/*"]
     },
     "target": "ESNext",
     "lib": ["DOM", "DOM.Iterable", "ESNext", "WebWorker"],
@@ -20,5 +19,5 @@
     "noEmit": true,
     "jsx": "react"
   },
-  "include": ["./src"]
+  "include": ["src"]
 }

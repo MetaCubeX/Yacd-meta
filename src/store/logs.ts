@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
-import { DispatchFn, GetStateFn, Log, State } from 'src/store/types';
+
+import { DispatchFn, GetStateFn, Log, State } from '~/store/types';
 
 const LogSize = 300;
 

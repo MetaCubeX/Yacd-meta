@@ -10,10 +10,7 @@ type Props = {
 };
 
 function ToggleSwitch({ options, value, name, onChange }: Props) {
-  const idxSelected = useMemo(
-    () => options.map((o) => o.value).indexOf(value),
-    [options, value]
-  );
+  const idxSelected = useMemo(() => options.map((o) => o.value).indexOf(value), [options, value]);
 
   const getPortionPercentage = useCallback(
     (idx: number) => {
@@ -52,7 +49,7 @@ function ToggleSwitch({ options, value, name, onChange }: Props) {
             <input
               id={id}
               name={name}
-              type='radio'
+              type="radio"
               value={o.value}
               checked={value === o.value}
               onChange={onChange}

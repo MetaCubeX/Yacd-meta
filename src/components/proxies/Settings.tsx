@@ -1,12 +1,9 @@
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import Select from 'src/components/shared/Select';
 
-import {
-  getAutoCloseOldConns,
-  getHideUnavailableProxies,
-  getProxySortBy,
-} from '../../store/app';
+import Select from '~/components/shared/Select';
+
+import { getAutoCloseOldConns, getHideUnavailableProxies, getProxySortBy } from '../../store/app';
 import { connect, useStoreActions } from '../StateProvider';
 import Switch from '../SwitchThemed';
 import s from './Settings.module.scss';
@@ -59,7 +56,7 @@ function Settings({ appConfig }) {
         <span>{t('hide_unavail_proxies')}</span>
         <div>
           <Switch
-            name='hideUnavailableProxies'
+            name="hideUnavailableProxies"
             checked={appConfig.hideUnavailableProxies}
             onChange={handleHideUnavailablesSwitchOnChange}
           />
@@ -69,7 +66,7 @@ function Settings({ appConfig }) {
         <span>{t('auto_close_conns')}</span>
         <div>
           <Switch
-            name='autoCloseOldConns'
+            name="autoCloseOldConns"
             checked={appConfig.autoCloseOldConns}
             onChange={(v) => updateAppConfig('autoCloseOldConns', v)}
           />

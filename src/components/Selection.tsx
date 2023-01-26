@@ -26,9 +26,9 @@ export function Selection2({
         return (
           <label key={idx}>
             <input
-              type='radio'
+              type="radio"
               checked={selectedIndex === idx}
-              name='selection'
+              name="selection"
               value={idx}
               aria-labelledby={'traffic chart type ' + idx}
               onChange={onInputChange}

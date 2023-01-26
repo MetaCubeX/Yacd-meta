@@ -1,8 +1,9 @@
+import react from '@vitejs/plugin-react';
+import * as path from 'path';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
-import react from '@vitejs/plugin-react'
-import * as path from 'path';
-import * as pkg from './package.json';
+
+import pkg from './package.json';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -14,8 +15,7 @@ export default defineConfig(({ mode }) => ({
   base: './',
   resolve: {
     alias: {
-      $src: path.resolve(__dirname, './src'),
-      src: path.resolve(__dirname, './src'),
+      '~': path.resolve(__dirname, './src'),
     },
   },
   publicDir: 'assets',

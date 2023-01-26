@@ -1,3 +1,5 @@
+@import '~/styles/utils/custom-media';
+
 .list {
   margin: 8px 0;
   display: grid;
@@ -5,8 +7,7 @@
 }
 
 .detail {
-  grid-template-columns: repeat(auto-fill, 160px);
-
+  grid-template-columns: auto auto;
 
   @media (--breakpoint-not-small) {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));

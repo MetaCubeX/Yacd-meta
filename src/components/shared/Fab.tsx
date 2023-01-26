@@ -23,18 +23,17 @@ interface ABProps extends React.HTMLAttributes<HTMLButtonElement> {
 }
 
 const AB: React.FC<ABProps> = ({ children, ...p }) => (
-  <button type='button' {...p} className='rtf--ab'>
+  <button type="button" {...p} className="rtf--ab">
     {children}
   </button>
 );
 
-interface MBProps
-  extends Omit<React.HTMLAttributes<HTMLButtonElement>, 'tabIndex'> {
+interface MBProps extends Omit<React.HTMLAttributes<HTMLButtonElement>, 'tabIndex'> {
   tabIndex?: number;
 }
 
 export const MB: React.FC<MBProps> = ({ children, ...p }) => (
-  <button type='button' className='rtf--mb' {...p}>
+  <button type="button" className="rtf--mb" {...p}>
     {children}
   </button>
 );
@@ -77,10 +76,7 @@ const Fab: React.FC<FabProps> = ({
     return event === 'click' ? (isOpen ? close() : open()) : null;
   };
 
-  const actionOnClick = (
-    e: React.FormEvent,
-    userFunc: (e: React.FormEvent) => void
-  ) => {
+  const actionOnClick = (e: React.FormEvent, userFunc: (e: React.FormEvent) => void) => {
     e.persist();
     setIsOpen(false);
     setTimeout(() => {
@@ -124,26 +120,24 @@ const Fab: React.FC<FabProps> = ({
       onMouseEnter={enter}
       onMouseLeave={leave}
       className={`rtf ${isOpen ? 'open' : 'closed'}`}
-      data-testid='fab'
+      data-testid="fab"
       style={style}
       {...p}
     >
-      <li className='rtf--mb__c'>
+      <li className="rtf--mb__c">
         <MB
           onClick={toggle}
           style={mainButtonStyles}
-          data-testid='main-button'
-          role='button'
-          aria-label='Floating menu'
+          data-testid="main-button"
+          role="button"
+          aria-label="Floating menu"
           tabIndex={0}
         >
           {icon}
         </MB>
         {text && (
           <span
-            className={`${'right' in style ? 'right' : ''} ${
-              alwaysShowTitle ? 'always-show' : ''
-            }`}
+            className={`${'right' in style ? 'right' : ''} ${alwaysShowTitle ? 'always-show' : ''}`}
             aria-hidden={ariaHidden}
           >
             {text}

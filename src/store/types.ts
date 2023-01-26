@@ -1,4 +1,4 @@
-import type { ClashAPIConfig } from 'src/types';
+import type { ClashAPIConfig } from '~/types';
 
 export type ClashAPIConfigWithAddedAt = ClashAPIConfig & { addedAt?: number };
 export type StateApp = {
@@ -22,7 +22,7 @@ export type ClashTunConfig = {
   stack: string;
   'dns-hijack': string[];
   'auto-route': boolean;
-}
+};
 
 export type ClashGeneralConfig = {
   port: number;
@@ -32,7 +32,7 @@ export type ClashGeneralConfig = {
   'tproxy-port': number;
   'mitm-port'?: number;
   'allow-lan': boolean;
-  'interface-name'?: string
+  'interface-name'?: string;
   mode: string;
   'log-level': string;
   sniffing?: boolean;
@@ -41,7 +41,7 @@ export type ClashGeneralConfig = {
 
 export type TunPartial<T> = {
   [P in keyof T]?: T[P] extends ClashTunConfig ? TunPartial<T[P]> : T[P];
-}
+};
 
 ///// store.proxies
 
@@ -53,7 +53,7 @@ export type SubscriptionInfo = {
   Upload?: number;
   Total?: number;
   Expire?: number;
-}
+};
 export type ProxyItem = {
   name: string;
   type: PrimitiveProxyType;

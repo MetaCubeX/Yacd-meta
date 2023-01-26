@@ -1,4 +1,4 @@
-import { ClashAPIConfig } from '$src/types';
+import { ClashAPIConfig } from '~/types';
 
 import { buildWebSocketURL, getURLAndInit } from '../misc/request-helper';
 
@@ -27,7 +27,7 @@ const traffic = {
     this.subscribers.forEach((f) => f(o));
   },
 
-  subscribe(listener: (x:any) => void) {
+  subscribe(listener: (x: any) => void) {
     this.subscribers.push(listener);
     return () => {
       const idx = this.subscribers.indexOf(listener);

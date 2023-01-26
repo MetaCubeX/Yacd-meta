@@ -1,6 +1,6 @@
-import { getURLAndInit } from 'src/misc/request-helper';
-import { ClashGeneralConfig, TunPartial } from 'src/store/types';
-import { ClashAPIConfig } from 'src/types';
+import { getURLAndInit } from '~/misc/request-helper';
+import { ClashGeneralConfig, TunPartial } from '~/store/types';
+import { ClashAPIConfig } from '~/types';
 
 const endpoint = '/configs';
 const updateGeoDatabasesFileEndpoint = '/configs/geo';
@@ -24,34 +24,25 @@ function configsPatchWorkaround(o: ClashConfigPartial) {
   return o;
 }
 
-export async function updateConfigs(
-  apiConfig: ClashAPIConfig,
-  o: ClashConfigPartial
-) {
+export async function updateConfigs(apiConfig: ClashAPIConfig, o: ClashConfigPartial) {
   const { url, init } = getURLAndInit(apiConfig);
   const body = JSON.stringify(configsPatchWorkaround(o));
   return await fetch(url + endpoint, { ...init, body, method: 'PATCH' });
 }
 
-export async function reloadConfigFile(
-    apiConfig: ClashAPIConfig
-) {
+export async function reloadConfigFile(apiConfig: ClashAPIConfig) {
   const { url, init } = getURLAndInit(apiConfig);
   const body = '{"path": "", "payload": ""}';
   return await fetch(url + endpoint + '?force=true', { ...init, body, method: 'PUT' });
 }
 
-export async function updateGeoDatabasesFile(
-    apiConfig: ClashAPIConfig
-) {
+export async function updateGeoDatabasesFile(apiConfig: ClashAPIConfig) {
   const { url, init } = getURLAndInit(apiConfig);
   const body = '{"path": "", "payload": ""}';
   return await fetch(url + updateGeoDatabasesFileEndpoint, { ...init, body, method: 'POST' });
 }
 
-export async function flushFakeIPPool(
-    apiConfig: ClashAPIConfig
-) {
+export async function flushFakeIPPool(apiConfig: ClashAPIConfig) {
   const { url, init } = getURLAndInit(apiConfig);
   return await fetch(url + flushFakeIPPoolEndpoint, { ...init, method: 'POST' });
 }

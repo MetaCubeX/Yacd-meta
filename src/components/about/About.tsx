@@ -1,25 +1,18 @@
 import * as React from 'react';
 import { GitHub } from 'react-feather';
 import { useQuery } from 'react-query';
-import { fetchVersion } from 'src/api/version';
-import ContentHeader from 'src/components/ContentHeader';
-import { connect } from 'src/components/StateProvider';
-import { getClashAPIConfig } from 'src/store/app';
-import { ClashAPIConfig } from 'src/types';
+
+import { fetchVersion } from '~/api/version';
+import ContentHeader from '~/components/ContentHeader';
+import { connect } from '~/components/StateProvider';
+import { getClashAPIConfig } from '~/store/app';
+import { ClashAPIConfig } from '~/types';
 
 import s from './About.module.scss';
 
 type Props = { apiConfig: ClashAPIConfig };
 
-function Version({
-  name,
-  link,
-  version,
-}: {
-  name: string;
-  link: string;
-  version: string;
-}) {
+function Version({ name, link, version }: { name: string; link: string; version: string }) {
   return (
     <div className={s.root}>
       <h2>{name}</h2>
@@ -28,12 +21,7 @@ function Version({
         <span className={s.mono}>{version}</span>
       </p>
       <p>
-        <a
-          className={s.link}
-          href={link}
-          target='_blank'
-          rel='noopener noreferrer'
-        >
+        <a className={s.link} href={link} target="_blank" rel="noopener noreferrer">
           <GitHub size={20} />
           <span>Source</span>
         </a>
@@ -48,19 +36,15 @@ function AboutImpl(props: Props) {
   );
   return (
     <>
-      <ContentHeader title='About' />
+      <ContentHeader title="About" />
       {version && version.version ? (
         <Version
-          name={version.meta?'Clash.Meta':'Clash'}
+          name={version.meta ? 'Clash.Meta' : 'Clash'}
           version={version.version}
-          link='https://github.com/metacubex/clash.meta'
+          link="https://github.com/metacubex/clash.meta"
         />
       ) : null}
-      <Version
-        name='Yacd'
-        version={__VERSION__}
-        link='https://github.com/metacubex/yacd'
-      />
+      <Version name="Yacd" version={__VERSION__} link="https://github.com/metacubex/yacd" />
     </>
   );
 }

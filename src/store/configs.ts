@@ -5,8 +5,8 @@ import {
   State,
   StateConfigs,
   TunPartial,
-} from 'src/store/types';
-import { ClashAPIConfig } from 'src/types';
+} from '~/store/types';
+import { ClashAPIConfig } from '~/types';
 
 import * as configsAPI from '../api/configs';
 import * as trafficAPI from '../api/traffic';
@@ -60,7 +60,7 @@ function markHaveFetchedConfig() {
   };
 }
 
-type generalConfig = Omit<ClashGeneralConfig, 'tun'>
+type generalConfig = Omit<ClashGeneralConfig, 'tun'>;
 
 export function updateConfigs(
   apiConfig: ClashAPIConfig,
@@ -95,69 +95,69 @@ export function updateConfigs(
 export function reloadConfigFile(apiConfig: ClashAPIConfig) {
   return async (dispatch: DispatchFn) => {
     configsAPI
-        .reloadConfigFile(apiConfig)
-        .then(
-            (res) => {
-              if (res.ok === false) {
-                // eslint-disable-next-line no-console
-                console.log('Error reload config file', res.statusText);
-              }
-            },
-            (err) => {
-              // eslint-disable-next-line no-console
-              console.log('Error reload config file', err);
-              throw err;
-            }
-        )
-        .then(() => {
-          dispatch(fetchConfigs(apiConfig));
-        });
+      .reloadConfigFile(apiConfig)
+      .then(
+        (res) => {
+          if (res.ok === false) {
+            // eslint-disable-next-line no-console
+            console.log('Error reload config file', res.statusText);
+          }
+        },
+        (err) => {
+          // eslint-disable-next-line no-console
+          console.log('Error reload config file', err);
+          throw err;
+        }
+      )
+      .then(() => {
+        dispatch(fetchConfigs(apiConfig));
+      });
   };
 }
 
 export function updateGeoDatabasesFile(apiConfig: ClashAPIConfig) {
   return async (dispatch: DispatchFn) => {
     configsAPI
-        .updateGeoDatabasesFile(apiConfig)
-        .then(
-            (res) => {
-              if (res.ok === false) {
-                // eslint-disable-next-line no-console
-                console.log('Error update geo databases file', res.statusText);
-              }
-            },
-            (err) => {
-              // eslint-disable-next-line no-console
-              console.log('Error update geo databases file', err);
-              throw err;
-            }
-        )
-        .then(() => {
-          dispatch(fetchConfigs(apiConfig));
-        });
+      .updateGeoDatabasesFile(apiConfig)
+      .then(
+        (res) => {
+          if (res.ok === false) {
+            // eslint-disable-next-line no-console
+            console.log('Error update geo databases file', res.statusText);
+          }
+        },
+        (err) => {
+          // eslint-disable-next-line no-console
+          console.log('Error update geo databases file', err);
+          throw err;
+        }
+      )
+      .then(() => {
+        dispatch(fetchConfigs(apiConfig));
+      });
   };
 }
 
 export function flushFakeIPPool(apiConfig: ClashAPIConfig) {
   return async (dispatch: DispatchFn) => {
     configsAPI
-        .flushFakeIPPool(apiConfig)
-        .then(
-            (res) => {
-              if (res.ok === false) {
-                // eslint-disable-next-line no-console
-                console.log('Error flush FakeIP pool', res.statusText);
-              }
-            },
-            (err) => {
-              // eslint-disable-next-line no-console
-              console.log('Error flush FakeIP pool', err);
-              throw err;
-            }
-        )
-        .then(() => {
-          dispatch(fetchConfigs(apiConfig));
-        });
+      .flushFakeIPPool(apiConfig)
+      .then(
+        (res) => {
+          if (res.ok === false) {
+            // eslint-disable-next-line no-console
+            console.log('Error flush FakeIP pool', res.statusText);
+          }
+        },
+        (err) => {
+          // eslint-disable-next-line no-console
+          console.log('Error flush FakeIP pool', err);
+          throw err;
+        }
+      )
+      .then(() => {
+        dispatch(fetchConfigs(apiConfig));
+      });
   };
 }
 

@@ -4,14 +4,11 @@ import HttpBackend from 'i18next-http-backend';
 import { initReactI18next } from 'react-i18next';
 
 const allLocales = {
-  zh: import('src/i18n/zh'),
-  en: import('src/i18n/en'),
+  zh: import('~/i18n/zh'),
+  en: import('~/i18n/en'),
 };
 
-type BackendRequestCallback = (
-  err: null,
-  result: { status: number; data: any }
-) => void;
+type BackendRequestCallback = (err: null, result: { status: number; data: any }) => void;
 
 i18next
   .use(HttpBackend)

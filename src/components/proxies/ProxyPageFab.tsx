@@ -1,17 +1,13 @@
 import * as React from 'react';
 import { Zap } from 'react-feather';
 import { useTranslation } from 'react-i18next';
-import { useUpdateProviderItems } from 'src/components/proxies/proxies.hooks';
-import {
-  Action,
-  Fab,
-  IsFetching,
-  position as fabPosition,
-} from 'src/components/shared/Fab';
-import { RotateIcon } from 'src/components/shared/RotateIcon';
-import { requestDelayAll } from 'src/store/proxies';
-import { DispatchFn, FormattedProxyProvider } from 'src/store/types';
-import { ClashAPIConfig } from 'src/types';
+
+import { useUpdateProviderItems } from '~/components/proxies/proxies.hooks';
+import { Action, Fab, IsFetching, position as fabPosition } from '~/components/shared/Fab';
+import { RotateIcon } from '~/components/shared/RotateIcon';
+import { requestDelayAll } from '~/store/proxies';
+import { DispatchFn, FormattedProxyProvider } from '~/store/types';
+import { ClashAPIConfig } from '~/types';
 
 const { useState, useCallback } = React;
 

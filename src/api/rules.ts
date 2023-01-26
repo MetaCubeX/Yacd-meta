@@ -1,6 +1,7 @@
 import invariant from 'invariant';
-import { getURLAndInit } from 'src/misc/request-helper';
-import { ClashAPIConfig } from 'src/types';
+
+import { getURLAndInit } from '~/misc/request-helper';
+import { ClashAPIConfig } from '~/types';
 
 // const endpoint = '/rules';
 
@@ -12,9 +13,7 @@ type RuleAPIItem = {
   proxy: string;
 };
 
-function normalizeAPIResponse(json: {
-  rules: Array<RuleAPIItem>;
-}): Array<RuleItem> {
+function normalizeAPIResponse(json: { rules: Array<RuleAPIItem> }): Array<RuleItem> {
   invariant(
     json.rules && json.rules.length >= 0,
     'there is no valid rules list in the rules API response'

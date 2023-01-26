@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { ThemeSwitcher } from 'src/components/shared/ThemeSwitcher';
-import { DOES_NOT_SUPPORT_FETCH, errors } from 'src/misc/errors';
-import { getClashAPIConfig } from 'src/store/app';
-import { fetchConfigs } from 'src/store/configs';
-import { closeModal } from 'src/store/modals';
-import { State } from 'src/store/types';
+
+import { ThemeSwitcher } from '~/components/shared/ThemeSwitcher';
+import { DOES_NOT_SUPPORT_FETCH, errors } from '~/misc/errors';
+import { getClashAPIConfig } from '~/store/app';
+import { fetchConfigs } from '~/store/configs';
+import { closeModal } from '~/store/modals';
+import { State } from '~/store/types';
 
 import APIConfig from './APIConfig';
 import s0 from './APIDiscovery.module.scss';

@@ -26,17 +26,7 @@ export function SelfControlledInput({ value, ...restProps }) {
     }
     refValue.current = value;
   }, [value]);
-  const onChange = useCallback(
-    (e) => setInternalValue(e.target.value),
-    [setInternalValue]
-  );
+  const onChange = useCallback((e) => setInternalValue(e.target.value), [setInternalValue]);
 
-  return (
-    <input
-      className={s0.input}
-      value={internalValue}
-      onChange={onChange}
-      {...restProps}
-    />
-  );
+  return <input className={s0.input} value={internalValue} onChange={onChange} {...restProps} />;
 }

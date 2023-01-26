@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { fetchConfigs } from 'src/api/configs';
-import { BackendList } from 'src/components/BackendList';
-import { addClashAPIConfig, getClashAPIConfig } from 'src/store/app';
-import { State } from 'src/store/types';
-import { ClashAPIConfig } from 'src/types';
+
+import { fetchConfigs } from '~/api/configs';
+import { BackendList } from '~/components/BackendList';
+import { addClashAPIConfig, getClashAPIConfig } from '~/store/app';
+import { State } from '~/store/types';
+import { ClashAPIConfig } from '~/types';
 
 import s0 from './APIConfig.module.scss';
 import Button from './Button';
@@ -85,9 +86,9 @@ function APIConfig({ dispatch }) {
   const detectApiServer = async () => {
     // if there is already a clash API server at `/`, just use it as default value
     const res = await fetch('/');
-    res.json().then(data => {
+    res.json().then((data) => {
       if (data['hello'] === 'clash') {
-        setBaseURL(window.location.origin)
+        setBaseURL(window.location.origin);
       }
     });
   };
@@ -95,39 +96,38 @@ function APIConfig({ dispatch }) {
     detectApiServer();
   }, []);
 
-
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div className={s0.root} ref={contentEl} onKeyDown={handleContentOnKeyDown}>
       <div className={s0.header}>
         <div className={s0.icon}>
-          <SvgYacd width={160} height={160} stroke='var(--stroke)' />
+          <SvgYacd width={160} height={160} stroke="var(--stroke)" />
         </div>
       </div>
       <div className={s0.body}>
         <div className={s0.hostnamePort}>
           <Field
-            id='baseURL'
-            name='baseURL'
-            label='API Base URL'
-            type='text'
-            placeholder='http://127.0.0.1:9090'
+            id="baseURL"
+            name="baseURL"
+            label="API Base URL"
+            type="text"
+            placeholder="http://127.0.0.1:9090"
             value={baseURL}
             onChange={handleInputOnChange}
           />
           <Field
-            id='secret'
-            name='secret'
-            label='Secret(optional)'
+            id="secret"
+            name="secret"
+            label="Secret(optional)"
             value={secret}
-            type='text'
+            type="text"
             onChange={handleInputOnChange}
           />
         </div>
       </div>
       <div className={s0.error}>{errMsg ? errMsg : null}</div>
       <div className={s0.footer}>
-        <Button label='Add' onClick={onConfirm} />
+        <Button label="Add" onClick={onConfirm} />
       </div>
       <div style={{ height: 20 }} />
       <BackendList />

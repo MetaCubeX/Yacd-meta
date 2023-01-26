@@ -2,10 +2,10 @@ import * as React from 'react';
 import { Zap } from 'react-feather';
 import { useQuery } from 'react-query';
 
-import * as proxiesAPI from '$src/api/proxies';
-import { fetchVersion } from '$src/api/version';
-import { getCollapsibleIsOpen, getHideUnavailableProxies, getProxySortBy } from '$src/store/app';
-import { fetchProxies, getProxies, switchProxy } from '$src/store/proxies';
+import * as proxiesAPI from '~/api/proxies';
+import { fetchVersion } from '~/api/version';
+import { getCollapsibleIsOpen, getHideUnavailableProxies, getProxySortBy } from '~/store/app';
+import { fetchProxies, getProxies, switchProxy } from '~/store/proxies';
 
 import Button from '../Button';
 import CollapsibleSectionHeader from '../CollapsibleSectionHeader';
@@ -14,9 +14,7 @@ import { useFilteredAndSorted } from './hooks';
 import s0 from './ProxyGroup.module.scss';
 import { ProxyList, ProxyListSummaryView } from './ProxyList';
 
-
 const { createElement, useCallback, useMemo, useState } = React;
-
 
 function ZapWrapper() {
   return (
@@ -39,19 +37,16 @@ function ProxyGroupImpl({
   apiConfig,
   dispatch,
 }) {
-  const all = useFilteredAndSorted(
-    allItems,
-    delay,
-    hideUnavailableProxies,
-    proxySortBy,
-    proxies
-  );
+  const all = useFilteredAndSorted(allItems, delay, hideUnavailableProxies, proxySortBy, proxies);
 
   const { data: version } = useQuery(['/version', apiConfig], () =>
-    fetchVersion('/version',apiConfig)
+    fetchVersion('/version', apiConfig)
   );
 
-  const isSelectable = useMemo(() => ['Selector', version.meta && 'Fallback'].includes(type) , [type, version.meta]);
+  const isSelectable = useMemo(
+    () => ['Selector', version.meta && 'Fallback'].includes(type),
+    [type, version.meta]
+  );
 
   const {
     app: { updateCollapsibleIsOpen },
@@ -73,15 +68,14 @@ function ProxyGroupImpl({
   const testLatency = useCallback(async () => {
     setIsTestingLatency(true);
     try {
-      if (version.meta===true){
+      if (version.meta === true) {
         await proxiesAPI.requestDelayForProxyGroup(apiConfig, name);
-        await dispatch(fetchProxies(apiConfig));}
-      else{
+        await dispatch(fetchProxies(apiConfig));
+      } else {
         await requestDelayForProxies(apiConfig, all);
         await dispatch(fetchProxies(apiConfig));
       }
-    }
-    catch (err) {}
+    } catch (err) {}
     setIsTestingLatency(false);
   }, [all, apiConfig, dispatch, name, version.meta]);
 
@@ -96,8 +90,8 @@ function ProxyGroupImpl({
           isOpen={isOpen}
         />
         <Button
-          title='Test latency'
-          kind='minimal'
+          title="Test latency"
+          kind="minimal"
           onClick={testLatency}
           isLoading={isTestingLatency}
         >

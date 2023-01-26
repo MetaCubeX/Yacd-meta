@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { updateProviderByName, updateProviders } from 'src/store/proxies';
-import { DispatchFn } from 'src/store/types';
-import { ClashAPIConfig } from 'src/types';
+
+import { updateProviderByName, updateProviders } from '~/store/proxies';
+import { DispatchFn } from '~/store/types';
+import { ClashAPIConfig } from '~/types';
 
 const { useCallback, useState } = React;
 
@@ -14,11 +15,10 @@ export function useUpdateProviderItem({
   apiConfig: ClashAPIConfig;
   name: string;
 }) {
-  return useCallback(() => dispatch(updateProviderByName(apiConfig, name)), [
-    apiConfig,
-    dispatch,
-    name,
-  ]);
+  return useCallback(
+    () => dispatch(updateProviderByName(apiConfig, name)),
+    [apiConfig, dispatch, name]
+  );
 }
 
 export function useUpdateProviderItems({

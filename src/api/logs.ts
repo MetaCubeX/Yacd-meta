@@ -1,6 +1,6 @@
-import { pad0 } from 'src/misc/utils';
-import { Log } from 'src/store/types';
-import { LogsAPIConfig } from 'src/types';
+import { pad0 } from '~/misc/utils';
+import { Log } from '~/store/types';
+import { LogsAPIConfig } from '~/types';
 
 import { buildLogsWebSocketURL, getURLAndInit } from '../misc/request-helper';
 

@@ -1,27 +1,28 @@
-import Tooltip from '@reach/tooltip';
+import { Tooltip } from '@reach/tooltip';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
-import ContentHeader from 'src/components/ContentHeader';
-import { ClosePrevConns } from 'src/components/proxies/ClosePrevConns';
-import { ProxyGroup } from 'src/components/proxies/ProxyGroup';
-import { ProxyPageFab } from 'src/components/proxies/ProxyPageFab';
-import { ProxyProviderList } from 'src/components/proxies/ProxyProviderList';
-import Settings from 'src/components/proxies/Settings';
-import BaseModal from 'src/components/shared/BaseModal';
-import { TextFilter } from 'src/components/shared/TextFitler';
-import { connect, useStoreActions } from 'src/components/StateProvider';
-import Equalizer from 'src/components/svg/Equalizer';
-import { getClashAPIConfig } from 'src/store/app';
-import { proxyFilterText } from 'src/store/proxies';
+
+import Button from '~/components/Button';
+import ContentHeader from '~/components/ContentHeader';
+import { ClosePrevConns } from '~/components/proxies/ClosePrevConns';
+import { ProxyGroup } from '~/components/proxies/ProxyGroup';
+import { ProxyPageFab } from '~/components/proxies/ProxyPageFab';
+import { ProxyProviderList } from '~/components/proxies/ProxyProviderList';
+import Settings from '~/components/proxies/Settings';
+import BaseModal from '~/components/shared/BaseModal';
+import { TextFilter } from '~/components/shared/TextFitler';
+import { connect, useStoreActions } from '~/components/StateProvider';
+import Equalizer from '~/components/svg/Equalizer';
+import { getClashAPIConfig } from '~/store/app';
 import {
   fetchProxies,
   getDelay,
   getProxyGroupNames,
   getProxyProviders,
   getShowModalClosePrevConns,
-} from 'src/store/proxies';
-import type { State } from 'src/store/types';
+  proxyFilterText,
+} from '~/store/proxies';
+import type { State } from '~/store/types';
 
 import s0 from './Proxies.module.scss';
 
@@ -35,9 +36,7 @@ function Proxies({
   apiConfig,
   showModalClosePrevConns,
 }) {
-  const refFetchedTimestamp = useRef<{ startAt?: number; completeAt?: number }>(
-    {}
-  );
+  const refFetchedTimestamp = useRef<{ startAt?: number; completeAt?: number }>({});
 
   const fetchProxiesHooked = useCallback(() => {
     refFetchedTimestamp.current.startAt = Date.now();
@@ -75,10 +74,7 @@ function Proxies({
 
   return (
     <>
-      <BaseModal
-        isOpen={isSettingsModalOpen}
-        onRequestClose={closeSettingsModal}
-      >
+      <BaseModal isOpen={isSettingsModalOpen} onRequestClose={closeSettingsModal}>
         <Settings />
       </BaseModal>
       <div className={s0.topBar}>
@@ -88,7 +84,7 @@ function Proxies({
             <TextFilter textAtom={proxyFilterText} />
           </div>
           <Tooltip label={t('settings')}>
-            <Button kind='minimal' onClick={() => setIsSettingsModalOpen(true)}>
+            <Button kind="minimal" onClick={() => setIsSettingsModalOpen(true)}>
               <Equalizer size={16} />
             </Button>
           </Tooltip>
@@ -110,15 +106,8 @@ function Proxies({
       </div>
       <ProxyProviderList items={proxyProviders} />
       <div style={{ height: 60 }} />
-      <ProxyPageFab
-        dispatch={dispatch}
-        apiConfig={apiConfig}
-        proxyProviders={proxyProviders}
-      />
-      <BaseModal
-        isOpen={showModalClosePrevConns}
-        onRequestClose={closeModalClosePrevConns}
-      >
+      <ProxyPageFab dispatch={dispatch} apiConfig={apiConfig} proxyProviders={proxyProviders} />
+      <BaseModal isOpen={showModalClosePrevConns} onRequestClose={closeModalClosePrevConns}>
         <ClosePrevConns
           onClickPrimaryButton={() => closePrevConnsAndTheModal(apiConfig)}
           onClickSecondaryButton={closeModalClosePrevConns}

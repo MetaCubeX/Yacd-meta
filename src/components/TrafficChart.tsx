@@ -1,15 +1,11 @@
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { State  } from '$src/store/types';
+import { State } from '~/store/types';
 
 import { fetchData } from '../api/traffic';
 import useLineChart from '../hooks/useLineChart';
-import {
-  chartJSResource,
-  chartStyles,
-  commonDataSetProps,
-} from '../misc/chart';
+import { chartJSResource, chartStyles, commonDataSetProps } from '../misc/chart';
 import { getClashAPIConfig, getSelectedChartStyleIndex } from '../store/app';
 import { connect } from './StateProvider';
 
@@ -19,7 +15,7 @@ const chartWrapperStyle = {
   // make chartjs chart responsive
   position: 'relative',
   maxWidth: 1000,
-  marginTop:'1em',
+  marginTop: '1em',
 };
 
 const mapState = (s: State) => ({
@@ -51,7 +47,7 @@ function TrafficChart({ apiConfig, selectedChartStyleIndex }) {
         },
       ],
     }),
-    [ traffic, selectedChartStyleIndex, t]
+    [traffic, selectedChartStyleIndex, t]
   );
 
   useLineChart(ChartMod.Chart, 'trafficChart', data, traffic);
@@ -59,7 +55,7 @@ function TrafficChart({ apiConfig, selectedChartStyleIndex }) {
   return (
     // @ts-expect-error ts-migrate(2322) FIXME: Type '{ position: string; maxWidth: number; }' is ... Remove this comment to see the full error message
     <div style={chartWrapperStyle}>
-      <canvas id='trafficChart' />
+      <canvas id="trafficChart" />
     </div>
   );
 }

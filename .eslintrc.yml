@@ -1,8 +1,4 @@
----
 parser: '@typescript-eslint/parser'
-parserOptions:
-  project: tsconfig.json
-  sourceType: module
 
 plugins:
   - simple-import-sort
@@ -32,18 +28,18 @@ rules:
     - 'error'
     - argsIgnorePattern: '^_'
   '@typescript-eslint/no-use-before-define':
-    - error
+    - 'error'
     - functions: false
   # disable this temporarily since we have a lot of JS files
   # and typescript-eslint runs against JS files too
-  '@typescript-eslint/explicit-module-boundary-types': off
+  '@typescript-eslint/explicit-module-boundary-types': 'off'
   '@typescript-eslint/ban-ts-comment': 'off'
   '@typescript-eslint/ban-ts-ignore': 'off'
-  react-hooks/rules-of-hooks: error
+  react-hooks/rules-of-hooks: 'error'
   react-hooks/exhaustive-deps:
-    - warn
-    - additionalHooks: useRecoilCallback
-  simple-import-sort/imports: error
+    - 'warn'
+    - additionalHooks: 'useRecoilCallback'
+  simple-import-sort/imports: 'error'
 #   quotes: ['error', 'single']
 #   strict: ['error', 'never']
 #   no-console: 'warn'

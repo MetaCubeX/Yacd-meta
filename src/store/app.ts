@@ -1,4 +1,4 @@
-import { DispatchFn, GetStateFn, State, StateApp } from 'src/store/types';
+import { DispatchFn, GetStateFn, State, StateApp } from '~/store/types';
 
 import { loadState, saveState } from '../misc/storage';
 import { debounce, trimTrailingSlash } from '../misc/utils';
@@ -152,7 +152,7 @@ export function updateCollapsibleIsOpen(prefix: string, name: string, v: boolean
 const defaultClashAPIConfig = {
   baseURL: document.getElementById('app')?.getAttribute('data-base-url') ?? 'http://127.0.0.1:9090',
   secret: '',
-  addedAt: 0
+  addedAt: 0,
 };
 // type Theme = 'light' | 'dark';
 const defaultState: StateApp = {
@@ -169,7 +169,7 @@ const defaultState: StateApp = {
   proxySortBy: 'Natural',
   hideUnavailableProxies: false,
   autoCloseOldConns: false,
-  logStreamingPaused: false
+  logStreamingPaused: false,
 };
 
 function parseConfigQueryString() {

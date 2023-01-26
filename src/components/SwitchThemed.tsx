@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ReactSwitch from 'react-switch';
 
-import { State } from '$src/store/types';
+import { State } from '~/store/types';
 
 import { getTheme } from '../store/app';
 import { connect } from './StateProvider';
@@ -20,13 +20,13 @@ function SwitchThemed({ checked = false, onChange, theme, name }) {
       uncheckedIcon={false}
       checkedIcon={false}
       offColor={offColor}
-      onColor='#047aff'
-      offHandleColor='#fff'
-      onHandleColor='#fff'
+      onColor="#047aff"
+      offHandleColor="#fff"
+      onHandleColor="#fff"
       handleDiameter={24}
       height={28}
       width={44}
-      className='rs'
+      className="rs"
       name={name}
     />
   );

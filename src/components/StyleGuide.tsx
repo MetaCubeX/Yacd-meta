@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Zap } from 'react-feather';
-import Loading from 'src/components/Loading';
+
+import Loading from '~/components/Loading';
 
 import Button from './Button';
 import Input from './Input';
@@ -50,14 +51,14 @@ class StyleGuide extends PureComponent {
         </Pane>
         {/* @ts-expect-error ts-migrate(2741) FIXME: Property 'style' is missing in type '{ children: E... Remove this comment to see the full error message */}
         <Pane>
-          <ToggleSwitch name='test' options={optionsRule} value='Rule' onChange={noop} />
+          <ToggleSwitch name="test" options={optionsRule} value="Rule" onChange={noop} />
         </Pane>
         {/* @ts-expect-error ts-migrate(2741) FIXME: Property 'style' is missing in type '{ children: E... Remove this comment to see the full error message */}
         <Pane>
-          <Button text='Test Lxatency' start={<Zap size={16} />} />
-          <Button text='Test Lxatency' start={<Zap size={16} />} isLoading />
-          <Button label='Test Lxatency' />
-          <Button label='Button Plain' kind='minimal' />
+          <Button text="Test Latency" start={<Zap size={16} />} />
+          <Button text="Test Latency" start={<Zap size={16} />} isLoading />
+          <Button label="Test Latency" />
+          <Button label="Button Plain" kind="minimal" />
         </Pane>
         <Pane style={{ paddingLeft: 20 }}>
           <Loading />

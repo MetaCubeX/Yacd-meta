@@ -1,18 +1,12 @@
-import Tooltip from '@reach/tooltip';
+import { Tooltip } from '@reach/tooltip';
 import cx from 'clsx';
 import * as React from 'react';
 import { Info } from 'react-feather';
 import { useTranslation } from 'react-i18next';
-import {
-  FcAreaChart,
-  FcDocument,
-  FcGlobe,
-  FcLink,
-  FcRuler,
-  FcSettings,
-} from 'react-icons/fc';
+import { FcAreaChart, FcDocument, FcGlobe, FcLink, FcRuler, FcSettings } from 'react-icons/fc';
 import { Link, useLocation } from 'react-router-dom';
-import { ThemeSwitcher } from 'src/components/shared/ThemeSwitcher';
+
+import { ThemeSwitcher } from '~/components/shared/ThemeSwitcher';
 
 import s from './SideBar.module.scss';
 
@@ -101,7 +95,7 @@ export default function SideBar() {
       <div className={s.footer}>
         <ThemeSwitcher />
         <Tooltip label={t('about')}>
-          <Link to='/about' className={s.iconWrapper}>
+          <Link to="/about" className={s.iconWrapper}>
             <Info size={20} />
           </Link>
         </Tooltip>

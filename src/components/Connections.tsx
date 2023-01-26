@@ -4,8 +4,9 @@ import React from 'react';
 import { Pause, Play, X as IconClose } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
-import { ConnectionItem } from 'src/api/connections';
-import { State } from 'src/store/types';
+
+import { ConnectionItem } from '~/api/connections';
+import { State } from '~/store/types';
 
 import * as connAPI from '../api/connections';
 import useRemainingViewPortHeight from '../hooks/useRemainingViewPortHeight';
@@ -108,8 +109,8 @@ function formatConnectionDataItem(
     source: `${sourceIP}:${sourcePort}`,
     downloadSpeedCurr: download - (prev ? prev.download : 0),
     uploadSpeedCurr: upload - (prev ? prev.upload : 0),
-    process: process? process : '-',
-    destinationIP: remoteDestination || destinationIP|| host,
+    process: process ? process : '-',
+    destinationIP: remoteDestination || destinationIP || host,
   };
   return ret;
 }
@@ -119,7 +120,7 @@ function renderTableOrPlaceholder(conns: FormattedConn[]) {
     <ConnectionTable data={conns} />
   ) : (
     <div className={s.placeHolder}>
-      <SvgYacd width={200} height={200} c1='var(--color-text)' />
+      <SvgYacd width={200} height={200} c1="var(--color-text)" />
     </div>
   );
 }
@@ -209,9 +210,9 @@ function Conn({ apiConfig }) {
           </TabList>
           <div className={s.inputWrapper}>
             <input
-              type='text'
-              name='filter'
-              autoComplete='off'
+              type="text"
+              name="filter"
+              autoComplete="off"
               className={s.input}
               placeholder={t('Search')}
               onChange={(e) => setFilterKeyword(e.target.value)}

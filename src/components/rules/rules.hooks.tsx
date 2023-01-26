@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useRecoilState } from 'recoil';
+
 import {
   fetchRuleProviders,
   refreshRuleProviderByName,
   updateRuleProviders,
-} from 'src/api/rule-provider';
-import { fetchRules } from 'src/api/rules';
-import { ruleFilterText } from 'src/store/rules';
-import type { ClashAPIConfig } from 'src/types';
+} from '~/api/rule-provider';
+import { fetchRules } from '~/api/rules';
+import { ruleFilterText } from '~/store/rules';
+import type { ClashAPIConfig } from '~/types';
 
 const { useCallback } = React;
 

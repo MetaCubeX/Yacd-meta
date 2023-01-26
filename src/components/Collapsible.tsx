@@ -43,10 +43,8 @@ const variantsCollpapsibleWrap = {
 };
 
 const variantsCollpapsibleChildContainer = {
-  open: {
-  },
-  closed: {
-  },
+  open: {},
+  closed: {},
 };
 
 // @ts-expect-error ts-migrate(2339) FIXME: Property 'isOpen' does not exist on type '{ childr... Remove this comment to see the full error message
@@ -59,20 +57,11 @@ const Collapsible = memo(({ children, isOpen }) => {
   return (
     <div>
       <motion.div
-        animate={
-          isOpen && previous === isOpen
-            ? 'initialOpen'
-            : isOpen
-            ? 'open'
-            : 'closed'
-        }
+        animate={isOpen && previous === isOpen ? 'initialOpen' : isOpen ? 'open' : 'closed'}
         custom={height}
         variants={variantsCollpapsibleWrap}
       >
-        <motion.div
-          variants={variantsCollpapsibleChildContainer}
-          ref={refToMeature}
-        >
+        <motion.div variants={variantsCollpapsibleChildContainer} ref={refToMeature}>
           {children}
         </motion.div>
       </motion.div>

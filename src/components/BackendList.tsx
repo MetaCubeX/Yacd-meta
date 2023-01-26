@@ -1,12 +1,10 @@
 import cx from 'clsx';
 import * as React from 'react';
 import { Eye, EyeOff, X as Close } from 'react-feather';
-import { useToggle } from 'src/hooks/basic';
-import {
-  getClashAPIConfigs,
-  getSelectedClashAPIConfigIndex,
-} from 'src/store/app';
-import { ClashAPIConfig } from 'src/types';
+
+import { useToggle } from '~/hooks/basic';
+import { getClashAPIConfigs, getSelectedClashAPIConfigIndex } from '~/store/app';
+import { ClashAPIConfig } from '~/types';
 
 import s from './BackendList.module.scss';
 import { connect, useStoreActions } from './StateProvider';
@@ -103,7 +101,7 @@ function Item({
       <span
         className={s.url}
         tabIndex={0}
-        role='button'
+        role="button"
         onClick={() => onSelect({ baseURL, secret })}
         onKeyUp={handleTap}
       >
@@ -137,11 +135,7 @@ function Button({
   disabled?: boolean;
 }) {
   return (
-    <button
-      disabled={disabled}
-      className={cx(className, s.btn)}
-      onClick={onClick}
-    >
+    <button disabled={disabled} className={cx(className, s.btn)} onClick={onClick}>
       {children}
     </button>
   );

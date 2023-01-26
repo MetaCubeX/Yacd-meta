@@ -17,20 +17,4 @@
 .content {
   flex-grow: 1;
   overflow-y: auto;
-
-  /*
-
-  $w: 7px;
-  &::-webkit-scrollbar {
-    width: $w;
-  }
-  &::-webkit-scrollbar-thumb {
-    border-radius: 20px;
-    background-color: rgba(221, 221, 221, 0.7);
-  }
-  &::-webkit-scrollbar-corner {
-    background: transparent;
-  }
-
-  */
 }

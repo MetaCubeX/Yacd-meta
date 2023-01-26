@@ -1,5 +1,5 @@
-import { getURLAndInit } from 'src/misc/request-helper';
-import { ClashAPIConfig } from 'src/types';
+import { getURLAndInit } from '~/misc/request-helper';
+import { ClashAPIConfig } from '~/types';
 
 type VersionData = {
   version?: string;
