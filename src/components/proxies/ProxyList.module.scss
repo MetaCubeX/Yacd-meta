@@ -1,13 +1,18 @@
 .list {
   margin: 8px 0;
-  display: flex;
-  flex-wrap: wrap;
-  margin-left: -3px;
+  display: grid;
+  grid-gap: 10px;
 }
 
-.listSummaryView {
-  margin: 8px 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 13px);
-  grid-gap: 10px;
+.detail {
+  grid-template-columns: repeat(auto-fill, 160px);
+
+
+  @media (--breakpoint-not-small) {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+.summary {
+  grid-template-columns: repeat(auto-fill, 12px);
 }

@@ -48,8 +48,14 @@
   opacity: 0.5;
 }
 
+.btnInternal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 4px;
+}
+
 .btnStart {
-  margin-right: 5px;
   display: inline-flex;
   align-items: center;
   justify-content: center;

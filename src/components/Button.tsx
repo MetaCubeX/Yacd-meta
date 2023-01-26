@@ -43,11 +43,7 @@ function Button(props: ButtonProps, ref: React.Ref<HTMLButtonElement>) {
     },
     [isLoading, onClick]
   );
-  const btnClassName = cx(
-    s0.btn,
-    { [s0.minimal]: kind === 'minimal' },
-    className
-  );
+  const btnClassName = cx(s0.btn, { [s0.minimal]: kind === 'minimal' }, className);
   return (
     <button
       className={btnClassName}
@@ -74,14 +70,12 @@ function Button(props: ButtonProps, ref: React.Ref<HTMLButtonElement>) {
 
 function ButtonInternal({ children, label, text, start }: ButtonInternalProps) {
   return (
-    <>
-      {start ? (
-        <span className={s0.btnStart}>
-          {typeof start === 'function' ? start() : start}
-        </span>
-      ) : null}
+    <div className={s0.btnInternal}>
+      {start && (
+        <span className={s0.btnStart}>{typeof start === 'function' ? start() : start}</span>
+      )}
       {children || label || text}
-    </>
+    </div>
   );
 }
 

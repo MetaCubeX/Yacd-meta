@@ -10,8 +10,6 @@
   outline: none;
   padding: 5px;
   color: var(--color-text);
-  border-radius: 100%;
-  border: 1px solid transparent;
 }
 .iconWrapper:hover {
   opacity: 0.6;
@@ -48,9 +46,8 @@
   }
   .iconWrapper {
     pointer-events: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    width: 100%;
+    height: 100%;
     position: absolute;
     left: 0;
     top: 0;

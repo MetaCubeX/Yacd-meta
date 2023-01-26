@@ -1,3 +1,4 @@
+import cx from 'clsx';
 import * as React from 'react';
 
 import { Proxy, ProxySmall } from './Proxy';
@@ -11,16 +12,11 @@ type ProxyListProps = {
   show?: boolean;
 };
 
-export function ProxyList({
-  all,
-  now,
-  isSelectable,
-  itemOnTapCallback,
-}: ProxyListProps) {
+export function ProxyList({ all, now, isSelectable, itemOnTapCallback }: ProxyListProps) {
   const proxies = all;
 
   return (
-    <div className={s.list}>
+    <div className={cx(s.list, s.detail)}>
       {proxies.map((proxyName) => {
         return (
           <Proxy
@@ -43,7 +39,7 @@ export function ProxyListSummaryView({
   itemOnTapCallback,
 }: ProxyListProps) {
   return (
-    <div className={s.listSummaryView}>
+    <div className={cx(s.list, s.summary)}>
       {all.map((proxyName) => {
         return (
           <ProxySmall
