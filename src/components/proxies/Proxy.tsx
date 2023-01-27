@@ -3,6 +3,7 @@ import cx from 'clsx';
 import * as React from 'react';
 
 import { keyCodes } from '~/misc/keycode';
+import { ProxyItem } from '~/store/types';
 
 import { getDelay, getProxies, NonProxyTypes } from '../../store/proxies';
 import { connect } from '../StateProvider';
@@ -54,7 +55,7 @@ function getProxyDotBackgroundColor(
 type ProxyProps = {
   name: string;
   now?: boolean;
-  proxy: any;
+  proxy: ProxyItem;
   latency: any;
   isSelectable?: boolean;
   udp: boolean;
@@ -136,9 +137,9 @@ function ProxyImpl({ now, name, proxy, latency, isSelectable, onClick }: ProxyPr
   const doSelect = React.useCallback(() => {
     isSelectable && onClick && onClick(name);
   }, [name, onClick, isSelectable]);
-  function formatUdpType(t: boolean) {
-    if (!t) return '';
-    return 'UDP';
+  function formatUdpType(udp: boolean, xudp?: boolean) {
+    if (!udp) return '';
+    return xudp ? 'XUDP' : 'UDP';
   }
   function formatTfo(t: boolean) {
     if (!t) return '';
@@ -187,7 +188,7 @@ function ProxyImpl({ now, name, proxy, latency, isSelectable, onClick }: ProxyPr
           <span>{name}</span>
         </ProxyNameTooltip>
         <span className={s0.proxyType} style={{ paddingLeft: 4, opacity: now ? 0.6 : 0.2 }}>
-          {formatUdpType(proxy.udp)}
+          {formatUdpType(proxy.udp, proxy.xudp)}
         </span>
       </div>
 
