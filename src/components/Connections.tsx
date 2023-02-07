@@ -46,6 +46,7 @@ type FormattedConn = {
   sourcePort: string;
   source: string;
   host: string;
+  sniffHost: string;
   type: string;
   network: string;
   process?: string;
@@ -72,7 +73,7 @@ function filterConns(conns: FormattedConn[], keyword: string) {
           conn.network,
           conn.process,
         ].some((field) => hasSubstring(field, keyword))
-      );
+    );
 }
 
 function formatConnectionDataItem(
@@ -91,6 +92,7 @@ function formatConnectionDataItem(
     sourceIP,
     sourcePort,
     process,
+    sniffHost,
   } = metadata;
   // host could be an empty string if it's direct IP connection
   let host2 = host;
@@ -105,6 +107,7 @@ function formatConnectionDataItem(
     rule: !rulePayload ? rule : `${rule} :: ${rulePayload}`,
     ...metadata,
     host: `${host2}:${destinationPort}`,
+    sniffHost: sniffHost ? sniffHost : '-',
     type: `${type}(${network})`,
     source: `${sourceIP}:${sourcePort}`,
     downloadSpeedCurr: download - (prev ? prev.download : 0),

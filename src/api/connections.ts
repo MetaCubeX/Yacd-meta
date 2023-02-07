@@ -23,6 +23,7 @@ export type ConnectionItem = {
     destinationPort: string;
     host: string;
     process?: string;
+    sniffHost?: string;
   };
   upload: number;
   download: number;

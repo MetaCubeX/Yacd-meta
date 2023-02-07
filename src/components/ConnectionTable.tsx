@@ -14,6 +14,7 @@ const sortDescFirst = true;
 const columns = [
   { accessor: 'id', show: false },
   { Header: 'c_host', accessor: 'host' },
+  { Header: 'c_sni', accessor: 'sniffHost' },
   { Header: 'c_process', accessor: 'process' },
   { Header: 'c_dl', accessor: 'download', sortDescFirst },
   { Header: 'c_ul', accessor: 'upload', sortDescFirst },

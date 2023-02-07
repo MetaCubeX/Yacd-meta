@@ -45,6 +45,7 @@ export const data = {
   allow_lan: 'Allow LAN',
   tls_sniffing: 'Sniffer',
   c_host: 'Host',
+  c_sni: 'Sniff Host',
   c_process: 'Process',
   c_dl: 'DL',
   c_ul: 'UL',

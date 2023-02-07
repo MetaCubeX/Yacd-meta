@@ -45,6 +45,7 @@ export const data = {
   allow_lan: '允许局域网连接',
   tls_sniffing: 'SNI 嗅探',
   c_host: '域名',
+  c_sni: '嗅探域名',
   c_process: '进程',
   c_dl: '下载',
   c_ul: '上传',
