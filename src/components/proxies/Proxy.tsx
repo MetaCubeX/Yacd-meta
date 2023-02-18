@@ -172,6 +172,8 @@ function ProxyImpl({ now, name, proxy, latency, isSelectable, onClick }: ProxyPr
     });
   }, [isSelectable, now, latency]);
 
+  const latencyNumber = latency?.number ?? proxy.history[proxy.history.length - 1]?.delay;
+
   return (
     <div
       tabIndex={0}
@@ -198,7 +200,7 @@ function ProxyImpl({ now, name, proxy, latency, isSelectable, onClick }: ProxyPr
           {formatTfo(proxy.tfo)}
         </div>
 
-        {latency && latency.number ? <ProxyLatency number={latency.number} color={color} /> : null}
+        {latencyNumber ? <ProxyLatency number={latencyNumber} color={color} /> : null}
       </div>
     </div>
   );
