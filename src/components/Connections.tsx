@@ -73,7 +73,7 @@ function filterConns(conns: FormattedConn[], keyword: string) {
           conn.network,
           conn.process,
         ].some((field) => hasSubstring(field, keyword))
-    );
+      );
 }
 
 function formatConnectionDataItem(

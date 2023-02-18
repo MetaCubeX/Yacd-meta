@@ -93,7 +93,7 @@ function Rules({ apiConfig }: RulesProps) {
     <div>
       <div className={s.header}>
         <ContentHeader title={t('Rules')} />
-        <TextFilter placeholder="Filter" textAtom={ruleFilterText} />
+        <TextFilter placeholder={t('Search')} textAtom={ruleFilterText} />
       </div>
       <div ref={refRulesContainer} style={{ paddingBottom }}>
         <VariableSizeList
