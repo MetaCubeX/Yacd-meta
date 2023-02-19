@@ -4,7 +4,12 @@ import { useQuery } from 'react-query';
 
 import * as proxiesAPI from '~/api/proxies';
 import { fetchVersion } from '~/api/version';
-import { getCollapsibleIsOpen, getHideUnavailableProxies, getProxySortBy } from '~/store/app';
+import {
+  getCollapsibleIsOpen,
+  getHideUnavailableProxies,
+  getLatencyTestUrl,
+  getProxySortBy,
+} from '~/store/app';
 import { fetchProxies, getProxies, switchProxy } from '~/store/proxies';
 
 import Button from '../Button';
@@ -34,6 +39,7 @@ function ProxyGroupImpl({
   type,
   now,
   isOpen,
+  latencyTestUrl,
   apiConfig,
   dispatch,
 }) {
@@ -69,7 +75,7 @@ function ProxyGroupImpl({
     setIsTestingLatency(true);
     try {
       if (version.meta === true) {
-        await proxiesAPI.requestDelayForProxyGroup(apiConfig, name);
+        await proxiesAPI.requestDelayForProxyGroup(apiConfig, name, latencyTestUrl);
         await dispatch(fetchProxies(apiConfig));
       } else {
         await requestDelayForProxies(apiConfig, all);
@@ -113,6 +119,7 @@ export const ProxyGroup = connect((s, { name, delay }) => {
   const collapsibleIsOpen = getCollapsibleIsOpen(s);
   const proxySortBy = getProxySortBy(s);
   const hideUnavailableProxies = getHideUnavailableProxies(s);
+  const latencyTestUrl = getLatencyTestUrl(s);
 
   const group = proxies[name];
   const { all, type, now } = group;
@@ -125,5 +132,6 @@ export const ProxyGroup = connect((s, { name, delay }) => {
     type,
     now,
     isOpen: collapsibleIsOpen[`proxyGroup:${name}`],
+    latencyTestUrl,
   };
 })(ProxyGroupImpl);

@@ -37,7 +37,7 @@ export async function requestDelayForProxy(
   latencyTestUrl = 'http://www.gstatic.com/generate_204'
 ) {
   const { url, init } = getURLAndInit(apiConfig);
-  const qs = `timeout=5000&url=${latencyTestUrl}`;
+  const qs = `timeout=5000&url=${encodeURIComponent(latencyTestUrl)}`;
   const fullURL = `${url}${endpoint}/${encodeURIComponent(name)}/delay?${qs}`;
   return await fetch(fullURL, init);
 }
@@ -48,7 +48,7 @@ export async function requestDelayForProxyGroup(
   latencyTestUrl = 'http://www.gstatic.com/generate_202'
 ) {
   const { url, init } = getURLAndInit(apiConfig);
-  const qs = `url=${latencyTestUrl}&timeout=2000`;
+  const qs = `url=${encodeURIComponent(latencyTestUrl)}&timeout=2000`;
   const fullUrl = `${url}/group/${encodeURIComponent(name)}/delay?${qs}`;
   return await fetch(fullUrl, init);
 }
@@ -65,11 +65,14 @@ export async function fetchProviderProxies(config) {
 export async function updateProviderByName(config, name) {
   const { url, init } = getURLAndInit(config);
   const options = { ...init, method: 'PUT' };
-  return await fetch(url + '/providers/proxies/' + name, options);
+  return await fetch(url + '/providers/proxies/' + encodeURIComponent(name), options);
 }
 
 export async function healthcheckProviderByName(config, name) {
   const { url, init } = getURLAndInit(config);
   const options = { ...init, method: 'GET' };
-  return await fetch(url + '/providers/proxies/' + name + '/healthcheck', options);
+  return await fetch(
+    url + '/providers/proxies/' + encodeURIComponent(name) + '/healthcheck',
+    options
+  );
 }
