@@ -3,6 +3,9 @@ import cx from 'clsx';
 import * as React from 'react';
 
 import { keyCodes } from '~/misc/keycode';
+import {
+  getLatencyTestUrl,
+} from '~/store/app';
 import { ProxyItem } from '~/store/types';
 
 import { getDelay, getProxies, NonProxyTypes } from '../../store/proxies';
@@ -27,12 +30,17 @@ function getLabelColor({
   number,
 }: {
   number?: number;
-} = {}) {
+} = {},
+  httpsTest: boolean) {
+  const delayMap = {
+    good: httpsTest ? 800 : 200,
+    normal: httpsTest ? 1500 : 500,
+  };
   if (number === 0) {
     return colorMap.na;
-  } else if (number < 200) {
+  } else if (number < delayMap.good) {
     return colorMap.good;
-  } else if (number < 500) {
+  } else if (number < delayMap.normal) {
     return colorMap.normal;
   } else if (typeof number === 'number') {
     return colorMap.bad;
@@ -44,12 +52,13 @@ function getProxyDotBackgroundColor(
   latency: {
     number?: number;
   },
-  proxyType: string
+  proxyType: string,
+  httpsTest: boolean,
 ) {
   if (NonProxyTypes.indexOf(proxyType) > -1) {
     return 'linear-gradient(135deg, white 15%, #999 15% 30%, white 30% 45%, #999 45% 60%, white 60% 75%, #999 75% 90%, white 90% 100%)';
   }
-  return getLabelColor(latency);
+  return getLabelColor(latency, httpsTest);
 }
 
 type ProxyProps = {
@@ -57,14 +66,15 @@ type ProxyProps = {
   now?: boolean;
   proxy: ProxyItem;
   latency: any;
+  httpsLatencyTest: boolean,
   isSelectable?: boolean;
   udp: boolean;
   tfo: boolean;
   onClick?: (proxyName: string) => unknown;
 };
 
-function ProxySmallImpl({ now, name, proxy, latency, isSelectable, onClick }: ProxyProps) {
-  const color = useMemo(() => getProxyDotBackgroundColor(latency, proxy.type), [latency, proxy]);
+function ProxySmallImpl({ now, name, proxy, latency, httpsLatencyTest, isSelectable, onClick }: ProxyProps) {
+  const color = useMemo(() => getProxyDotBackgroundColor(latency, proxy.type, httpsLatencyTest), [latency, proxy]);
   const title = useMemo(() => {
     let ret = name;
     if (latency && typeof latency.number === 'number') {
@@ -129,8 +139,8 @@ function ProxyNameTooltip({ children, label, 'aria-label': ariaLabel }) {
   );
 }
 
-function ProxyImpl({ now, name, proxy, latency, isSelectable, onClick }: ProxyProps) {
-  const color = useMemo(() => getLabelColor(latency), [latency]);
+function ProxyImpl({ now, name, proxy, latency, httpsLatencyTest, isSelectable, onClick }: ProxyProps) {
+  const color = useMemo(() => getLabelColor(latency, httpsLatencyTest), [latency]);
   const doSelect = React.useCallback(() => {
     isSelectable && onClick && onClick(name);
   }, [name, onClick, isSelectable]);
@@ -209,9 +219,11 @@ function ProxyImpl({ now, name, proxy, latency, isSelectable, onClick }: ProxyPr
 const mapState = (s: any, { name }) => {
   const proxies = getProxies(s);
   const delay = getDelay(s);
+  const latencyTestUrl = getLatencyTestUrl(s);
   return {
     proxy: proxies[name],
     latency: delay[name],
+    httpsLatencyTest: latencyTestUrl.startsWith('https://'),
   };
 };
 
