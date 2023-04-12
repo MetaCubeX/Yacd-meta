@@ -95,7 +95,7 @@ export function updateClashAPIConfig({ baseURL, secret }) {
 const rootEl = document.querySelector('html');
 type ThemeType = 'dark' | 'light' | 'auto';
 
-function setTheme(theme: ThemeType = 'dark') {
+function setTheme(theme: ThemeType = 'light') {
   if (theme === 'auto') {
     rootEl.setAttribute('data-theme', 'auto');
   } else if (theme === 'dark') {

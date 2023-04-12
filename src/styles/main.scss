@@ -4,7 +4,7 @@
 @import 'modern-normalize/modern-normalize.css';
 
 @font-face {
-  font-family: 'Twemoji Mozilla';
+  font-family: '_Twemoji Mozilla';
   src: url('../../assets/Twemoji_Mozilla.ttf') format('truetype');
 }
 
@@ -64,7 +64,7 @@
 :root {
   --font-mono: 'Roboto Mono', Menlo, monospace;
   // prettier-ignore
-  --font-normal: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, "Twemoji Mozilla", Segoe UI Emoji, Segoe UI Symbol, 'PingFang SC', 'Microsoft YaHei', '\5fae\8f6f\96c5\9ed1', Arial;
+  --font-normal: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Twemoji Mozilla, _Twemoji Mozilla, Source Han Sans SC,Segoe UI Emoji, Segoe UI Symbol, 'PingFang SC', 'Microsoft YaHei', '\5fae\8f6f\96c5\9ed1', Arial;
   --color-focus-blue: #1a73e8;
   --btn-bg: #387cec;
 }

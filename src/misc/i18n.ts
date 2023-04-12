@@ -47,7 +47,7 @@ i18next
         }
       },
     },
-    supportedLngs: ['en', 'zh'],
+    supportedLngs: ['zh', 'en'],
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false,
