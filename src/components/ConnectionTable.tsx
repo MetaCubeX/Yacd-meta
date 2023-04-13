@@ -71,8 +71,11 @@ function Table({ data }) {
       {headerGroups.map((headerGroup) => {
         return (
           <div {...headerGroup.getHeaderGroupProps()} className={s.tr}>
-            {headerGroup.headers.map((column) => (
-              <div {...column.getHeaderProps(column.getSortByToggleProps())} className={s.th}>
+            {headerGroup.headers.map((column, index) => (
+              <div
+                {...column.getHeaderProps(column.getSortByToggleProps())}
+                className={index >= 5 && index < 10 ? s.thdu : s.th}
+              >
                 <span>{t(column.render('Header'))}</span>
                 <span className={s.sortIconContainer}>
                   {column.isSorted ? (
@@ -86,14 +89,14 @@ function Table({ data }) {
 
             {rows.map((row, i) => {
               prepareRow(row);
-              return row.cells.map((cell) => {
+              return row.cells.map((cell, j) => {
                 return (
                   <div
                     {...cell.getCellProps()}
                     className={cx(
                       s.td,
-                      i % 2 === 0 ? s.odd : false
-                      // j >= 6 && j < 10 ? s.du : true
+                      i % 2 === 0 ? s.odd : false,
+                      j >= 5 && j < 10 ? s.du : true
                     )}
                   >
                     {renderCell(cell, locale)}
