@@ -89,7 +89,7 @@ function ProxyProviderImpl({
     const getYear = expire.getFullYear() + '-';
     const getMonth =
       (expire.getMonth() + 1 < 10 ? '0' + (expire.getMonth() + 1) : expire.getMonth() + 1) + '-';
-    const getDate = expire.getDate() + ' ';
+    const getDate = (expire.getDate() < 10 ? '0' + expire.getDate() : expire.getDate()) + ' ';
     return getYear + getMonth + getDate;
   };
   return (
