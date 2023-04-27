@@ -5,6 +5,12 @@ import { buildWebSocketURL, getURLAndInit } from '../misc/request-helper';
 const endpoint = '/connections';
 
 const fetched = false;
+
+interface Subscriber {
+  listner: unknown; // on data received, listener will be called with data
+  onClose: () => void; // on stream closed, onClose will be called
+}
+
 const subscribers = [];
 
 // see also https://github.com/Dreamacro/clash/blob/dev/constant/metadata.go#L41
@@ -48,28 +54,49 @@ function appendData(s: string) {
     // eslint-disable-next-line no-console
     console.log('JSON.parse error', JSON.parse(s));
   }
-  subscribers.forEach((f) => f(o));
+  subscribers.forEach((s) => s.listner(o));
 }
 
 type UnsubscribeFn = () => void;
 
 let wsState: number;
-export function fetchData(apiConfig: ClashAPIConfig, listener: unknown): UnsubscribeFn | void {
+export function fetchData(
+  apiConfig: ClashAPIConfig,
+  listener: unknown,
+  onClose: () => void
+): UnsubscribeFn | void {
   if (fetched || wsState === 1) {
-    if (listener) return subscribe(listener);
+    if (listener)
+      return subscribe({
+        listner: listener,
+        onClose,
+      });
   }
   wsState = 1;
   const url = buildWebSocketURL(apiConfig, endpoint);
   const ws = new WebSocket(url);
-  ws.addEventListener('error', () => (wsState = 3));
+  ws.addEventListener('error', () => {
+    wsState = 3;
+    subscribers.forEach((s) => s.onClose());
+    subscribers.length = 0;
+  });
+  ws.addEventListener('close', () => {
+    wsState = 3;
+    subscribers.forEach((s) => s.onClose());
+    subscribers.length = 0;
+  });
   ws.addEventListener('message', (event) => appendData(event.data));
-  if (listener) return subscribe(listener);
+  if (listener)
+    return subscribe({
+      listner: listener,
+      onClose,
+    });
 }
 
-function subscribe(listener: unknown): UnsubscribeFn {
-  subscribers.push(listener);
+function subscribe(subscriber: Subscriber): UnsubscribeFn {
+  subscribers.push(subscriber);
   return function unsubscribe() {
-    const idx = subscribers.indexOf(listener);
+    const idx = subscribers.indexOf(subscriber);
     subscribers.splice(idx, 1);
   };
 }

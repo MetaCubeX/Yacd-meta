@@ -221,9 +221,15 @@ function Conn({ apiConfig }) {
     },
     [setConns, isRefreshPaused]
   );
+  const [reConnectCount, setReConnectCount] = useState(0);
+
   useEffect(() => {
-    return connAPI.fetchData(apiConfig, read);
-  }, [apiConfig, read]);
+    return connAPI.fetchData(apiConfig, read, () => {
+      setTimeout(() => {
+        setReConnectCount((prev) => prev + 1);
+      }, 1000);
+    });
+  }, [apiConfig, read, reConnectCount, setReConnectCount]);
 
   const { t } = useTranslation();
 
