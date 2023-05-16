@@ -29,6 +29,7 @@ export type ConnectionItem = {
     destinationPort: string;
     host: string;
     process?: string;
+    processPath?: string;
     sniffHost?: string;
   };
   upload: number;
@@ -50,6 +51,14 @@ function appendData(s: string) {
   let o: ConnectionsData;
   try {
     o = JSON.parse(s);
+    o.connections.forEach(conn => {
+      let m = conn.metadata;
+      if (m.process == null) {
+        if (m.processPath != null) {
+          m.process = m.processPath.replace(/^.*[/\\](.*)$/, "$1");
+        }
+      }
+    });
   } catch (err) {
     // eslint-disable-next-line no-console
     console.log('JSON.parse error', JSON.parse(s));
