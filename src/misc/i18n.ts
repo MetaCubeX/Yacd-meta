@@ -4,7 +4,7 @@ import HttpBackend from 'i18next-http-backend';
 import { initReactI18next } from 'react-i18next';
 
 const allLocales = {
-  zh: import('~/i18n/zh'),
+  zh_cn: import('~/i18n/zh-cn'),
   en: import('~/i18n/en'),
 };
 
@@ -30,13 +30,13 @@ i18next
         switch (url) {
           case '/__zh/translation.json':
           case '/__zh-CN/translation.json':
-            p = allLocales.zh;
+            p = allLocales.zh_cn;
             break;
           case '/__en/translation.json':
             p = allLocales.en;
             break;
           default:
-            p = allLocales.zh;
+            p = allLocales.zh_cn;
             break;
         }
 
@@ -47,7 +47,7 @@ i18next
         }
       },
     },
-    supportedLngs: ['zh', 'en'],
+    supportedLngs: ['zh-CN', 'en'],
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false,
