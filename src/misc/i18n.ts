@@ -5,6 +5,7 @@ import { initReactI18next } from 'react-i18next';
 
 const allLocales = {
   zh_cn: import('~/i18n/zh-cn'),
+  zh_tw: import('~/i18n/zh-tw'),
   en: import('~/i18n/en'),
 };
 
@@ -32,6 +33,9 @@ i18next
           case '/__zh-CN/translation.json':
             p = allLocales.zh_cn;
             break;
+          case '/__zh-TW/translation.json':
+            p = allLocales.zh_tw;
+            break;
           case '/__en/translation.json':
             p = allLocales.en;
             break;
@@ -47,7 +51,7 @@ i18next
         }
       },
     },
-    supportedLngs: ['zh-CN', 'en'],
+    supportedLngs: ['zh-CN', 'zh-TW', 'en'],
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false,
