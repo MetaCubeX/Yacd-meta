@@ -271,7 +271,7 @@ function Conn({ apiConfig }) {
             />
           </div>
         </div>
-        <div ref={refContainer} style={{ padding: 30, paddingBottom, paddingTop: 10 }}>
+        <div ref={refContainer} style={{ padding: 30, paddingBottom: 10, paddingTop: 10 }}>
           <div
             style={{
               height: containerHeight - paddingBottom,

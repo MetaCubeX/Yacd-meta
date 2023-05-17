@@ -18,7 +18,6 @@ import { Fab, position as fabPosition } from './shared/Fab';
 
 const { useCallback, useEffect } = React;
 
-const paddingBottom = 30;
 const colors = {
   debug: '#389d3d',
   info: '#58c3f2',
@@ -68,14 +67,14 @@ function Logs({ dispatch, logLevel, apiConfig, logs, logStreamingPaused }) {
       <LogSearch />
       <div ref={refLogsContainer}>
         {logs.length === 0 ? (
-          <div className={s.logPlaceholder} style={{ height: containerHeight - paddingBottom * 2 }}>
+          <div className={s.logPlaceholder} style={{ height: containerHeight * 0.9 }}>
             <div className={s.logPlaceholderIcon}>
               <SvgYacd width={200} height={200} />
             </div>
             <div>{t('no_logs')}</div>
           </div>
         ) : (
-          <div className={s.logsWrapper} style={{ height: containerHeight - paddingBottom * 2 }}>
+          <div className={s.logsWrapper} style={{ height: containerHeight * 0.85 }}>
             {logs.map((log, index) => (
               <div className="" key={index}>
                 <LogLine {...log} />
