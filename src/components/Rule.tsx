@@ -29,7 +29,7 @@ function Rule({ type, payload, proxy, id, size }: Props) {
   return (
     <div className={s0.rule}>
       <div className={s0.left}>{id}</div>
-      <div>
+      <div style={{ marginLeft: 10 }}>
         <div className={s0.payloadAndSize}>
           <div className={s0.payload}>{payload}</div>
           {(type === 'GeoSite' || type === 'GeoIP') && (
