@@ -52,6 +52,7 @@ i18next
       },
     },
     supportedLngs: ['zh-CN', 'zh-TW', 'en'],
+    load: 'currentOnly',
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false,
