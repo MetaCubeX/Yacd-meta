@@ -235,7 +235,19 @@ function Conn({ apiConfig }) {
 
   return (
     <div>
-      <ContentHeader title={t('Connections')} />
+      <div className={s.header}>
+        <ContentHeader title={t('Connections')} />
+        <div className={s.inputWrapper}>
+          <input
+            type="text"
+            name="filter"
+            autoComplete="off"
+            className={s.input}
+            placeholder={t('Search')}
+            onChange={(e) => setFilterKeyword(e.target.value)}
+          />
+        </div>
+      </div>
       <Tabs>
         <div
           style={{
@@ -260,16 +272,6 @@ function Conn({ apiConfig }) {
               </span>
             </Tab>
           </TabList>
-          <div className={s.inputWrapper}>
-            <input
-              type="text"
-              name="filter"
-              autoComplete="off"
-              className={s.input}
-              placeholder={t('Search')}
-              onChange={(e) => setFilterKeyword(e.target.value)}
-            />
-          </div>
         </div>
         <div ref={refContainer} style={{ padding: 30, paddingBottom: 10, paddingTop: 10 }}>
           <div
