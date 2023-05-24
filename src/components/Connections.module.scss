@@ -34,12 +34,16 @@
    */
   padding-right: 15px;
   @media (--breakpoint-not-small) {
-    padding-right: 40px;
+    padding-right: 25px;
   }
 }
 
 .inputWrapper {
-  margin: 0 30px;
+  margin: 0;
+  @media (--breakpoint-not-small) {
+    margin: 0 25px;
+  }
+
   width: 100%;
   max-width: 350px;
   justify-self: flex-end;
