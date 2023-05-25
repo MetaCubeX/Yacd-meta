@@ -67,9 +67,9 @@ function Table({ data }) {
 
   let locale: Locale;
 
-  if (i18n.language === 'zh-cn') {
+  if (i18n.language === 'zh-CN') {
     locale = zhCN;
-  } else if (i18n.language === 'zh-tw') {
+  } else if (i18n.language === 'zh-TW') {
     locale = zhTW;
   } else {
     locale = enUS;
