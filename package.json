@@ -26,6 +26,7 @@
     "memoize-one": "6.0.0",
     "modern-normalize": "1.1.0",
     "prop-types": "15.8.1",
+    "react-beautiful-dnd": "^13.1.1",
     "react-feather": "^2.0.10",
     "react-modal": "3.16.1",
     "react-tabs": "6.0.0",
