@@ -443,7 +443,7 @@ function ConfigImpl({
         <div>
           <div className={s0.label}>
             {t('current_backend')}
-            <p>{getBackendContent(version) + apiConfig.baseURL}</p>
+            <p>{getBackendContent(version) + apiConfig?.baseURL}</p>
           </div>
           <div className={s0.label}>Action</div>
           <Button
