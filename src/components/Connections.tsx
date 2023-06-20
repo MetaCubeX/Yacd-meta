@@ -145,12 +145,12 @@ function modifyChains(chains: string[]): string {
 
   //倒序
   if (chains.length === 2) {
-    return chains[1] + ' ->' + chains[0];
+    return `${chains[1]} -> ${chains[0]}`;
   }
 
   const first = chains.pop();
   const last = chains.shift();
-  return `${first} ->${last}`;
+  return `${first} -> ${last}`;
 }
 
 function renderTableOrPlaceholder(conns: FormattedConn[]) {

@@ -9,7 +9,6 @@
 .th {
   height: 50px;
   background: var(--color-background);
-  position: sticky;
   top: 0;
   font-size: 1em;
   user-select: none;
@@ -35,12 +34,11 @@
 
 .td {
   /* 上边下边 | 左边右边 */
-  padding: 10px 2px;
+  padding: 10px 5px;
   font-size: 0.9em;
   // max-width: 14em;
   min-width: 9em;
   cursor: default;
-  align-items: center;
   text-align: left;
   vertical-align: middle;
   white-space: nowrap;
@@ -50,6 +48,18 @@
   }
 
   font-family: var(--font-normal);
+}
+
+.overlay {
+  background: #444;
+}
+.modal {
+  background-color: var(--bg-modal);
+  // color: var(--color-text);
+}
+
+.table {
+  border-collapse: collapse;
 }
 
 .td.odd {
@@ -63,8 +73,8 @@
 }
 
 .sortIconContainer {
-  display: inline-flex;
-  margin-left: 0.5em;
+  float: right;
+  // margin-left: 0.5em;
   width: 1em;
   height: 1em;
 }

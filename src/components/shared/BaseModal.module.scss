@@ -8,10 +8,10 @@
   line-height: 1.4;
   opacity: 0.6;
   transition: all 0.3s ease;
-  transform: translate(-50%, -50%) scale(1.2);
+  // transform: scale(1.2);
   box-shadow: rgba(0, 0, 0, 0.12) 0px 4px 4px, rgba(0, 0, 0, 0.24) 0px 16px 32px;
 }
 .afterOpen {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  // transform: scale(1);
 }

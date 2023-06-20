@@ -20,9 +20,8 @@ const getItemStyle = (isDragging, draggableStyle) => {
   return {
     ...draggableStyle,
     ...(isDragging && {
-      left: 0,
       background: 'transparent',
-      transform: draggableStyle.transform + ' translateY(-195px)', // modal基于transform会造成偏移
+      transform: draggableStyle.transform, // modal基于transform会造成偏移
     }),
   };
 };
@@ -48,7 +47,7 @@ const columnsOrigin = JSON.stringify([
 const savedHiddenColumns = localStorage.getItem('hiddenColumns');
 const savedColumns = localStorage.getItem('columns');
 
-let hiddenColumns = savedHiddenColumns
+const hiddenColumns = savedHiddenColumns
   ? JSON.parse(savedHiddenColumns)
   : JSON.parse(hiddenColumnsOrigin);
 const columnsInit = savedColumns ? JSON.parse(savedColumns) : JSON.parse(columnsOrigin);
@@ -91,7 +90,6 @@ function Table({ data }) {
   );
 
   const { getTableProps, setHiddenColumns, headerGroups, rows, prepareRow } = table;
-
   const { t, i18n } = useTranslation();
 
   let locale: Locale;
@@ -121,8 +119,8 @@ function Table({ data }) {
   };
 
   const resetColumns = () => {
-    hiddenColumns = JSON.parse(hiddenColumnsOrigin);
-    setColumns(JSON.parse(columnsOrigin));
+    hiddenColumns.splice(0, hiddenColumns.length);
+    hiddenColumns.push('id');
     setHiddenColumns(hiddenColumns);
     localStorage.removeItem('hiddenColumns');
     localStorage.removeItem('columns');
@@ -194,7 +192,7 @@ function Table({ data }) {
         <Button onClick={() => setModalColumn(true)}>管理列</Button>
         <Button onClick={resetColumns}>重置列</Button>
       </div>
-      <table {...getTableProps()}>
+      <table {...getTableProps()} className={s.table}>
         <thead>
           {headerGroups.map((headerGroup, trindex) => {
             return (
@@ -204,9 +202,7 @@ function Table({ data }) {
                     <span>{t(column.render('Header'))}</span>
                     <span className={s.sortIconContainer}>
                       {column.isSorted ? (
-                        <span className={column.isSortedDesc ? '' : s.rotate180}>
-                          <ChevronDown size={16} />
-                        </span>
+                        <ChevronDown size={16} className={column.isSortedDesc ? '' : s.rotate180} />
                       ) : null}
                     </span>
                   </th>
