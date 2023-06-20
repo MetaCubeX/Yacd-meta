@@ -61,6 +61,7 @@ declare module 'react-table' {
   ): {
     headerGroups: HeaderGroup[];
     getTableProps(): { role?: string };
+    setHiddenColumns: (columns: string[]) => void;
     rows: Row[];
     prepareRow(r: Row): void;
   };

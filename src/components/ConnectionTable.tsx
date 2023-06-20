@@ -7,37 +7,51 @@ import { ChevronDown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 import { useSortBy, useTable } from 'react-table';
 
+import BaseModal from '~/components/shared/BaseModal';
+
 import prettyBytes from '../misc/pretty-bytes';
+import Button from './Button';
 import s from './ConnectionTable.module.scss';
+import Switch from './SwitchThemed';
 
 const sortDescFirst = true;
 
 const getItemStyle = (isDragging, draggableStyle) => {
   return {
     ...draggableStyle,
-    ...(isDragging && { background: 'transparent' }),
+    ...(isDragging && {
+      left: 0,
+      background: 'transparent',
+      transform: draggableStyle.transform + ' translateY(-195px)', // modal基于transform会造成偏移
+    }),
   };
 };
 
+const hiddenColumnsOrigin = JSON.stringify(['id']);
+const columnsOrigin = JSON.stringify([
+  { accessor: 'id', show: false },
+  { Header: 'c_type', accessor: 'type' },
+  { Header: 'c_process', accessor: 'process' },
+  { Header: 'c_host', accessor: 'host' },
+  { Header: 'c_rule', accessor: 'rule' },
+  { Header: 'c_chains', accessor: 'chains' },
+  { Header: 'c_time', accessor: 'start' },
+  { Header: 'c_dl_speed', accessor: 'downloadSpeedCurr', sortDescFirst },
+  { Header: 'c_ul_speed', accessor: 'uploadSpeedCurr', sortDescFirst },
+  { Header: 'c_dl', accessor: 'download', sortDescFirst },
+  { Header: 'c_ul', accessor: 'upload', sortDescFirst },
+  { Header: 'c_source', accessor: 'source' },
+  { Header: 'c_destination_ip', accessor: 'destinationIP' },
+  { Header: 'c_sni', accessor: 'sniffHost' },
+]);
+
+const savedHiddenColumns = localStorage.getItem('hiddenColumns');
 const savedColumns = localStorage.getItem('columns');
-const columnsInit = savedColumns
-  ? JSON.parse(savedColumns)
-  : [
-      { accessor: 'id', show: false },
-      { Header: 'c_type', accessor: 'type' },
-      { Header: 'c_process', accessor: 'process' },
-      { Header: 'c_host', accessor: 'host' },
-      { Header: 'c_rule', accessor: 'rule' },
-      { Header: 'c_chains', accessor: 'chains' },
-      { Header: 'c_time', accessor: 'start' },
-      { Header: 'c_dl_speed', accessor: 'downloadSpeedCurr', sortDescFirst },
-      { Header: 'c_ul_speed', accessor: 'uploadSpeedCurr', sortDescFirst },
-      { Header: 'c_dl', accessor: 'download', sortDescFirst },
-      { Header: 'c_ul', accessor: 'upload', sortDescFirst },
-      { Header: 'c_source', accessor: 'source' },
-      { Header: 'c_destination_ip', accessor: 'destinationIP' },
-      { Header: 'c_sni', accessor: 'sniffHost' },
-    ];
+
+let hiddenColumns = savedHiddenColumns
+  ? JSON.parse(savedHiddenColumns)
+  : JSON.parse(hiddenColumnsOrigin);
+const columnsInit = savedColumns ? JSON.parse(savedColumns) : JSON.parse(columnsOrigin);
 
 function renderCell(cell: { column: { id: string }; value: number }, locale: Locale) {
   switch (cell.column.id) {
@@ -60,12 +74,13 @@ const tableState = {
     // maintain a more stable order
     sortById,
   ],
-  hiddenColumns: ['id'],
+  hiddenColumns,
 };
 
 function Table({ data }) {
+  const [showModalColumn, setModalColumn] = useState(false);
   const [columns, setColumns] = useState(columnsInit);
-  const { getTableProps, headerGroups, rows, prepareRow } = useTable(
+  const table = useTable(
     {
       columns,
       data,
@@ -74,6 +89,8 @@ function Table({ data }) {
     },
     useSortBy
   );
+
+  const { getTableProps, setHiddenColumns, headerGroups, rows, prepareRow } = table;
 
   const { t, i18n } = useTranslation();
 
@@ -86,6 +103,30 @@ function Table({ data }) {
   } else {
     locale = enUS;
   }
+
+  const closeModalColumn = () => {
+    setModalColumn(false);
+  };
+
+  const onShowChange = (column, val) => {
+    if (!val) {
+      hiddenColumns.push(column.accessor);
+    } else {
+      const idx = hiddenColumns.indexOf(column.accessor);
+
+      hiddenColumns.splice(idx, 1);
+    }
+    setHiddenColumns(Array.from(hiddenColumns));
+    localStorage.setItem('hiddenColumns', JSON.stringify(hiddenColumns));
+  };
+
+  const resetColumns = () => {
+    hiddenColumns = JSON.parse(hiddenColumnsOrigin);
+    setColumns(JSON.parse(columnsOrigin));
+    setHiddenColumns(hiddenColumns);
+    localStorage.removeItem('hiddenColumns');
+    localStorage.removeItem('columns');
+  };
 
   const onDragEnd = (result) => {
     if (!result.destination) {
@@ -100,66 +141,106 @@ function Table({ data }) {
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="droppable" direction="horizontal">
-        {(provided) => (
-          <div {...getTableProps()} {...provided.droppableProps} ref={provided.innerRef}>
-            {headerGroups.map((headerGroup) => {
-              return (
-                <div {...headerGroup.getHeaderGroupProps()} className={s.tr}>
-                  {headerGroup.headers.map((column, index) => (
-                    <Draggable
-                      key={column.render('Header')}
-                      draggableId={column.render('Header')}
-                      index={columns.findIndex((i) => i.Header === column.render('Header'))}
-                    >
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...column.getHeaderProps(column.getSortByToggleProps())}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
-                          className={index == 0 || (index >= 5 && index < 10) ? s.thdu : s.th}
-                        >
-                          <span>{t(column.render('Header'))}</span>
-                          <span className={s.sortIconContainer}>
-                            {column.isSorted ? (
-                              <span className={column.isSortedDesc ? '' : s.rotate180}>
-                                <ChevronDown size={16} />
-                              </span>
-                            ) : null}
-                          </span>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {rows.map((row, i) => {
-                    prepareRow(row);
-                    return row.cells.map((cell, j) => {
+    <div style={{ marginTop: '5px' }}>
+      <BaseModal isOpen={showModalColumn} onRequestClose={closeModalColumn}>
+        <div>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="droppable-modal">
+              {(provided) => (
+                <div {...provided.droppableProps} ref={provided.innerRef}>
+                  {columns
+                    .filter((i) => i.accessor !== 'id')
+                    .map((column) => {
+                      const show = !hiddenColumns.includes(column.accessor);
+
                       return (
-                        <div
-                          {...cell.getCellProps()}
-                          className={cx(
-                            s.td,
-                            i % 2 === 0 ? s.odd : false,
-                            j == 0 || (j >= 5 && j < 10) ? s.center : true
-                            // j ==1 ? s.break : true
-                          )}
+                        <Draggable
+                          key={column.accessor}
+                          draggableId={column.accessor}
+                          index={columns.findIndex((a) => a.accessor === column.accessor)}
                         >
-                          {renderCell(cell, locale)}
-                        </div>
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              className={s.columnManagerRow}
+                              style={getItemStyle(
+                                snapshot.isDragging,
+                                provided.draggableProps.style
+                              )}
+                            >
+                              <span>{t(column.Header)}</span>
+                              <div style={{ transform: 'scale(0.7)', height: '20px' }}>
+                                <Switch
+                                  size="mini"
+                                  checked={show}
+                                  onChange={(val) => onShowChange(column, val)}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </Draggable>
                       );
-                    });
-                  })}
+                    })}
+                  {provided.placeholder}
                 </div>
-              );
-            })}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </div>
+      </BaseModal>
+      <div className={s.btnSection}>
+        <Button onClick={() => setModalColumn(true)}>管理列</Button>
+        <Button onClick={resetColumns}>重置列</Button>
+      </div>
+      <table {...getTableProps()}>
+        <thead>
+          {headerGroups.map((headerGroup, trindex) => {
+            return (
+              <tr {...headerGroup.getHeaderGroupProps()} className={s.tr} key={trindex}>
+                {headerGroup.headers.map((column) => (
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())} className={s.th}>
+                    <span>{t(column.render('Header'))}</span>
+                    <span className={s.sortIconContainer}>
+                      {column.isSorted ? (
+                        <span className={column.isSortedDesc ? '' : s.rotate180}>
+                          <ChevronDown size={16} />
+                        </span>
+                      ) : null}
+                    </span>
+                  </th>
+                ))}
+              </tr>
+            );
+          })}
+        </thead>
+        <tbody>
+          {rows.map((row, i) => {
+            prepareRow(row);
+            return (
+              <tr className={s.tr} key={i}>
+                {row.cells.map((cell, j) => {
+                  return (
+                    <td
+                      {...cell.getCellProps()}
+                      className={cx(
+                        s.td,
+                        i % 2 === 0 ? s.odd : false,
+                        j == 0 || (j >= 5 && j < 10) ? s.center : true
+                        // j ==1 ? s.break : true
+                      )}
+                    >
+                      {renderCell(cell, locale)}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
