@@ -66,4 +66,6 @@ export const data = {
   close_all_confirm: '確定關閉所有連接？',
   close_all_confirm_yes: '確定',
   close_all_confirm_no: '取消',
+  manage_column: '管理列',
+  reset_column: '重置列',
 };

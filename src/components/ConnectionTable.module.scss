@@ -20,9 +20,9 @@
 }
 
 .btnSection {
-  width: 140px;
-  display: flex;
-  justify-content: space-between;
+  button {
+    margin-right: 15px;
+  }
 }
 
 .break {
@@ -53,6 +53,7 @@
 .overlay {
   background: #444;
 }
+
 .modal {
   background-color: var(--bg-modal);
   // color: var(--color-text);

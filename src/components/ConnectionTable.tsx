@@ -122,6 +122,7 @@ function Table({ data }) {
     hiddenColumns.splice(0, hiddenColumns.length);
     hiddenColumns.push('id');
     setHiddenColumns(hiddenColumns);
+    setColumns(JSON.parse(columnsOrigin));
     localStorage.removeItem('hiddenColumns');
     localStorage.removeItem('columns');
   };
@@ -189,8 +190,8 @@ function Table({ data }) {
         </div>
       </BaseModal>
       <div className={s.btnSection}>
-        <Button onClick={() => setModalColumn(true)}>管理列</Button>
-        <Button onClick={resetColumns}>重置列</Button>
+        <Button onClick={() => setModalColumn(true)}>{t('manage_column')}</Button>
+        <Button onClick={resetColumns}>{t('reset_column')}</Button>
       </div>
       <table {...getTableProps()} className={s.table}>
         <thead>

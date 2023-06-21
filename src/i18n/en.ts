@@ -66,4 +66,6 @@ export const data = {
   close_all_confirm: 'Are you sure you want to close all connections?',
   close_all_confirm_yes: "I'm sure",
   close_all_confirm_no: 'No',
+  manage_column: 'Custom columns',
+  reset_column: 'Reset columns',
 };
