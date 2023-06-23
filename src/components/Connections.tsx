@@ -359,7 +359,7 @@ function Conn({ apiConfig }) {
             </Tab>
           </TabList>
 
-          <div>
+          <div className={s.sourceipContainer}>
             <Button onClick={openModalSource}>{t('client_tag')}</Button>
             <Button onClick={() => setFilterSourceIpStr('')} kind="minimal">
               {t('All')}
