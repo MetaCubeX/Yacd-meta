@@ -2,12 +2,13 @@ import './Connections.css';
 
 import React from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import { Pause, Play, RefreshCcw, Settings, Tag, X as IconClose } from 'react-feather';
+import { List, Pause, Play, RefreshCcw, Settings, Tag, X as IconClose } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 
 import { ConnectionItem } from '~/api/connections';
 import BaseModal from '~/components/shared/BaseModal';
+import Select from '~/components/shared/Select';
 import { State } from '~/store/types';
 
 import * as connAPI from '../api/connections';
@@ -17,6 +18,7 @@ import Button from './Button';
 import s from './Connections.module.scss';
 import ConnectionTable from './ConnectionTable';
 import ContentHeader from './ContentHeader';
+import Input from './Input';
 import ModalCloseAllConnections from './ModalCloseAllConnections';
 import { Action, Fab, position as fabPosition } from './shared/Fab';
 import { connect } from './StateProvider';
@@ -107,11 +109,14 @@ function filterConns(conns: FormattedConn[], keyword: string, sourceIp: string) 
 }
 
 function getConnIpList(conns: FormattedConn[], sourceMap: { reg: string; name: string }[]) {
-  return Array.from(new Set(conns.map((x) => x.sourceIP)))
-    .sort()
-    .map((value) => {
-      return getNameFromSource(value, sourceMap);
-    });
+  return [
+    ['', '全部'],
+    ...Array.from(new Set(conns.map((x) => x.sourceIP)))
+      .sort()
+      .map((value) => {
+        return [value, getNameFromSource(value, sourceMap)];
+      }),
+  ];
 }
 
 function getNameFromSource(
@@ -402,8 +407,9 @@ function Conn({ apiConfig }) {
                                 provided.draggableProps.style
                               )}
                             >
-                              <span>{t(column.Header)}</span>
-                              <div style={{ transform: 'scale(0.7)', height: '20px' }}>
+                              <List />
+                              <span className={s.columnManageLabel}>{t(column.Header)}</span>
+                              <div className={s.columnManageSwitch}>
                                 <Switch
                                   size="mini"
                                   checked={show}
@@ -434,7 +440,7 @@ function Conn({ apiConfig }) {
             {sourceMap.map((source, index) => (
               <tr key={`${index}`}>
                 <td>
-                  <input
+                  <Input
                     type="text"
                     name="reg"
                     autoComplete="off"
@@ -443,7 +449,7 @@ function Conn({ apiConfig }) {
                   />
                 </td>
                 <td>
-                  <input
+                  <Input
                     type="text"
                     name="name"
                     autoComplete="off"
@@ -459,14 +465,14 @@ function Conn({ apiConfig }) {
           </tbody>
         </table>
         <div>
-          <div>{t('sourceip_tip')}</div>
+          <div className={s.iptableTipContainer}>{t('sourceip_tip')}</div>
           <Button onClick={() => sourceMap.push({ reg: '', name: '' })}>{t('add_tag')}</Button>
         </div>
       </BaseModal>
       <div className={s.header}>
         <ContentHeader title={t('Connections')} />
         <div className={s.inputWrapper}>
-          <input
+          <Input
             type="text"
             name="filter"
             autoComplete="off"
@@ -481,10 +487,15 @@ function Conn({ apiConfig }) {
           style={{
             display: 'flex',
             flexWrap: 'wrap',
+            paddingLeft: '30px',
             justifyContent: 'flex-start',
           }}
         >
-          <TabList>
+          <TabList
+            style={{
+              padding: '0 15px 0 0',
+            }}
+          >
             <Tab>
               <span>{t('Active')}</span>
               <span className={s.connQty}>
@@ -500,22 +511,12 @@ function Conn({ apiConfig }) {
               </span>
             </Tab>
           </TabList>
-
-          <div className={s.sourceipContainer}>
-            <Button onClick={() => setFilterSourceIpStr('')} kind="minimal">
-              {t('All')}
-            </Button>
-            {connIpSet.map((value, k) => {
-              if (value) {
-                return (
-                  <Button key={k} onClick={() => setFilterSourceIpStr(value)} kind="minimal">
-                    {value}
-                  </Button>
-                );
-              }
-            })}
-            {/* {renderTableOrPlaceholder(filteredClosedConns)} */}
-          </div>
+          <Select
+            options={connIpSet}
+            selected={filterSourceIpStr}
+            style={{ width: 'unset' }}
+            onChange={(e) => setFilterSourceIpStr(e.target.value)}
+          />
         </div>
         <div ref={refContainer} style={{ padding: 30, paddingBottom: 10, paddingTop: 10 }}>
           <div
