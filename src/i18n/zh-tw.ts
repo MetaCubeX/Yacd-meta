@@ -16,6 +16,7 @@ export const data = {
   'Pause Refresh': '暫停重整',
   'Resume Refresh': '繼續重整',
   close_all_connections: '斷開所有連線',
+  close_filter_connections: '斷開所有過濾後的連線',
   Search: '搜尋',
   Up: '上傳',
   Down: '下載',
@@ -62,6 +63,7 @@ export const data = {
   c_source: '來源',
   c_destination_ip: '目標 IP',
   c_type: '類型',
+  c_ctrl: '操作',
   restart_core: '重新啟動 clash 核心',
   upgrade_core: '更新 Alpha 核心',
   close_all_confirm: '確定關閉所有連接？',
@@ -74,4 +76,6 @@ export const data = {
   add_tag: '新增標籤',
   client_tag: '客戶端標籤',
   sourceip_tip: '/開頭為正規表達式，否則為全面配對',
+  disconnect: '斷開連線',
+  internel: '內部連線',
 };

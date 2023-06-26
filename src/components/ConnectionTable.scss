@@ -1,0 +1,23 @@
+.connections-table {
+  td.ctrl {
+    min-width: 4em;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    svg {
+      height: 16px;
+    }
+  }
+
+  td.type,
+  td.start,
+  td.downloadSpeedCurr,
+  td.uploadSpeedCurr,
+  td.download,
+  td.upload {
+    min-width: 7em;
+    text-align: center;
+  }
+}

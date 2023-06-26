@@ -15,6 +15,7 @@ export const data = {
   'Pause Refresh': 'Pause Refresh',
   'Resume Refresh': 'Resume Refresh',
   close_all_connections: 'Close All Connections',
+  close_filter_connections: 'Close all connections after filtering',
   Search: 'Search',
   Up: 'Up',
   Down: 'Down',
@@ -63,6 +64,7 @@ export const data = {
   c_source: 'Source',
   c_destination_ip: 'Destination IP',
   c_type: 'Type',
+  c_ctrl: 'Operation',
   close_all_confirm: 'Are you sure you want to close all connections?',
   close_all_confirm_yes: "I'm sure",
   close_all_confirm_no: 'No',
@@ -73,4 +75,6 @@ export const data = {
   add_tag: 'Add tag',
   client_tag: 'Client tags',
   sourceip_tip: "Prefix with / for regular expressions, otherwise it's a complete match",
+  disconnect: 'Close Connection',
+  internel: 'Internal Connection',
 };

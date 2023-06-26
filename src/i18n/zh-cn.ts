@@ -16,6 +16,7 @@ export const data = {
   'Pause Refresh': '暂停刷新',
   'Resume Refresh': '继续刷新',
   close_all_connections: '关闭所有连接',
+  close_filter_connections: '关闭所有过滤后的连接',
   Search: '查找',
   Up: '上传',
   Down: '下载',
@@ -62,6 +63,7 @@ export const data = {
   c_source: '来源',
   c_destination_ip: '目标IP',
   c_type: '类型',
+  c_ctrl: '操作',
   restart_core: '重启 clash 核心',
   upgrade_core: '更新 Alpha 核心',
   close_all_confirm: '确定关闭所有连接？',
@@ -74,4 +76,6 @@ export const data = {
   add_tag: '添加标签',
   client_tag: '客户端标签',
   sourceip_tip: '/开头为正则，否则为全匹配',
+  disconnect: '断开连接',
+  internel: '内部链接',
 };

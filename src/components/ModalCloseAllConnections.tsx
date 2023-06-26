@@ -9,7 +9,12 @@ import s from './ModalCloseAllConnections.module.scss';
 
 const { useRef, useCallback, useMemo } = React;
 
-export default function Comp({ isOpen, onRequestClose, primaryButtonOnTap }) {
+export default function Comp({
+  confirm = 'close_all_confirm',
+  isOpen,
+  onRequestClose,
+  primaryButtonOnTap,
+}) {
   const { t } = useTranslation();
   const primaryButtonRef = useRef(null);
   const onAfterOpen = useCallback(() => {
@@ -31,7 +36,7 @@ export default function Comp({ isOpen, onRequestClose, primaryButtonOnTap }) {
       className={className}
       overlayClassName={cx(modalStyle.overlay, s.overlay)}
     >
-      <p>{t('close_all_confirm')}</p>
+      <p>{t(confirm)}</p>
       <div className={s.btngrp}>
         <Button onClick={primaryButtonOnTap} ref={primaryButtonRef}>
           {t('close_all_confirm_yes')}

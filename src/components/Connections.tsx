@@ -1,45 +1,33 @@
 import './Connections.css';
 
 import React from 'react';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import { List, Pause, Play, RefreshCcw, Settings, Tag, X as IconClose } from 'react-feather';
+import { Pause, Play, RefreshCcw, Settings, Tag, X as IconClose } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 
 import { ConnectionItem } from '~/api/connections';
-import BaseModal from '~/components/shared/BaseModal';
 import Select from '~/components/shared/Select';
 import { State } from '~/store/types';
 
 import * as connAPI from '../api/connections';
 import useRemainingViewPortHeight from '../hooks/useRemainingViewPortHeight';
 import { getClashAPIConfig } from '../store/app';
-import Button from './Button';
 import s from './Connections.module.scss';
 import ConnectionTable from './ConnectionTable';
 import ContentHeader from './ContentHeader';
 import Input from './Input';
 import ModalCloseAllConnections from './ModalCloseAllConnections';
+import ModalManageConnectionColumns from './ModalManageConnectionColumns';
+import ModalSourceIP from './ModalSourceIP';
 import { Action, Fab, position as fabPosition } from './shared/Fab';
 import { connect } from './StateProvider';
 import SvgYacd from './SvgYacd';
-import Switch from './SwitchThemed';
 
 const { useEffect, useState, useRef, useCallback } = React;
 
 const sourceMapInit = localStorage.getItem('sourceMap')
   ? JSON.parse(localStorage.getItem('sourceMap'))
   : [];
-
-const getItemStyle = (isDragging, draggableStyle) => {
-  return {
-    ...draggableStyle,
-    ...(isDragging && {
-      background: 'transparent',
-      transform: draggableStyle.transform, // modal基于transform会造成偏移
-    }),
-  };
-};
 
 const paddingBottom = 30;
 
@@ -106,17 +94,6 @@ function filterConns(conns: FormattedConn[], keyword: string, sourceIp: string) 
   }
 
   return result;
-}
-
-function getConnIpList(conns: FormattedConn[], sourceMap: { reg: string; name: string }[]) {
-  return [
-    ['', '全部'],
-    ...Array.from(new Set(conns.map((x) => x.sourceIP)))
-      .sort()
-      .map((value) => {
-        return [value, getNameFromSource(value, sourceMap)];
-      }),
-  ];
 }
 
 function getNameFromSource(
@@ -223,9 +200,8 @@ function ConnQty({ qty }) {
 }
 
 const sortDescFirst = true;
-
-const hiddenColumnsOrigin = JSON.stringify(['id']);
-const columnsOrigin = JSON.stringify([
+const hiddenColumnsOrigin = ['id'];
+const columnsOrigin = [
   { accessor: 'id', show: false },
   { Header: 'c_type', accessor: 'type' },
   { Header: 'c_process', accessor: 'process' },
@@ -240,17 +216,35 @@ const columnsOrigin = JSON.stringify([
   { Header: 'c_source', accessor: 'source' },
   { Header: 'c_destination_ip', accessor: 'destinationIP' },
   { Header: 'c_sni', accessor: 'sniffHost' },
-]);
+  { Header: 'c_ctrl', accessor: 'ctrl' },
+];
 
 const savedHiddenColumns = localStorage.getItem('hiddenColumns');
 const savedColumns = localStorage.getItem('columns');
 
 const hiddenColumnsInit = savedHiddenColumns
   ? JSON.parse(savedHiddenColumns)
-  : JSON.parse(hiddenColumnsOrigin);
-const columnsInit = savedColumns ? JSON.parse(savedColumns) : JSON.parse(columnsOrigin);
+  : [...hiddenColumnsOrigin];
+
+const columnOrder = savedColumns ? JSON.parse(savedColumns) : null;
+const columnsInit = columnOrder
+  ? [...columnsOrigin].sort((pre, next) => {
+      const preIdx = columnOrder.findIndex((column) => column.accessor === pre.accessor);
+      const nextIdx = columnOrder.findIndex((column) => column.accessor === next.accessor);
+
+      if (preIdx === -1) {
+        return 1;
+      }
+
+      if (nextIdx === -1) {
+        return -1;
+      }
+      return preIdx - nextIdx;
+    })
+  : [...columnsOrigin];
 
 function Conn({ apiConfig }) {
+  const { t } = useTranslation();
   const [showModalColumn, setModalColumn] = useState(false);
   const [hiddenColumns, setHiddenColumns] = useState(hiddenColumnsInit);
   const [columns, setColumns] = useState(columnsInit);
@@ -259,37 +253,11 @@ function Conn({ apiConfig }) {
     setModalColumn(false);
   };
 
-  const onShowChange = (column, val) => {
-    if (!val) {
-      hiddenColumns.push(column.accessor);
-    } else {
-      const idx = hiddenColumns.indexOf(column.accessor);
-
-      hiddenColumns.splice(idx, 1);
-    }
-    setHiddenColumns(Array.from(hiddenColumns));
-    localStorage.setItem('hiddenColumns', JSON.stringify(hiddenColumns));
-  };
-
   const resetColumns = () => {
-    hiddenColumns.splice(0, hiddenColumns.length);
-    hiddenColumns.push('id');
-    setHiddenColumns(hiddenColumns);
-    setColumns(JSON.parse(columnsOrigin));
+    setHiddenColumns([...hiddenColumnsOrigin]);
+    setColumns([...columnsOrigin]);
     localStorage.removeItem('hiddenColumns');
     localStorage.removeItem('columns');
-  };
-
-  const onDragEnd = (result) => {
-    if (!result.destination) {
-      return;
-    }
-
-    const items = Array.from(columns);
-    const [removed] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, removed);
-    setColumns(items);
-    localStorage.setItem('columns', JSON.stringify(items));
   };
 
   const [sourceMapModal, setSourceMapModal] = useState(false);
@@ -305,9 +273,29 @@ function Conn({ apiConfig }) {
   const filteredConns = filterConns(conns, filterKeyword, filterSourceIpStr);
   const filteredClosedConns = filterConns(closedConns, filterKeyword, filterSourceIpStr);
 
-  const connIpSet = getConnIpList(conns, sourceMap);
+  const getConnIpList = (conns: FormattedConn[]) => {
+    return [
+      ['', t('All')],
+      ...Array.from(new Set(conns.map((x) => x.sourceIP)))
+        .sort()
+        .map((value) => {
+          return [value, getNameFromSource(value, sourceMap).trim() || t('internel')];
+        }),
+    ];
+  };
+  const connIpSet = getConnIpList(conns);
   // const ClosedConnIpSet = getConnIpList(closedConns);
 
+  const [isCloseFilterModalOpen, setIsCloseFilterModalOpen] = useState(false);
+  const openCloseFilterModal = useCallback(() => setIsCloseFilterModalOpen(true), []);
+  const closeCloseFilterModal = useCallback(() => setIsCloseFilterModalOpen(false), []);
+
+  const closeFilterConnections = useCallback(async () => {
+    for (const connection of filteredConns) {
+      await connAPI.closeConnById(apiConfig, connection.id);
+    }
+    closeCloseFilterModal();
+  }, [apiConfig, filteredConns, closeCloseFilterModal]);
   const [isCloseAllModalOpen, setIsCloseAllModalOpen] = useState(false);
   const openCloseAllModal = useCallback(() => setIsCloseAllModalOpen(true), []);
   const closeCloseAllModal = useCallback(() => setIsCloseAllModalOpen(false), []);
@@ -345,7 +333,7 @@ function Conn({ apiConfig }) {
         prevConnsRef.current = x;
       }
     },
-    [setConns, isRefreshPaused]
+    [setConns, sourceMap, isRefreshPaused]
   );
   const [reConnectCount, setReConnectCount] = useState(0);
 
@@ -357,7 +345,6 @@ function Conn({ apiConfig }) {
     });
   }, [apiConfig, read, reConnectCount, setReConnectCount]);
 
-  const { t } = useTranslation();
   const openModalSource = () => {
     if (sourceMap.length === 0) {
       sourceMap.push({
@@ -372,103 +359,9 @@ function Conn({ apiConfig }) {
     localStorage.setItem('sourceMap', JSON.stringify(sourceMap));
     setSourceMapModal(false);
   };
-  const setSource = (key, index, val) => {
-    sourceMap[index][key] = val;
-    setSourceMap(Array.from(sourceMap));
-  };
 
   return (
     <div>
-      <BaseModal isOpen={showModalColumn} onRequestClose={closeModalColumn}>
-        <div>
-          <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="droppable-modal">
-              {(provided) => (
-                <div {...provided.droppableProps} ref={provided.innerRef}>
-                  {columns
-                    .filter((i) => i.accessor !== 'id')
-                    .map((column) => {
-                      const show = !hiddenColumns.includes(column.accessor);
-
-                      return (
-                        <Draggable
-                          key={column.accessor}
-                          draggableId={column.accessor}
-                          index={columns.findIndex((a) => a.accessor === column.accessor)}
-                        >
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className={s.columnManagerRow}
-                              style={getItemStyle(
-                                snapshot.isDragging,
-                                provided.draggableProps.style
-                              )}
-                            >
-                              <List />
-                              <span className={s.columnManageLabel}>{t(column.Header)}</span>
-                              <div className={s.columnManageSwitch}>
-                                <Switch
-                                  size="mini"
-                                  checked={show}
-                                  onChange={(val) => onShowChange(column, val)}
-                                />
-                              </div>
-                            </div>
-                          )}
-                        </Draggable>
-                      );
-                    })}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
-        </div>
-      </BaseModal>
-      <BaseModal isOpen={sourceMapModal} onRequestClose={closeModalSource}>
-        <table className={s.sourceipTable}>
-          <thead>
-            <tr>
-              <th>{t('c_source')}</th>
-              <th>{t('device_name')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sourceMap.map((source, index) => (
-              <tr key={`${index}`}>
-                <td>
-                  <Input
-                    type="text"
-                    name="reg"
-                    autoComplete="off"
-                    value={source.reg}
-                    onChange={(e) => setSource('reg', index, e.target.value)}
-                  />
-                </td>
-                <td>
-                  <Input
-                    type="text"
-                    name="name"
-                    autoComplete="off"
-                    value={source.name}
-                    onChange={(e) => setSource('name', index, e.target.value)}
-                  />
-                </td>
-                <td>
-                  <Button onClick={() => sourceMap.splice(index, 1)}>{t('delete')}</Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div>
-          <div className={s.iptableTipContainer}>{t('sourceip_tip')}</div>
-          <Button onClick={() => sourceMap.push({ reg: '', name: '' })}>{t('add_tag')}</Button>
-        </div>
-      </BaseModal>
       <div className={s.header}>
         <ContentHeader title={t('Connections')} />
         <div className={s.inputWrapper}>
@@ -537,6 +430,9 @@ function Conn({ apiConfig }) {
                 <Action text={t('close_all_connections')} onClick={openCloseAllModal}>
                   <IconClose size={10} />
                 </Action>
+                <Action text={t('close_filter_connections')} onClick={openCloseFilterModal}>
+                  <IconClose size={10} />
+                </Action>
                 <Action text={t('manage_column')} onClick={() => setModalColumn(true)}>
                   <Settings size={10} />
                 </Action>
@@ -570,6 +466,26 @@ function Conn({ apiConfig }) {
           isOpen={isCloseAllModalOpen}
           primaryButtonOnTap={closeAllConnections}
           onRequestClose={closeCloseAllModal}
+        />
+        <ModalCloseAllConnections
+          confirm={'close_filter_connections'}
+          isOpen={isCloseFilterModalOpen}
+          primaryButtonOnTap={closeFilterConnections}
+          onRequestClose={closeCloseFilterModal}
+        />
+        <ModalManageConnectionColumns
+          isOpen={showModalColumn}
+          onRequestClose={closeModalColumn}
+          columns={columns}
+          hiddenColumns={hiddenColumns}
+          setColumns={setColumns}
+          setHiddenColumns={setHiddenColumns}
+        />
+        <ModalSourceIP
+          isOpen={sourceMapModal}
+          onRequestClose={closeModalSource}
+          sourceMap={sourceMap}
+          setSourceMap={setSourceMap}
         />
       </Tabs>
     </div>

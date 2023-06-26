@@ -35,6 +35,7 @@ declare module 'react-table' {
     getHeaderProps(p: SortByToggleProps): { role?: string };
     getSortByToggleProps(): SortByToggleProps;
     render(x: string): string;
+    id: string;
     isSorted: boolean;
     isSortedDesc: boolean;
   }
@@ -46,7 +47,7 @@ declare module 'react-table' {
 
   interface Cell {
     getCellProps(): { role?: string };
-
+    row: { original: { id: string } };
     column: { id: string };
     value: number;
   }

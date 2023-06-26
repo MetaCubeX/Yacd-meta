@@ -1,0 +1,18 @@
+.columnManagerRow {
+  width: 200px;
+  display: flex;
+  margin: 5px 0;
+  align-items: center;
+
+  .columnManageLabel {
+    flex: 1;
+    margin-left: 10px;
+  }
+
+  .columnManageSwitch {
+    transform: scale(0.7);
+    height: 20px;
+    display: flex;
+    align-items: center;
+  }
+}
