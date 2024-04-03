@@ -179,7 +179,7 @@ function parseConfigQueryString() {
   const qs = search.replace(/^\?/, '').split('&');
   for (let i = 0; i < qs.length; i++) {
     const [k, v] = qs[i].split('=');
-    collector[k] = encodeURIComponent(v);
+    collector[k] = decodeURIComponent(v);
   }
   return collector;
 }
