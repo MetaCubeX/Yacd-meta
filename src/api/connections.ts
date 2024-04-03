@@ -51,11 +51,11 @@ function appendData(s: string) {
   let o: ConnectionsData;
   try {
     o = JSON.parse(s);
-    o.connections.forEach(conn => {
-      let m = conn.metadata;
+    o.connections?.forEach((conn) => {
+      const m = conn.metadata;
       if (m.process == null) {
         if (m.processPath != null) {
-          m.process = m.processPath.replace(/^.*[/\\](.*)$/, "$1");
+          m.process = m.processPath.replace(/^.*[/\\](.*)$/, '$1');
         }
       }
     });
@@ -86,12 +86,12 @@ export function fetchData(
   const ws = new WebSocket(url);
   ws.addEventListener('error', () => {
     wsState = 3;
-    subscribers.forEach((s) => s.onClose());
+    subscribers.forEach((s) => s.onClose?.());
     subscribers.length = 0;
   });
   ws.addEventListener('close', () => {
     wsState = 3;
-    subscribers.forEach((s) => s.onClose());
+    subscribers.forEach((s) => s.onClose?.());
     subscribers.length = 0;
   });
   ws.addEventListener('message', (event) => appendData(event.data));

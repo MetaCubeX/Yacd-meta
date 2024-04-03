@@ -313,9 +313,10 @@ function Conn({ apiConfig }) {
     ({ connections }) => {
       const prevConnsKv = arrayToIdKv(prevConnsRef.current);
       const now = Date.now();
-      const x = connections.map((c: ConnectionItem) =>
-        formatConnectionDataItem(c, prevConnsKv, now, sourceMap)
-      );
+      const x =
+        connections?.map((c: ConnectionItem) =>
+          formatConnectionDataItem(c, prevConnsKv, now, sourceMap)
+        ) ?? [];
       const closed = [];
       for (const c of prevConnsRef.current) {
         const idx = x.findIndex((conn: ConnectionItem) => conn.id === c.id);
