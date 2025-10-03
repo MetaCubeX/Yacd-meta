@@ -52,6 +52,7 @@ export const data = {
   enable_tun_device: 'Bật thiết bị TUN',
   allow_lan: 'Cho phép LAN',
   tls_sniffing: 'Bộ giám sát gói tin Sniffer',
+  use_emoji_font: 'Sử dụng Phông chữ Emoji',
   c_host: 'Máy chủ',
   c_sni: 'Phát hiện máy chủ Sniff ',
   c_process: 'Quá trình',

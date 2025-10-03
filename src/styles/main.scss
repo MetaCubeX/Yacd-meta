@@ -64,7 +64,9 @@
 :root {
   --font-mono: 'Roboto Mono', Menlo, monospace;
   // prettier-ignore
-  --font-normal: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji",  "Source Han Sans", "PingFang SC", "Microsoft YaHei" , "微软雅黑", Arial,"Twemoji Mozilla", "_Twemoji Mozilla","Segoe UI Emoji", "Segoe UI Symbol";
+  --font-normal: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  // prettier-ignore
+  --font-with-emoji: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji",  "Source Han Sans", "PingFang SC", "Microsoft YaHei" , "微软雅黑", Arial,"Twemoji Mozilla", "_Twemoji Mozilla","Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 body {
@@ -94,6 +96,10 @@ body {
 
   margin: 0;
   padding: 0;
+}
+
+:root[data-emoji-font='enabled'] body {
+  font-family: var(--font-with-emoji);
 }
 
 @mixin dark {

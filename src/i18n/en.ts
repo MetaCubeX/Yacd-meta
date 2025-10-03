@@ -52,6 +52,7 @@ export const data = {
   enable_tun_device: 'Enable TUN Device',
   allow_lan: 'Allow LAN',
   tls_sniffing: 'Sniffer',
+  use_emoji_font: 'Use Emoji Font',
   c_host: 'Host',
   c_sni: 'Sniff Host',
   c_process: 'Process',

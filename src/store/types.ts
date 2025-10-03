@@ -8,6 +8,7 @@ export type StateApp = {
   latencyTestUrl: string;
   selectedChartStyleIndex: number;
   theme: string;
+  useEmojiFont: boolean;
 
   collapsibleIsOpen: Record<string, boolean>;
   proxySortBy: string;

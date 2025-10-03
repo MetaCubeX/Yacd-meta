@@ -14,6 +14,7 @@ export const getClashAPIConfigs = (s: State) => s.app.clashAPIConfigs;
 export const getTheme = (s: State) => s.app.theme;
 export const getSelectedChartStyleIndex = (s: State) => s.app.selectedChartStyleIndex;
 export const getLatencyTestUrl = (s: State) => s.app.latencyTestUrl;
+export const getUseEmojiFont = (s: State) => s.app.useEmojiFont;
 export const getCollapsibleIsOpen = (s: State) => s.app.collapsibleIsOpen;
 export const getProxySortBy = (s: State) => s.app.proxySortBy;
 export const getHideUnavailableProxies = (s: State) => s.app.hideUnavailableProxies;
@@ -105,6 +106,14 @@ function setTheme(theme: ThemeType = 'light') {
   }
 }
 
+function setEmojiFont(useEmojiFont: boolean) {
+  if (useEmojiFont) {
+    rootEl.setAttribute('data-emoji-font', 'enabled');
+  } else {
+    rootEl.setAttribute('data-emoji-font', 'disabled');
+  }
+}
+
 export function switchTheme(nextTheme = 'auto') {
   return (dispatch: DispatchFn, getState: GetStateFn) => {
     const currentTheme = getTheme(getState());
@@ -134,7 +143,10 @@ export function updateAppConfig(name: string, value: unknown) {
     dispatch('appUpdateAppConfig', (s) => {
       s.app[name] = value;
     });
-    // side effect
+    // side effect for emoji font
+    if (name === 'useEmojiFont') {
+      setEmojiFont(value as boolean);
+    }
     saveState(getState().app);
   };
 }
@@ -162,6 +174,7 @@ const defaultState: StateApp = {
   latencyTestUrl: 'https://www.gstatic.com/generate_204',
   selectedChartStyleIndex: 0,
   theme: 'dark',
+  useEmojiFont: true,
 
   // type { [string]: boolean }
   collapsibleIsOpen: {},
@@ -213,7 +226,8 @@ export function initialState() {
   if (query.theme === 'dark' || query.theme === 'light') {
     s.theme = query.theme;
   }
-  // set initial theme
+  // set initial theme and emoji font
   setTheme(s.theme);
+  setEmojiFont(s.useEmojiFont);
   return s;
 }

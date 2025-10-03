@@ -51,6 +51,7 @@ export const data = {
   enable_tun_device: '開啟 TUN 轉發',
   allow_lan: '允許區域網路連接',
   tls_sniffing: 'SNI 嗅探',
+  use_emoji_font: '使用 Emoji 字體',
   c_host: '網域名稱',
   c_sni: '嗅探網域名稱',
   c_process: '處理程序',

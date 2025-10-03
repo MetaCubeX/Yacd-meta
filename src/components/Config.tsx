@@ -9,7 +9,12 @@ import Select from '~/components/shared/Select';
 import { ClashGeneralConfig, DispatchFn, State } from '~/store/types';
 import { ClashAPIConfig } from '~/types';
 
-import { getClashAPIConfig, getLatencyTestUrl, getSelectedChartStyleIndex } from '../store/app';
+import {
+  getClashAPIConfig,
+  getLatencyTestUrl,
+  getSelectedChartStyleIndex,
+  getUseEmojiFont,
+} from '../store/app';
 import {
   fetchConfigs,
   flushFakeIPPool,
@@ -78,6 +83,7 @@ const mapState = (s: State) => ({
 const mapState2 = (s: State) => ({
   selectedChartStyleIndex: getSelectedChartStyleIndex(s),
   latencyTestUrl: getLatencyTestUrl(s),
+  useEmojiFont: getUseEmojiFont(s),
   apiConfig: getClashAPIConfig(s),
 });
 
@@ -96,6 +102,7 @@ type ConfigImplProps = {
   configs: ClashGeneralConfig;
   selectedChartStyleIndex: number;
   latencyTestUrl: string;
+  useEmojiFont: boolean;
   apiConfig: ClashAPIConfig;
 };
 
@@ -114,6 +121,7 @@ function ConfigImpl({
   configs,
   selectedChartStyleIndex,
   latencyTestUrl,
+  useEmojiFont,
   apiConfig,
 }: ConfigImplProps) {
   const { t, i18n } = useTranslation();
@@ -262,7 +270,11 @@ function ConfigImpl({
         <div>
           <div className={s0.label}>Mode</div>
           <Select
-            options={configState['mode-list'] ? configState['mode-list'].map(value => [value, value]) : modeOptions}
+            options={
+              configState['mode-list']
+                ? configState['mode-list'].map((value) => [value, value])
+                : modeOptions
+            }
             selected={configState['mode-list'] ? configState.mode : configState.mode.toLowerCase()}
             onChange={(e) => handleInputOnChange({ name: 'mode', value: e.target.value })}
           />
@@ -427,6 +439,17 @@ function ConfigImpl({
               options={langOptions}
               selected={i18n.language}
               onChange={(e) => i18n.changeLanguage(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className={s0.label}>{t('use_emoji_font')}</div>
+          <div className={s0.wrapSwitch}>
+            <Switch
+              name="useEmojiFont"
+              checked={useEmojiFont}
+              onChange={(value: boolean) => updateAppConfig('useEmojiFont', value)}
             />
           </div>
         </div>
