@@ -1,0 +1,1 @@
+import{d as s,c as a}from"./index-41a412db.js";const i="_select_1lwjy_1",m={select:i};function d({options:c,selected:t,onChange:l,className:n,...o}){return s("select",{className:a(m.select,n),value:t,onChange:l,...o,children:c.map(([e,r])=>s("option",{value:e,children:r},e))})}export{d as S};
