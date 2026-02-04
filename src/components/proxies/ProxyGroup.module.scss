@@ -9,10 +9,6 @@
   border-radius: 12px;
   box-shadow: var(--shadow-card);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-  &:hover {
-    border-color: var(--color-focus-blue);
-  }
 }
 
 .zapWrapper {

@@ -1,9 +1,27 @@
 .TrafficNow {
   color: var(--color-text);
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  grid-gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   padding: 10px 0;
+
+  .overview {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+
+    & > div:nth-child(3) {
+      grid-column: 1 / -1;
+    }
+
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr 1fr 1fr;
+
+      & > div:nth-child(3) {
+        grid-column: auto;
+      }
+    }
+  }
 
   .sec {
     padding: 20px;
@@ -17,7 +35,6 @@
     min-height: 140px;
 
     &:hover {
-      transform: translateY(-2px);
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
 
