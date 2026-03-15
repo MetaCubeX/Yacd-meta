@@ -1,0 +1,1 @@
+import{i as t,j as e}from"./index-b39ebf0e.js";const n="_root_1dimp_4",r="_h1_1dimp_24",s={root:n,h1:r};function a({children:o}){return e("div",{className:s.root,children:o})}const m=t.memo(a);export{m as C};
