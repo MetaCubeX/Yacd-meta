@@ -5,6 +5,7 @@
   "author": "MetaCubeX (https://github.com/MetaCubeX)",
   "license": "MIT",
   "private": true,
+  "packageManager": "pnpm@11.5.1",
   "keywords": [
     "react",
     "clash"
@@ -14,12 +15,6 @@
     "start": "vite",
     "build": "vite build",
     "serve": "vite preview"
-  },
-  "pnpm": {
-    "overrides": {
-      "@types/react": "18.3.28",
-      "@types/react-dom": "18.3.7"
-    }
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",

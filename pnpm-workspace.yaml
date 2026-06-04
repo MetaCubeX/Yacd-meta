@@ -1,0 +1,8 @@
+overrides:
+  "@types/react": 18.3.28
+  "@types/react-dom": 18.3.7
+
+allowBuilds:
+  "@parcel/watcher": false
+  core-js: false
+  esbuild: true
