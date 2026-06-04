@@ -28,6 +28,8 @@ type AppConfig = {
   autoCloseOldConns: boolean;
   proxiesLayout: string;
   proxyGroupByProvider: boolean;
+  latencyTestUrl: string;
+  latencyTestTimeout: number;
 };
 
 type Props = {
@@ -35,7 +37,6 @@ type Props = {
   groupNames: string[];
   proxies: ProxiesMapping;
   delay: DelayMapping;
-  latencyTestUrl: string;
   collapsibleIsOpen: Record<string, boolean>;
   proxyProviders: FormattedProxyProvider[];
   apiConfig: ClashAPIConfig;
@@ -48,13 +49,13 @@ export default function Proxies({
   groupNames,
   proxies,
   delay,
-  latencyTestUrl,
   collapsibleIsOpen,
   proxyProviders,
   apiConfig,
   showModalClosePrevConns,
   appConfig,
 }: Props) {
+  const { latencyTestUrl, latencyTestTimeout } = appConfig;
   const {
     isSettingsModalOpen,
     openSettingsModal,
@@ -99,6 +100,7 @@ export default function Proxies({
                   proxySortBy={appConfig.proxySortBy}
                   isOpen={Boolean(collapsibleIsOpen[`proxyGroup:${name}`])}
                   latencyTestUrl={latencyTestUrl}
+                  latencyTestTimeout={latencyTestTimeout}
                   proxyGroupByProvider={appConfig.proxyGroupByProvider}
                 />
               </div>

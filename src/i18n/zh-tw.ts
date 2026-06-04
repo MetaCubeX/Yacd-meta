@@ -43,6 +43,7 @@ export const data = {
   no_logs: '暫時沒有紀錄…',
   chart_style: '流量圖樣式',
   latency_test_url: '延遲測速 URL',
+  latency_test_timeout: '測速超時',
   lang: '語言',
   proxy_provider: '代理伺服器提供者',
   update_all_rule_provider: '更新所有規則提供者',

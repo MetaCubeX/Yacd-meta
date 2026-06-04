@@ -35,10 +35,11 @@ export async function requestToSwitchProxy(apiConfig, name1, name2) {
 export async function requestDelayForProxy(
   apiConfig,
   name,
-  latencyTestUrl = 'https://www.gstatic.com/generate_204'
+  latencyTestUrl = 'https://www.gstatic.com/generate_204',
+  timeout = 5000
 ) {
   const { url, init } = getURLAndInit(apiConfig);
-  const qs = `timeout=5000&url=${encodeURIComponent(latencyTestUrl)}`;
+  const qs = `timeout=${timeout}&url=${encodeURIComponent(latencyTestUrl)}`;
   const fullURL = `${url}${endpoint}/${encodeURIComponent(name)}/delay?${qs}`;
   return await fetch(fullURL, init);
 }
@@ -46,10 +47,11 @@ export async function requestDelayForProxy(
 export async function requestDelayForProxyGroup(
   apiConfig,
   name,
-  latencyTestUrl = 'http://www.gstatic.com/generate_202'
+  latencyTestUrl = 'https://www.gstatic.com/generate_204',
+  timeout = 5000
 ) {
   const { url, init } = getURLAndInit(apiConfig);
-  const qs = `url=${encodeURIComponent(latencyTestUrl)}&timeout=2000`;
+  const qs = `url=${encodeURIComponent(latencyTestUrl)}&timeout=${timeout}`;
   const fullUrl = `${url}/group/${encodeURIComponent(name)}/delay?${qs}`;
   return await fetch(fullUrl, init);
 }
@@ -81,14 +83,17 @@ export async function healthcheckProviderByName(config, name) {
 export async function healthcheckProviderProxy(
   config: ClashAPIConfig,
   providerName: string,
-  proxyName: string
+  proxyName: string,
+  latencyTestUrl = 'https://www.gstatic.com/generate_204',
+  timeout = 5000
 ) {
   const { url, init } = getURLAndInit(config);
+  const qs = `timeout=${timeout}&url=${encodeURIComponent(latencyTestUrl)}`;
   const options = { ...init, method: 'GET' };
   return await fetch(
     `${url}/providers/proxies/${encodeURIComponent(providerName)}/${encodeURIComponent(
       proxyName
-    )}/healthcheck`,
+    )}/healthcheck?${qs}`,
     options
   );
 }

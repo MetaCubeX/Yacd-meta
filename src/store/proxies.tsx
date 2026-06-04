@@ -17,7 +17,7 @@ import { ClashAPIConfig } from '~/types';
 import * as connAPI from '../api/connections';
 import * as proxiesAPI from '../api/proxies';
 
-import { getAutoCloseOldConns, getLatencyTestUrl } from './app';
+import { getAutoCloseOldConns, getLatencyTestTimeout, getLatencyTestUrl } from './app';
 
 export const initialState: StateProxies = {
   proxies: {},
@@ -299,7 +299,8 @@ function requestDelayForProxyOnce(apiConfig: ClashAPIConfig, name: string) {
     let delayNumber: number | undefined;
     try {
       const latencyTestUrl = getLatencyTestUrl(getState());
-      const res = await proxiesAPI.requestDelayForProxy(apiConfig, name, latencyTestUrl);
+      const latencyTestTimeout = getLatencyTestTimeout(getState());
+      const res = await proxiesAPI.requestDelayForProxy(apiConfig, name, latencyTestUrl, latencyTestTimeout);
       if (res.ok === false) {
         error = res.statusText;
       }
@@ -363,9 +364,10 @@ export function healthcheckProxy(apiConfig: ClashAPIConfig, name: string) {
       const proxy = getProxies(getState())[name];
       const providerName = proxy?.providerName;
       const latencyTestUrl = getLatencyTestUrl(getState());
+      const latencyTestTimeout = getLatencyTestTimeout(getState());
       const res = providerName
-        ? await proxiesAPI.healthcheckProviderProxy(apiConfig, providerName, name)
-        : await proxiesAPI.requestDelayForProxy(apiConfig, name, latencyTestUrl);
+        ? await proxiesAPI.healthcheckProviderProxy(apiConfig, providerName, name, latencyTestUrl, latencyTestTimeout)
+        : await proxiesAPI.requestDelayForProxy(apiConfig, name, latencyTestUrl, latencyTestTimeout);
       if (res.ok === false) {
         error = res.statusText;
       }

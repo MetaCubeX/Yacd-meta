@@ -38,7 +38,6 @@ type Props = {
   dispatch: DispatchFn;
   configs: ClashGeneralConfig;
   selectedChartStyleIndex: number;
-  latencyTestUrl: string;
   apiConfig: ClashAPIConfig;
 };
 
@@ -46,7 +45,6 @@ export default function Config({
   dispatch,
   configs,
   selectedChartStyleIndex,
-  latencyTestUrl,
   apiConfig,
 }: Props) {
   const { t, i18n } = useTranslation();
@@ -276,16 +274,6 @@ export default function Config({
             {t('dashboard')}
           </div>
           <div className={s0.section}>
-            <div>
-              <div className={s0.label}>{t('latency_test_url')}</div>
-              <SelfControlledInput
-                name="latencyTestUrl"
-                type="text"
-                value={latencyTestUrl}
-                onBlur={handleInputOnBlur}
-                className=""
-              />
-            </div>
             <div>
               <div className={s0.label}>{t('lang')}</div>
               <div>

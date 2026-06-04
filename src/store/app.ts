@@ -16,6 +16,7 @@ export const getClashAPIConfigs = (s: State) => s.app.clashAPIConfigs;
 export const getTheme = (s: State) => s.app.theme;
 export const getSelectedChartStyleIndex = (s: State) => s.app.selectedChartStyleIndex;
 export const getLatencyTestUrl = (s: State) => s.app.latencyTestUrl;
+export const getLatencyTestTimeout = (s: State) => s.app.latencyTestTimeout;
 export const getCollapsibleIsOpen = (s: State) => s.app.collapsibleIsOpen;
 export const getProxySortBy = (s: State) => s.app.proxySortBy;
 export const getHideUnavailableProxies = (s: State) => s.app.hideUnavailableProxies;
@@ -166,6 +167,7 @@ const defaultState: StateApp = {
   clashAPIConfigs: [defaultClashAPIConfig],
 
   latencyTestUrl: 'https://www.gstatic.com/generate_204',
+  latencyTestTimeout: 5000,
   selectedChartStyleIndex: 0,
   theme: 'auto',
 

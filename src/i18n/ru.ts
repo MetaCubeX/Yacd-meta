@@ -46,6 +46,7 @@ export const data = {
   no_logs: 'Пока нет логов, подождите...',
   chart_style: 'Стиль графика',
   latency_test_url: 'URL для проверки задержки',
+  latency_test_timeout: 'Таймаут проверки задержки',
   lang: 'Язык',
   proxy_provider: 'Провайдер прокси',
   rule_provider: 'Провайдер правил',

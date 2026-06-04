@@ -6,6 +6,7 @@ export type StateApp = {
   clashAPIConfigs: ClashAPIConfigWithAddedAt[];
 
   latencyTestUrl: string;
+  latencyTestTimeout: number;
   selectedChartStyleIndex: number;
   theme: string;
 

@@ -8,6 +8,73 @@
   padding: 13px 0;
 }
 
+.urlInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 240px;
+}
+
+.urlInput {
+  width: 100%;
+  padding: 4px 24px 4px 8px;
+  border: 1px solid var(--color-separator);
+  border-radius: 4px;
+  background: var(--color-bg-1, transparent);
+  color: inherit;
+  font-size: 12px;
+  outline: none;
+
+  &:focus {
+    border-color: var(--color-focus-blue, #409eff);
+  }
+}
+
+.urlClearBtn {
+  position: absolute;
+  right: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary, #909399);
+  padding: 0;
+  line-height: 1;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    color: var(--color-text, inherit);
+  }
+}
+
+.timeoutInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.timeoutInput {
+  width: 70px;
+  padding: 4px 8px;
+  border: 1px solid var(--color-separator);
+  border-radius: 4px;
+  background: var(--color-bg-1, transparent);
+  color: inherit;
+  font-size: 12px;
+  text-align: right;
+  outline: none;
+
+  &:focus {
+    border-color: var(--color-focus-blue, #409eff);
+  }
+}
+
+.timeoutUnit {
+  font-size: 12px;
+  color: var(--color-text-secondary, #909399);
+}
+
 hr {
   height: 1px;
   background-color: var(--color-separator);

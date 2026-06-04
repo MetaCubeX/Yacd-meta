@@ -92,6 +92,7 @@ type Props = {
   proxies: ProxiesMapping;
   isOpen: boolean;
   latencyTestUrl: string;
+  latencyTestTimeout?: number;
   apiConfig: ClashAPIConfig;
   dispatch: DispatchFn;
   proxyGroupByProvider?: boolean;
@@ -105,6 +106,7 @@ export const ProxyGroup = memo(function ProxyGroup({
   proxies,
   isOpen,
   latencyTestUrl,
+  latencyTestTimeout = 5000,
   apiConfig,
   dispatch,
   proxyGroupByProvider = false,
@@ -172,7 +174,7 @@ export const ProxyGroup = memo(function ProxyGroup({
     setIsTestingLatency(true);
     try {
       if (version.meta === true) {
-        await proxiesAPI.requestDelayForProxyGroup(apiConfig, name, latencyTestUrl);
+        await proxiesAPI.requestDelayForProxyGroup(apiConfig, name, latencyTestUrl, latencyTestTimeout);
         await dispatch(fetchProxies(apiConfig));
       } else {
         await requestDelayForProxies(apiConfig, all);
@@ -180,7 +182,7 @@ export const ProxyGroup = memo(function ProxyGroup({
       }
     } catch (err) {}
     setIsTestingLatency(false);
-  }, [all, apiConfig, dispatch, name, version.meta, latencyTestUrl, requestDelayForProxies]);
+  }, [all, apiConfig, dispatch, name, version.meta, latencyTestUrl, latencyTestTimeout, requestDelayForProxies]);
 
   return (
     <div className={s0.group}>

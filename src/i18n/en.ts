@@ -46,6 +46,7 @@ export const data = {
   no_logs: 'No logs yet, hang tight...',
   chart_style: 'Chart Style',
   latency_test_url: 'Latency Test URL',
+  latency_test_timeout: 'Latency Test Timeout',
   lang: 'Language',
   proxy_provider: 'Proxy Provider',
   rule_provider: 'Rule Provider',

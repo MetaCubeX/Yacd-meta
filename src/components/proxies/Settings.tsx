@@ -17,6 +17,8 @@ type AppConfig = {
   autoCloseOldConns: boolean;
   proxiesLayout: string;
   proxyGroupByProvider: boolean;
+  latencyTestUrl: string;
+  latencyTestTimeout: number;
 };
 
 type Props = {
@@ -41,9 +43,62 @@ export default function Settings({ appConfig }: Props) {
     },
     [updateAppConfig],
   );
+
+  const handleLatencyUrlChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateAppConfig('latencyTestUrl', e.target.value);
+    },
+    [updateAppConfig],
+  );
+
+  const handleLatencyUrlClear = useCallback(() => {
+    updateAppConfig('latencyTestUrl', '');
+  }, [updateAppConfig]);
+
+  const handleLatencyTimeoutChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const v = parseInt(e.target.value, 10);
+      if (!isNaN(v) && v > 0) updateAppConfig('latencyTestTimeout', v);
+    },
+    [updateAppConfig],
+  );
+
   const { t } = useTranslation();
   return (
     <>
+      <div className={s.labeledInput}>
+        <span>{t('latency_test_url')}</span>
+        <div className={s.urlInputWrapper}>
+          <input
+            className={s.urlInput}
+            type="text"
+            value={appConfig.latencyTestUrl}
+            onChange={handleLatencyUrlChange}
+            spellCheck={false}
+          />
+          {appConfig.latencyTestUrl && (
+            <button className={s.urlClearBtn} onClick={handleLatencyUrlClear} tabIndex={-1}>
+              ×
+            </button>
+          )}
+        </div>
+      </div>
+      <div className={s.labeledInput}>
+        <span>{t('latency_test_timeout')}</span>
+        <div className={s.timeoutInputWrapper}>
+          <input
+            className={s.timeoutInput}
+            type="number"
+            min={100}
+            max={30000}
+            step={100}
+            value={appConfig.latencyTestTimeout}
+            onChange={handleLatencyTimeoutChange}
+          />
+          <span className={s.timeoutUnit}>ms</span>
+        </div>
+      </div>
+      <hr />
       <div className={s.labeledInput}>
         <span>{t('sort_in_grp')}</span>
         <div>
