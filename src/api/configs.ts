@@ -9,9 +9,9 @@ const upgradeCoreEndpoint = '/upgrade';
 const upgradeGeoEndpoint = '/upgrade/geo';
 const upgradeUIEndpoint = '/upgrade/ui';
 
-export async function fetchConfigs(apiConfig: ClashAPIConfig) {
+export async function fetchConfigs(apiConfig: ClashAPIConfig, signal?: AbortSignal) {
   const { url, init } = getURLAndInit(apiConfig);
-  return await fetch(url + endpoint, init);
+  return await fetch(url + endpoint, { ...init, signal });
 }
 
 // TODO support PUT /configs

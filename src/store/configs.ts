@@ -17,15 +17,24 @@ export const getConfigs = (s: State) => s.configs.configs;
 export const getHaveFetched = (s: State) => s.configs.haveFetchedConfig;
 export const getLogLevel = (s: State) => s.configs.configs['log-level'];
 
+const STARTUP_TIMEOUT_MS = 2000;
+
 export function fetchConfigs(apiConfig: ClashAPIConfig) {
   return async (dispatch: DispatchFn, getState: GetStateFn) => {
     let res: Response;
+    const haveFetched = getHaveFetched(getState());
+    const controller = new AbortController();
+    const timeoutId = haveFetched
+      ? null
+      : setTimeout(() => controller.abort(), STARTUP_TIMEOUT_MS);
     try {
-      res = await configsAPI.fetchConfigs(apiConfig);
+      res = await configsAPI.fetchConfigs(apiConfig, haveFetched ? undefined : controller.signal);
     } catch (err) {
-      // TypeError and AbortError
+      // TypeError and AbortError (includes timeout)
       dispatch(openModal('apiConfig'));
       return;
+    } finally {
+      if (timeoutId !== null) clearTimeout(timeoutId);
     }
 
     if (!res.ok) {
