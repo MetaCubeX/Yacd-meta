@@ -30,6 +30,7 @@ export const data = {
   hide_unavail_proxies: '隐藏不可用代理',
   auto_close_conns: '切换代理时自动断开旧连接',
   double_column_layout: '双列显示',
+  group_by_provider: '按提供商分组节点',
   order_natural: '原 config 文件中的排序',
   order_latency_asc: '按延迟从小到大',
   order_latency_desc: '按延迟从大到小',

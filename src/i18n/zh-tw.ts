@@ -26,6 +26,7 @@ export const data = {
   hide_unavail_proxies: '隱藏不可用的代理伺服器',
   auto_close_conns: '切換代理伺服器時自動斷開舊連線',
   double_column_layout: '雙列顯示',
+  group_by_provider: '依提供商分組節點',
   order_natural: '原 config 文件中的順序',
   order_latency_asc: '按延遲從小到大',
   order_latency_desc: '按延遲從大到小',

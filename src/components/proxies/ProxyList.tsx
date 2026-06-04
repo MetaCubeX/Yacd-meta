@@ -105,3 +105,63 @@ export function ProxyListSummaryView({
     </div>
   );
 }
+
+export function ProxyListGroupedByProvider({
+  all,
+  proxies,
+  delay,
+  latencyTestUrl,
+  apiConfig,
+  dispatch,
+  now,
+  isSelectable,
+  itemOnTapCallback,
+}: ProxyListProps) {
+  const httpsLatencyTest = latencyTestUrl.startsWith('https://');
+
+  // Group proxy names by their providerName
+  const groups: { label: string; names: string[] }[] = React.useMemo(() => {
+    const map = new Map<string, string[]>();
+    for (const proxyName of all) {
+      const providerName = proxies[proxyName]?.providerName ?? '';
+      if (!map.has(providerName)) map.set(providerName, []);
+      map.get(providerName)!.push(proxyName);
+    }
+    return Array.from(map.entries()).map(([label, names]) => ({ label, names }));
+  }, [all, proxies]);
+
+  return (
+    <div>
+      {groups.map(({ label, names }) => (
+        <div key={label} className={s.providerGroup}>
+          {label ? <div className={s.providerLabel}>{label}</div> : null}
+          <div className={cx(s.list, s.detail)}>
+            {names.map((proxyName) => {
+              const proxy = proxies[proxyName] || {
+                name: proxyName,
+                type: 'Http' as const,
+                udp: false,
+                tfo: false,
+                history: [],
+              };
+              return (
+                <Proxy
+                  apiConfig={apiConfig}
+                  dispatch={dispatch}
+                  proxy={proxy}
+                  latency={getProxyLatency(proxies, delay, proxyName)}
+                  httpsLatencyTest={httpsLatencyTest}
+                  key={proxyName}
+                  onClick={itemOnTapCallback}
+                  isSelectable={isSelectable}
+                  name={proxyName}
+                  now={proxyName === now}
+                />
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}

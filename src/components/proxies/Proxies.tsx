@@ -27,6 +27,7 @@ type AppConfig = {
   hideUnavailableProxies: boolean;
   autoCloseOldConns: boolean;
   proxiesLayout: string;
+  proxyGroupByProvider: boolean;
 };
 
 type Props = {
@@ -98,6 +99,7 @@ export default function Proxies({
                   proxySortBy={appConfig.proxySortBy}
                   isOpen={Boolean(collapsibleIsOpen[`proxyGroup:${name}`])}
                   latencyTestUrl={latencyTestUrl}
+                  proxyGroupByProvider={appConfig.proxyGroupByProvider}
                 />
               </div>
             ))}

@@ -10,6 +10,7 @@ import {
   getLatencyTestUrl,
   getProxiesLayout,
   getProxySortBy,
+  getProxyGroupByProvider,
 } from '~/store/app';
 import {
   getDelay,
@@ -25,12 +26,20 @@ const getAppConfig = createSelector(
   getHideUnavailableProxies,
   getAutoCloseOldConns,
   getProxiesLayout,
-  (proxySortBy, hideUnavailableProxies, autoCloseOldConns, proxiesLayout) => ({
+  getProxyGroupByProvider,
+  (
     proxySortBy,
     hideUnavailableProxies,
     autoCloseOldConns,
     proxiesLayout,
-  })
+    proxyGroupByProvider,
+  ) => ({
+    proxySortBy,
+    hideUnavailableProxies,
+    autoCloseOldConns,
+    proxiesLayout,
+    proxyGroupByProvider,
+  }),
 );
 
 const mapState = (state: State) => ({

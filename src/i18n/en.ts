@@ -29,6 +29,7 @@ export const data = {
   hide_unavail_proxies: 'Hide unavailable proxies',
   auto_close_conns: 'Automatically close old connections',
   double_column_layout: 'Double column layout',
+  group_by_provider: 'Group proxies by provider',
   order_natural: 'Original order in config file',
   order_latency_asc: 'By latency from small to big',
   order_latency_desc: 'By latency from big to small',

@@ -29,6 +29,7 @@ export const data = {
   hide_unavail_proxies: 'Скрыть недоступные прокси',
   auto_close_conns: 'Автоматически закрывать старые подключения',
   double_column_layout: 'Двухколоночный макет',
+  group_by_provider: 'Группировать прокси по провайдеру',
   order_natural: 'Исходный порядок из конфигурации',
   order_latency_asc: 'По задержке (от меньшей к большей)',
   order_latency_desc: 'По задержке (от большей к меньшей)',

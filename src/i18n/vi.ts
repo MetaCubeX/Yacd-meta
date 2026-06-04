@@ -24,6 +24,7 @@ export const data = {
   sort_in_grp: 'Sắp xếp trong nhóm',
   hide_unavail_proxies: 'Ẩn proxy không khả dụng',
   auto_close_conns: 'Tự động đóng kết nối cũ',
+  group_by_provider: 'Nhóm proxy theo nhà cung cấp',
   order_natural: 'Thứ tự ban đầu trong tệp cấu hình',
   order_latency_asc: 'Theo độ trễ từ nhỏ đến lớn',
   order_latency_desc: 'Theo độ trễ từ lớn đến nhỏ',

@@ -17,7 +17,7 @@ import CollapsibleSectionHeader from '../CollapsibleSectionHeader';
 import { useStoreActions } from '../StateProvider';
 
 import s0 from './ProxyGroup.module.scss';
-import { ProxyList, ProxyListSummaryView } from './ProxyList';
+import { ProxyList, ProxyListGroupedByProvider, ProxyListSummaryView } from './ProxyList';
 
 const { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } = React;
 
@@ -94,6 +94,7 @@ type Props = {
   latencyTestUrl: string;
   apiConfig: ClashAPIConfig;
   dispatch: DispatchFn;
+  proxyGroupByProvider?: boolean;
 };
 
 export const ProxyGroup = memo(function ProxyGroup({
@@ -106,6 +107,7 @@ export const ProxyGroup = memo(function ProxyGroup({
   latencyTestUrl,
   apiConfig,
   dispatch,
+  proxyGroupByProvider = false,
 }: Props) {
   const group = proxies[name] as ProxyItem & { all?: string[]; now?: string };
   const { all: allItems = [], type, now } = group || {};
@@ -115,18 +117,18 @@ export const ProxyGroup = memo(function ProxyGroup({
   const nowChain = useMemo(() => buildNowChain(proxies, name), [proxies, name]);
   const nowLatency = useMemo(
     () => (now ? getProxyLatency(proxies, delay, now) : undefined),
-    [proxies, delay, now]
+    [proxies, delay, now],
   );
   const availableCount = useMemo(() => countAvailableProxies(allItems, delay), [allItems, delay]);
   const qtyLabel = `${availableCount}/${allItems.length}`;
 
   const { data: version } = useQuery(['/version', apiConfig], () =>
-    fetchVersion('/version', apiConfig)
+    fetchVersion('/version', apiConfig),
   );
 
   const isSelectable = useMemo(
     () => ['Selector', version.meta && 'Fallback', version.meta && 'URLTest'].includes(type),
-    [type, version.meta]
+    [type, version.meta],
   );
 
   const {
@@ -143,7 +145,7 @@ export const ProxyGroup = memo(function ProxyGroup({
       if (!isSelectable) return;
       dispatch(switchProxy(apiConfig, name, proxyName));
     },
-    [apiConfig, dispatch, name, isSelectable]
+    [apiConfig, dispatch, name, isSelectable],
   );
   const [isTestingLatency, setIsTestingLatency] = useState(false);
 
@@ -206,17 +208,31 @@ export const ProxyGroup = memo(function ProxyGroup({
         </div>
       </div>
       <Collapsible isOpen={isOpen}>
-        <ProxyList
-          apiConfig={apiConfig}
-          all={all}
-          delay={delay}
-          dispatch={dispatch}
-          latencyTestUrl={latencyTestUrl}
-          now={now}
-          isSelectable={isSelectable}
-          itemOnTapCallback={itemOnTapCallback}
-          proxies={proxies}
-        />
+        {proxyGroupByProvider ? (
+          <ProxyListGroupedByProvider
+            apiConfig={apiConfig}
+            all={all}
+            delay={delay}
+            dispatch={dispatch}
+            latencyTestUrl={latencyTestUrl}
+            now={now}
+            isSelectable={isSelectable}
+            itemOnTapCallback={itemOnTapCallback}
+            proxies={proxies}
+          />
+        ) : (
+          <ProxyList
+            apiConfig={apiConfig}
+            all={all}
+            delay={delay}
+            dispatch={dispatch}
+            latencyTestUrl={latencyTestUrl}
+            now={now}
+            isSelectable={isSelectable}
+            itemOnTapCallback={itemOnTapCallback}
+            proxies={proxies}
+          />
+        )}
       </Collapsible>
       <Collapsible isOpen={!isOpen}>
         {nowChain && (

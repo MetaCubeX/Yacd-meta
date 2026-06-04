@@ -22,6 +22,7 @@ export const getHideUnavailableProxies = (s: State) => s.app.hideUnavailableProx
 export const getAutoCloseOldConns = (s: State) => s.app.autoCloseOldConns;
 export const getLogStreamingPaused = (s: State) => s.app.logStreamingPaused;
 export const getProxiesLayout = (s: State) => s.app.proxiesLayout;
+export const getProxyGroupByProvider = (s: State) => s.app.proxyGroupByProvider;
 
 const saveStateDebounced = debounce(saveState, 600);
 
@@ -176,6 +177,7 @@ const defaultState: StateApp = {
   autoCloseOldConns: true,
   logStreamingPaused: false,
   proxiesLayout: 'single',
+  proxyGroupByProvider: false,
 };
 
 function parseConfigQueryString() {

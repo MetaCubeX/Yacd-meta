@@ -16,6 +16,7 @@ type AppConfig = {
   hideUnavailableProxies: boolean;
   autoCloseOldConns: boolean;
   proxiesLayout: string;
+  proxyGroupByProvider: boolean;
 };
 
 type Props = {
@@ -31,14 +32,14 @@ export default function Settings({ appConfig }: Props) {
     (e) => {
       updateAppConfig('proxySortBy', e.target.value);
     },
-    [updateAppConfig]
+    [updateAppConfig],
   );
 
   const handleHideUnavailablesSwitchOnChange = useCallback(
     (v) => {
       updateAppConfig('hideUnavailableProxies', v);
     },
-    [updateAppConfig]
+    [updateAppConfig],
   );
   const { t } = useTranslation();
   return (
@@ -83,6 +84,16 @@ export default function Settings({ appConfig }: Props) {
             name="proxiesLayout"
             checked={appConfig.proxiesLayout === 'double'}
             onChange={(v) => updateAppConfig('proxiesLayout', v ? 'double' : 'single')}
+          />
+        </div>
+      </div>
+      <div className={s.labeledInput}>
+        <span>{t('group_by_provider')}</span>
+        <div>
+          <Switch
+            name="proxyGroupByProvider"
+            checked={appConfig.proxyGroupByProvider}
+            onChange={(v) => updateAppConfig('proxyGroupByProvider', v)}
           />
         </div>
       </div>

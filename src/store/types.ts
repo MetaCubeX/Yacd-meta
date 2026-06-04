@@ -15,6 +15,7 @@ export type StateApp = {
   autoCloseOldConns: boolean;
   logStreamingPaused: boolean;
   proxiesLayout: string;
+  proxyGroupByProvider: boolean;
 };
 
 export type ClashTunConfig = {
@@ -144,8 +145,8 @@ export type State = {
 export type GetStateFn = () => State;
 export interface DispatchFn {
   (msg: string, change: (s: State) => void): void;
-  (action: (dispatch: DispatchFn, getState: GetStateFn) => Promise<void>): ReturnType<
-    typeof action
-  >;
+  (
+    action: (dispatch: DispatchFn, getState: GetStateFn) => Promise<void>,
+  ): ReturnType<typeof action>;
   (action: (dispatch: DispatchFn, getState: GetStateFn) => void): ReturnType<typeof action>;
 }
