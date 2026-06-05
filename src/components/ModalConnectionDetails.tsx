@@ -9,6 +9,7 @@ import Modal from './Modal';
 import { FormattedConn } from '~/store/connections';
 
 import prettyBytes from '../misc/pretty-bytes';
+import * as geoip from '../api/geoip';
 
 import modalStyle from './Modal.module.scss';
 import s from './ModalConnectionDetails.module.scss';
@@ -37,12 +38,20 @@ export default function ModalConnectionDetails({ isOpen, onRequestClose, connect
     { label: 'Sniff Host', value: connection.sniffHost },
     { label: 'Process', value: connection.process },
     { label: 'Destination', value: `${connection.destinationIP}:${connection.destinationPort}` },
+    {
+      label: 'Destination Location',
+      value: connection.destinationIP ? geoip.lookupIp(connection.destinationIP) : '',
+    },
     { label: 'Remote Destination', value: connection.remoteDestination },
     { label: 'Rule', value: connection.rule },
     { label: 'Chains', value: connection.chains },
     { label: 'Type', value: connection.type },
     { label: 'Network', value: connection.network },
     { label: 'Source', value: `${connection.sourceIP}:${connection.sourcePort}` },
+    {
+      label: 'Source Location',
+      value: connection.sourceIP ? geoip.lookupIp(connection.sourceIP) : '',
+    },
     { label: 'Upload', value: prettyBytes(connection.upload) },
     { label: 'Download', value: prettyBytes(connection.download) },
     {

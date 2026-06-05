@@ -36,6 +36,7 @@ export const CONNECTION_COLUMNS_DEFAULT: ConnectionColumn[] = [
   { Header: 'c_ul', accessor: 'upload', sortDescFirst },
   { Header: 'c_source', accessor: 'source' },
   { Header: 'c_destination_ip', accessor: 'destinationIP' },
+  { Header: 'c_destination_location', accessor: 'destinationLocation' },
   { Header: 'c_sni', accessor: 'sniffHost' },
   { Header: 'c_ctrl', accessor: 'ctrl' },
 ];

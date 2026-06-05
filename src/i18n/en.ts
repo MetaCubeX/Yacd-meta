@@ -74,6 +74,7 @@ export const data = {
   c_time: 'Time',
   c_source: 'Source',
   c_destination_ip: 'Destination IP',
+  c_destination_location: 'Location',
   c_type: 'Type',
   c_ctrl: 'Close',
   close_all_confirm: 'Are you sure you want to close all connections?',

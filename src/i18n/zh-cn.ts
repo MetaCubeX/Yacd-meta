@@ -71,6 +71,7 @@ export const data = {
   c_time: '连接时间',
   c_source: '来源',
   c_destination_ip: '目标IP',
+  c_destination_location: '归属地',
   c_type: '类型',
   c_ctrl: '关闭',
   restart_core: '重启核心',
