@@ -74,6 +74,7 @@ export const data = {
   c_time: 'Время',
   c_source: 'Источник',
   c_destination_ip: 'IP назначения',
+  c_destination_location: 'Местоположение',
   c_type: 'Тип',
   c_ctrl: 'Закрыть',
   close_all_confirm: 'Вы уверены, что хотите закрыть все подключения?',

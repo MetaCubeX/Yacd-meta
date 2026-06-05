@@ -1,3 +1,8 @@
 node_modules/
 public/
 pkg/
+
+# Vendored IP databases (downloaded at build time by `pnpm fetch:geoip`).
+# ~38 MB total; do not commit. See assets/geoip/NOTICE.md for sources and
+# license terms, and GEOIP.md for how to refresh.
+assets/geoip/

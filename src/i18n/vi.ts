@@ -66,6 +66,7 @@ export const data = {
   c_time: 'Thời gian',
   c_source: 'Nguồn',
   c_destination_ip: 'Địa chỉ IP đích',
+  c_destination_location: 'Vị trí',
   c_type: 'Loại',
   c_ctrl: 'Đóng',
   close_all_confirm: 'Bạn có chắc chắn muốn đóng tất cả kết nối không?',

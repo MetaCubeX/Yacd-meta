@@ -8,10 +8,12 @@ import { ArrowDown, ArrowUp, ChevronDown, Sliders, XCircle } from '~/components/
 import { useTranslation } from 'react-i18next';
 import { useSortBy, useTable } from 'react-table';
 import { List as VirtualList, RowComponentProps } from 'react-window';
+import { Tooltip } from '@reach/tooltip';
 
 import { FormattedConn } from '~/store/connections';
 
 import * as connAPI from '../api/connections';
+import * as geoip from '../api/geoip';
 import prettyBytes from '../misc/pretty-bytes';
 
 import ConnectionCard from './ConnectionCard';
@@ -34,6 +36,7 @@ const COLUMN_WIDTHS = {
   uploadSpeedCurr: 100,
   source: 170,
   destinationIP: 170,
+  destinationLocation: 220,
   process: 130,
   sniffHost: 150,
 };
@@ -154,6 +157,27 @@ function Table({ data, columns, hiddenColumns, apiConfig, height }) {
         case 'downloadSpeedCurr':
         case 'uploadSpeedCurr':
           return prettyBytes(cell.value) + '/s';
+        case 'destinationLocation': {
+          // `destinationLocation` is a virtual column: the cell value
+          // is computed from the row's destinationIP at render time.
+          const ip = cell.row.original.destinationIP;
+          if (!ip) return '';
+          // geoip.lookupIp is sync once init() has resolved; before
+          // that it returns '' and we render an em-dash.
+          const region = geoip.lookupIp(ip);
+          const text = region || '—';
+          // The column is 220px wide; long Chinese region strings get
+          // truncated. Wrap the text in a tooltip so the user can
+          // hover to see the full value.
+          if (!region) return text;
+          return (
+            <Tooltip label={region}>
+              <span style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {text}
+              </span>
+            </Tooltip>
+          );
+        }
         default:
           return cell.value;
       }

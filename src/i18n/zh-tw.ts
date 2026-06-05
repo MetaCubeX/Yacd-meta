@@ -66,6 +66,7 @@ export const data = {
   c_time: '連線時間',
   c_source: '來源',
   c_destination_ip: '目標 IP',
+  c_destination_location: '歸屬地',
   c_type: '類型',
   c_ctrl: '關閉',
   restart_core: '重啟核心',
