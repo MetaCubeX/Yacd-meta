@@ -1,4 +1,4 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
 export type FormattedConn = {
   id: string;
@@ -24,22 +24,13 @@ export type FormattedConn = {
 };
 
 // 当前活跃连接
-export const connectionsState = atom<FormattedConn[]>({
-  key: 'connectionsState',
-  default: [],
-});
+export const connectionsState = atom<FormattedConn[]>([]);
 
 // 已关闭连接
-export const closedConnectionsState = atom<FormattedConn[]>({
-  key: 'closedConnectionsState',
-  default: [],
-});
+export const closedConnectionsState = atom<FormattedConn[]>([]);
 
 // 连接刷新暂停状态
-export const isRefreshPausedState = atom<boolean>({
-  key: 'isRefreshPausedState',
-  default: false,
-});
+export const isRefreshPausedState = atom<boolean>(false);
 
 // 最大已关闭连接数量限制
 export const MAX_CLOSED_CONNECTIONS = 100;

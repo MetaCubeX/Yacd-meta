@@ -1,11 +1,18 @@
 import './ConnectionTable.scss';
 
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+  VisibilityState,
+} from '@tanstack/react-table';
 import cx from 'clsx';
 import { formatDistance, Locale } from 'date-fns';
 import { enUS, zhCN, zhTW } from 'date-fns/locale';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSortBy, useTable } from 'react-table';
 import { List as VirtualList, RowComponentProps } from 'react-window';
 
 import { ArrowDown, ArrowUp, ChevronDown, Sliders, XCircle } from '~/components/shared/FeatherIcons';
@@ -78,27 +85,41 @@ function Table({ data, columns, hiddenColumns, apiConfig, height }) {
     return () => mql.removeEventListener('change', listener);
   }, []);
 
-  // 从本地存储加载排序状态
-  const tableState = useMemo(() => {
-    const savedSortBy = JSON.parse(localStorage.getItem('tableSortBy')) || [sortById];
-    return {
-      sortBy: savedSortBy,
-      hiddenColumns,
-    };
-  }, [hiddenColumns]);
-
-  const table = useTable(
-    {
-      columns,
-      data,
-      initialState: tableState,
-      autoResetSortBy: false,
-    },
-    useSortBy
+  // react-table v8 列定义：从项目内部的 ConnectionColumn 形态映射而来
+  const columnDefs = useMemo<ColumnDef<FormattedConn>[]>(
+    () =>
+      columns.map((c) => ({
+        id: c.accessor,
+        accessorFn: (row: FormattedConn) => (row as any)[c.accessor],
+        header: c.Header ?? c.accessor,
+        enableSorting: c.accessor !== 'ctrl',
+        sortDescFirst: c.sortDescFirst ?? false,
+      })),
+    [columns]
   );
 
-  const { setHiddenColumns, headerGroups, rows, prepareRow, toggleSortBy } = table;
-  const state = table.state;
+  // 从本地存储加载排序状态（v7 sortBy 与 v8 SortingState 形态一致，可直接复用）
+  const [sorting, setSorting] = useState<SortingState>(() => {
+    return JSON.parse(localStorage.getItem('tableSortBy')) || [sortById];
+  });
+
+  // hiddenColumns 为需隐藏的列 id 列表，转换为 v8 的可见性映射
+  const columnVisibility = useMemo<VisibilityState>(
+    () => Object.fromEntries(hiddenColumns.map((id: string) => [id, false])),
+    [hiddenColumns]
+  );
+
+  const table = useReactTable({
+    data,
+    columns: columnDefs,
+    state: { sorting, columnVisibility },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    autoResetAll: false,
+  });
+
+  const rows = table.getRowModel().rows;
 
   const sortOptions = useMemo(() => {
     return columns
@@ -109,11 +130,7 @@ function Table({ data, columns, hiddenColumns, apiConfig, height }) {
       }));
   }, [columns, t]);
 
-  const currentSort = state.sortBy[0] || sortById;
-
-  useEffect(() => {
-    setHiddenColumns(hiddenColumns);
-  }, [setHiddenColumns, hiddenColumns]);
+  const currentSort = sorting[0] || sortById;
 
   let locale: Locale;
 
@@ -147,15 +164,15 @@ function Table({ data, columns, hiddenColumns, apiConfig, height }) {
             ></XCircle>
           );
         case 'start':
-          return formatDistance(cell.value, 0, { locale: locale });
+          return formatDistance(cell.getValue(), 0, { locale: locale });
         case 'download':
         case 'upload':
-          return prettyBytes(cell.value);
+          return prettyBytes(cell.getValue());
         case 'downloadSpeedCurr':
         case 'uploadSpeedCurr':
-          return prettyBytes(cell.value) + '/s';
+          return prettyBytes(cell.getValue()) + '/s';
         default:
-          return cell.value;
+          return cell.getValue();
       }
     },
     [handlerDisconnect]
@@ -163,8 +180,8 @@ function Table({ data, columns, hiddenColumns, apiConfig, height }) {
 
   // 当排序状态改变时，将新状态保存到本地存储
   useEffect(() => {
-    localStorage.setItem('tableSortBy', JSON.stringify(state.sortBy));
-  }, [state.sortBy]);
+    localStorage.setItem('tableSortBy', JSON.stringify(sorting));
+  }, [sorting]);
 
   const MobileRow = useCallback(
     ({ index, style }: RowComponentProps) => {
@@ -187,32 +204,29 @@ function Table({ data, columns, hiddenColumns, apiConfig, height }) {
   const DesktopRow = useCallback(
     ({ index, style }: RowComponentProps) => {
       const row = rows[index];
-      prepareRow(row);
       return (
         <div
-          {...(row as any).getRowProps({
-            style: {
-              ...style,
-              display: 'flex',
-              width: TOTAL_WIDTH,
-            },
-          })}
+          style={{
+            ...style,
+            display: 'flex',
+            width: TOTAL_WIDTH,
+          }}
           className={s.tr}
-          onClick={() => setSelectedConn((row as any).original)}
+          onClick={() => setSelectedConn(row.original as FormattedConn)}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
-              setSelectedConn((row as any).original);
+              setSelectedConn(row.original as FormattedConn);
             }
           }}
         >
-          {row.cells.map((cell) => {
+          {row.getVisibleCells().map((cell) => {
             const columnStyle = getColumnStyle(cell.column.id);
             return (
               <div
-                {...cell.getCellProps()}
+                key={cell.id}
                 className={cx(s.td, index % 2 === 0 ? s.odd : false, cell.column.id)}
                 style={{
                   display: 'flex',
@@ -230,7 +244,7 @@ function Table({ data, columns, hiddenColumns, apiConfig, height }) {
         </div>
       );
     },
-    [prepareRow, rows, renderCell, locale]
+    [rows, renderCell, locale]
   );
 
   const handleDesktopListScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
@@ -253,7 +267,7 @@ function Table({ data, columns, hiddenColumns, apiConfig, height }) {
               </div>
               <select
                 value={currentSort.id}
-                onChange={(e) => toggleSortBy(e.target.value, currentSort.desc)}
+                onChange={(e) => setSorting([{ id: e.target.value, desc: currentSort.desc }])}
               >
                 {sortOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -265,7 +279,7 @@ function Table({ data, columns, hiddenColumns, apiConfig, height }) {
             </div>
             <button
               className={s.sortDirBtn}
-              onClick={() => toggleSortBy(currentSort.id, !currentSort.desc)}
+              onClick={() => setSorting([{ id: currentSort.id, desc: !currentSort.desc }])}
             >
               {currentSort.desc ? <ArrowDown size={18} /> : <ArrowUp size={18} />}
             </button>
@@ -294,32 +308,46 @@ function Table({ data, columns, hiddenColumns, apiConfig, height }) {
             style={{ overflow: 'hidden', width: '100%' }}
           >
             <div className={s.thead} style={{ width: TOTAL_WIDTH }}>
-              {headerGroups.map((headerGroup, trindex) => (
-                <div
-                  {...headerGroup.getHeaderGroupProps()}
-                  className={s.tr}
-                  key={trindex}
-                  style={{ display: 'flex' }}
-                >
-                  {headerGroup.headers.map((column) => {
-                    const columnStyle = getColumnStyle(column.id);
+              {table.getHeaderGroups().map((headerGroup) => (
+                <div className={s.tr} key={headerGroup.id} style={{ display: 'flex' }}>
+                  {headerGroup.headers.map((header) => {
+                    const columnStyle = getColumnStyle(header.column.id);
+                    const sortDir = header.column.getIsSorted();
+                    const canSort = header.column.getCanSort();
+                    const sortHandler = header.column.getToggleSortingHandler();
                     return (
                       <div
-                        {...column.getHeaderProps(column.getSortByToggleProps())}
+                        key={header.id}
                         className={s.th}
+                        onClick={sortHandler}
+                        onKeyDown={
+                          canSort
+                            ? (e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  sortHandler?.(e);
+                                }
+                              }
+                            : undefined
+                        }
+                        role={canSort ? 'button' : undefined}
+                        tabIndex={canSort ? 0 : undefined}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
+                          cursor: canSort ? 'pointer' : 'default',
                           ...columnStyle,
                         }}
                       >
-                        <span className={s.headerText}>{t(column.render('Header'))}</span>
-                        {column.id !== 'ctrl' ? (
+                        <span className={s.headerText}>
+                          {t(header.column.columnDef.header as string)}
+                        </span>
+                        {header.column.id !== 'ctrl' ? (
                           <span className={s.sortIconContainer}>
-                            {column.isSorted ? (
+                            {sortDir ? (
                               <ChevronDown
                                 size={14}
-                                className={column.isSortedDesc ? '' : s.rotate180}
+                                className={sortDir === 'desc' ? '' : s.rotate180}
                               />
                             ) : null}
                           </span>

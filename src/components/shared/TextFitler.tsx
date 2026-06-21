@@ -5,9 +5,9 @@ import { useTextInut } from '~/hooks/useTextInput';
 
 import s from './TextFitler.module.scss';
 
-import type { RecoilState } from 'recoil';
+import type { PrimitiveAtom } from 'jotai';
 
-export function TextFilter(props: { textAtom: RecoilState<string>; placeholder?: string }) {
+export function TextFilter(props: { textAtom: PrimitiveAtom<string>; placeholder?: string }) {
   const [onChange, text] = useTextInut(props.textAtom);
   return (
     <input

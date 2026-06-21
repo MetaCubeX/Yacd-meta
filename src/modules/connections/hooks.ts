@@ -1,5 +1,5 @@
+import { useAtom } from 'jotai';
 import * as React from 'react';
-import { useRecoilState } from 'recoil';
 
 import { ConnectionItem } from '~/api/connections';
 import * as connAPI from '~/api/connections';
@@ -60,9 +60,9 @@ export function useSourceMapState() {
 }
 
 export function useConnectionsStream(apiConfig: ClashAPIConfig, sourceMap: SourceMapItem[]) {
-  const [conns, setConns] = useRecoilState(connectionsState);
-  const [closedConns, setClosedConns] = useRecoilState(closedConnectionsState);
-  const [isRefreshPaused, setIsRefreshPaused] = useRecoilState(isRefreshPausedState);
+  const [conns, setConns] = useAtom(connectionsState);
+  const [closedConns, setClosedConns] = useAtom(closedConnectionsState);
+  const [isRefreshPaused, setIsRefreshPaused] = useAtom(isRefreshPausedState);
   const [reConnectCount, setReConnectCount] = useState(0);
   const prevConnsRef = useRef<FormattedConn[]>(conns);
 

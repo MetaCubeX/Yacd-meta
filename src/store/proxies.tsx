@@ -1,4 +1,4 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
 /* import { ProxyItem, ProxiesMapping, DelayMapping } from '~/store/types'; */
 import {
@@ -460,7 +460,4 @@ export const actions = {
   healthcheckProxy,
 };
 
-export const proxyFilterText = atom({
-  key: 'proxyFilterText',
-  default: '',
-});
+export const proxyFilterText = atom('');

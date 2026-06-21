@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { useAtom } from 'jotai';
 import * as React from 'react';
-import { useRecoilState } from 'recoil';
 
 import {
   fetchRuleProviders,
@@ -71,7 +71,7 @@ export function useRuleAndProvider(apiConfig: ClashAPIConfig) {
   });
   const { data: provider } = useRuleProviderQuery(apiConfig);
 
-  const [filterText] = useRecoilState(ruleFilterText);
+  const [filterText] = useAtom(ruleFilterText);
   if (filterText === '') {
     return { rules, provider, isFetching };
   }

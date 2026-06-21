@@ -55,7 +55,7 @@ export default tseslint.config(
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
       'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': ['warn', { additionalHooks: 'useRecoilCallback' }],
+      'react-hooks/exhaustive-deps': 'warn',
       'import/order': [
         'error',
         {

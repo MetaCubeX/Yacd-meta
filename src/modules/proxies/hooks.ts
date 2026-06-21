@@ -1,5 +1,5 @@
+import { useAtom } from 'jotai';
 import * as React from 'react';
-import { useRecoilState } from 'recoil';
 
 import {
   fetchProxies,
@@ -126,7 +126,7 @@ export function useFilteredAndSorted(
   proxySortBy: string,
   proxies?: ProxiesMapping
 ) {
-  const [filterText] = useRecoilState(proxyFilterText);
+  const [filterText] = useAtom(proxyFilterText);
   return useMemo(
     () =>
       filterAvailableProxiesAndSort(
