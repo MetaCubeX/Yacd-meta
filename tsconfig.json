@@ -14,7 +14,9 @@
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "strict": false,
+    "strict": true,
+    // 渐进开启 strict：strict 家族中除以下两项外均已满足并启用。
+    // 这两个重型检查留作后续增量修复（noImplicitAny ~180 处、strictNullChecks ~87 处）。
     "noImplicitAny": false,
     "strictNullChecks": false,
     "noUncheckedSideEffectImports": false,
