@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Zap } from '~/components/shared/FeatherIcons';
 import { useTranslation } from 'react-i18next';
 
 import { Action, Fab, IsFetching, position as fabPosition } from '~/components/shared/Fab';
+import { Zap } from '~/components/shared/FeatherIcons';
 import { RotateIcon } from '~/components/shared/RotateIcon';
 import { useTestLatencyAction, useUpdateProviderItems } from '~/modules/proxies/hooks';
 import { DispatchFn, FormattedProxyProvider } from '~/store/types';

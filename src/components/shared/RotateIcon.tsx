@@ -1,5 +1,6 @@
 import cx from 'clsx';
 import * as React from 'react';
+
 import { RotateCw } from '~/components/shared/FeatherIcons';
 
 import s from './RotateIcon.module.scss';

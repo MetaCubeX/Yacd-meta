@@ -1,9 +1,9 @@
 import { formatDistance, Locale } from 'date-fns';
 import { enUS, zhCN, zhTW } from 'date-fns/locale';
 import React from 'react';
-import { ArrowDown, ArrowDownCircle, ArrowUp, X } from '~/components/shared/FeatherIcons';
 import { useTranslation } from 'react-i18next';
 
+import { ArrowDown, ArrowDownCircle, ArrowUp, X } from '~/components/shared/FeatherIcons';
 import { FormattedConn } from '~/store/connections';
 
 import prettyBytes from '../misc/pretty-bytes';

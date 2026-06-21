@@ -62,7 +62,7 @@ function pump(reader: ReadableStreamDefaultReader) {
       parseAndAppend(lastSplit);
       decoded = '';
 
-      // eslint-disable-next-line no-console
+       
       console.log('GET /memory streaming done');
       fetched = false;
       return;
@@ -110,7 +110,7 @@ function fetchDataWithFetch(apiConfig: ClashAPIConfig) {
       }
     },
     (err) => {
-      // eslint-disable-next-line no-console
+       
       console.log('fetch /memory error', err);
       fetched = false;
     }

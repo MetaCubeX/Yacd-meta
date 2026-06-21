@@ -1,10 +1,11 @@
+import { useSuspenseQuery } from '@tanstack/react-query';
 import cx from 'clsx';
 import * as React from 'react';
-import { ChevronDown, Zap } from '~/components/shared/FeatherIcons';
-import { useQuery } from 'react-query';
+
 
 import * as proxiesAPI from '~/api/proxies';
 import { fetchVersion } from '~/api/version';
+import { ChevronDown, Zap } from '~/components/shared/FeatherIcons';
 import { useFilteredAndSorted } from '~/modules/proxies/hooks';
 import { getProxyLatency } from '~/modules/proxies/utils';
 import { fetchProxies, switchProxy } from '~/store/proxies';
@@ -124,9 +125,10 @@ export const ProxyGroup = memo(function ProxyGroup({
   const availableCount = useMemo(() => countAvailableProxies(allItems, delay), [allItems, delay]);
   const qtyLabel = `${availableCount}/${allItems.length}`;
 
-  const { data: version } = useQuery(['/version', apiConfig], () =>
-    fetchVersion('/version', apiConfig),
-  );
+  const { data: version } = useSuspenseQuery({
+    queryKey: ['/version', apiConfig],
+    queryFn: () => fetchVersion('/version', apiConfig),
+  });
 
   const isSelectable = useMemo(
     () => ['Selector', version.meta && 'Fallback', version.meta && 'URLTest'].includes(type),

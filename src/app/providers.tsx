@@ -1,5 +1,5 @@
+import { QueryClientProvider } from '@tanstack/react-query';
 import * as React from 'react';
-import { QueryClientProvider } from 'react-query';
 import { RecoilRoot } from 'recoil';
 
 import ErrorBoundary from '~/components/ErrorBoundary';

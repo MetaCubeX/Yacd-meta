@@ -1,5 +1,5 @@
+import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import * as React from 'react';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useRecoilState } from 'recoil';
 
 import {
@@ -18,16 +18,17 @@ export function useUpdateRuleProviderItem(
   apiConfig: ClashAPIConfig
 ): [(ev: React.MouseEvent<HTMLButtonElement>) => unknown, boolean] {
   const queryClient = useQueryClient();
-  const { mutate, isLoading } = useMutation(refreshRuleProviderByName, {
+  const { mutate, isPending } = useMutation({
+    mutationFn: refreshRuleProviderByName,
     onSuccess: () => {
-      queryClient.invalidateQueries('/providers/rules');
+      queryClient.invalidateQueries({ queryKey: ['/providers/rules'] });
     },
   });
   const onClickRefreshButton = (ev: React.MouseEvent<HTMLButtonElement>) => {
     ev.preventDefault();
     mutate({ name, apiConfig });
   };
-  return [onClickRefreshButton, isLoading];
+  return [onClickRefreshButton, isPending];
 }
 
 export function useUpdateAllRuleProviderItems(
@@ -35,36 +36,39 @@ export function useUpdateAllRuleProviderItems(
 ): [(ev: React.MouseEvent<HTMLButtonElement>) => unknown, boolean] {
   const queryClient = useQueryClient();
   const { data: provider } = useRuleProviderQuery(apiConfig);
-  const { mutate, isLoading } = useMutation(updateRuleProviders, {
+  const { mutate, isPending } = useMutation({
+    mutationFn: updateRuleProviders,
     onSuccess: () => {
-      queryClient.invalidateQueries('/providers/rules');
+      queryClient.invalidateQueries({ queryKey: ['/providers/rules'] });
     },
   });
   const onClickRefreshButton = (ev: React.MouseEvent<HTMLButtonElement>) => {
     ev.preventDefault();
     mutate({ names: provider.names, apiConfig });
   };
-  return [onClickRefreshButton, isLoading];
+  return [onClickRefreshButton, isPending];
 }
 
 export function useInvalidateQueries() {
   const queryClient = useQueryClient();
   return useCallback(() => {
-    queryClient.invalidateQueries('/rules');
-    queryClient.invalidateQueries('/providers/rules');
+    queryClient.invalidateQueries({ queryKey: ['/rules'] });
+    queryClient.invalidateQueries({ queryKey: ['/providers/rules'] });
   }, [queryClient]);
 }
 
 export function useRuleProviderQuery(apiConfig: ClashAPIConfig) {
-  return useQuery(['/providers/rules', apiConfig], () =>
-    fetchRuleProviders('/providers/rules', apiConfig)
-  );
+  return useSuspenseQuery({
+    queryKey: ['/providers/rules', apiConfig],
+    queryFn: () => fetchRuleProviders('/providers/rules', apiConfig),
+  });
 }
 
 export function useRuleAndProvider(apiConfig: ClashAPIConfig) {
-  const { data: rules, isFetching } = useQuery(['/rules', apiConfig], () =>
-    fetchRules('/rules', apiConfig)
-  );
+  const { data: rules, isFetching } = useSuspenseQuery({
+    queryKey: ['/rules', apiConfig],
+    queryFn: () => fetchRules('/rules', apiConfig),
+  });
   const { data: provider } = useRuleProviderQuery(apiConfig);
 
   const [filterText] = useRecoilState(ruleFilterText);

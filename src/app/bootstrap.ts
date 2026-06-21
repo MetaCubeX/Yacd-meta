@@ -18,9 +18,9 @@ export function registerAppBootstrap(rootEl: HTMLElement | null) {
   rootEl.addEventListener('touchmove', onTouchMove, false);
   rootEl.addEventListener('touchend', onTouchEnd, false);
 
-  // eslint-disable-next-line no-console
+   
   console.log('Checkout the repo: https://github.com/MetaCubeX/yacd');
-  // eslint-disable-next-line no-console
+   
   console.log('Version:', __VERSION__);
 }
 
@@ -59,7 +59,7 @@ function handleTouch(trace: TouchPoint[]) {
   const tag = window.location.hash.slice(1);
   const index = tags.indexOf(tag);
 
-  // eslint-disable-next-line no-console
+   
   console.log(index, tag, tags.length);
 
   if (index === 3) return;

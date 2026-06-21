@@ -6,8 +6,6 @@ import { Head } from '~/components/shared/Head';
 import SideBar from '~/components/SideBar';
 
 import styles from '../App.module.scss';
-
-import APIDiscovery from './APIDiscovery';
 import AboutPage from '../pages/AboutPage';
 import BackendPage from '../pages/BackendPage';
 import ConfigPage from '../pages/ConfigPage';
@@ -17,6 +15,8 @@ import LogsPage from '../pages/LogsPage';
 import ProxiesPage from '../pages/ProxiesPage';
 import RulesPage from '../pages/RulesPage';
 import StyleGuidePage from '../pages/StyleGuidePage';
+
+import APIDiscovery from './APIDiscovery';
 
 const routes = [
   { path: '/', element: <Navigate to="/proxies" replace /> },

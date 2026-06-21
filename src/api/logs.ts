@@ -30,7 +30,7 @@ function appendData(s: string, callback: AppendLogFn) {
   try {
     o = JSON.parse(s);
   } catch (err) {
-    // eslint-disable-next-line no-console
+     
     console.log('JSON.parse error', JSON.parse(s));
   }
 
@@ -71,7 +71,7 @@ function pump(reader: ReadableStreamDefaultReader, appendLog: AppendLogFn) {
       appendData(lastSplit, appendLog);
       decoded = '';
 
-      // eslint-disable-next-line no-console
+       
       console.log('GET /logs streaming done');
       fetched = false;
       return;
@@ -147,7 +147,7 @@ function fetchLogsWithFetch(apiConfig: LogsAPIConfig, appendLog: AppendLogFn) {
       fetched = false;
       if (signal.aborted) return;
 
-      // eslint-disable-next-line no-console
+       
       console.log('GET /logs error:', err.message);
     },
   );

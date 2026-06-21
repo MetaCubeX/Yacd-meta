@@ -1,13 +1,13 @@
 import { Tooltip } from '@reach/tooltip';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import cx from 'clsx';
 import * as React from 'react';
-import { Info } from '~/components/shared/FeatherIcons';
 import { useTranslation } from 'react-i18next';
 import { FcAreaChart, FcDocument, FcGlobe, FcLink, FcRuler, FcSettings } from 'react-icons/fc';
-import { useQuery } from 'react-query';
 import { Link, useLocation } from 'react-router-dom';
 
 import { fetchVersion } from '~/api/version';
+import { Info } from '~/components/shared/FeatherIcons';
 import { ThemeSwitcher } from '~/components/shared/ThemeSwitcher';
 import { connect } from '~/components/StateProvider';
 import { getClashAPIConfig } from '~/store/app';
@@ -92,9 +92,10 @@ function SideBar(props: Props) {
   const { t } = useTranslation();
   const location = useLocation();
 
-  const { data: version } = useQuery(['/version', props.apiConfig], () =>
-    fetchVersion('/version', props.apiConfig)
-  );
+  const { data: version } = useSuspenseQuery({
+    queryKey: ['/version', props.apiConfig],
+    queryFn: () => fetchVersion('/version', props.apiConfig),
+  });
   return (
     <div className={s.root}>
       <div className={version.meta && version.premium ? s.logo_singbox : s.logo_meta} />

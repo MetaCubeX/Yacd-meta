@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+
 import {
   Download,
   ArrowDown,
@@ -7,7 +9,6 @@ import {
   Link as LinkIcon,
   Upload,
 } from '~/components/shared/FeatherIcons';
-import { useTranslation } from 'react-i18next';
 
 import useMemory from '../hooks/useMemory';
 import useTraffic from '../hooks/useTraffic';

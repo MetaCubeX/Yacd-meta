@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+
 import {
   Cpu,
   DownloadCloud,
@@ -9,8 +11,6 @@ import {
   Tool,
   Trash2,
 } from '~/components/shared/FeatherIcons';
-import { useTranslation } from 'react-i18next';
-
 import Select from '~/components/shared/Select';
 import { useConfigPage } from '~/modules/config/hooks';
 import {
@@ -27,8 +27,7 @@ import { ClashAPIConfig } from '~/types';
 
 import Button from './Button';
 import s0 from './Config.module.scss';
-import ContentHeader from './ContentHeader';
-import Input, { SelfControlledInput } from './Input';
+import Input from './Input';
 import { Selection2 } from './Selection';
 import { useStoreActions } from './StateProvider';
 import Switch from './SwitchThemed';

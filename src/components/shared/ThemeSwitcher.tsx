@@ -1,9 +1,9 @@
 import { Tooltip } from '@reach/tooltip';
+import { LazyMotion, domAnimation, m } from 'framer-motion';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { connect } from '~/components/StateProvider';
-import { LazyMotion, domAnimation, m } from 'framer-motion';
 import { getTheme, switchTheme } from '~/store/app';
 import { State } from '~/store/types';
 

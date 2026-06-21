@@ -34,7 +34,7 @@ export async function fetchRules(endpoint: string, apiConfig: ClashAPIConfig) {
     }
   } catch (err) {
     // log and ignore
-    // eslint-disable-next-line no-console
+     
     console.log('failed to fetch rules', err);
   }
   return normalizeAPIResponse(json);

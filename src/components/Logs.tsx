@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { ArrowDown, Pause, Play, Trash2 } from '~/components/shared/FeatherIcons';
 import { useTranslation } from 'react-i18next';
 
 import ContentHeader from '~/components/ContentHeader';
 import LogSearch from '~/components/LogSearch';
+import { ArrowDown, Pause, Play, Trash2 } from '~/components/shared/FeatherIcons';
 import Select from '~/components/shared/Select';
 import { useStoreActions } from '~/components/StateProvider';
 import SvgYacd from '~/components/SvgYacd';
 import useRemainingViewPortHeight from '~/hooks/useRemainingViewPortHeight';
-import { useLogsPage } from '~/modules/logs/hooks';
 import { LOG_LEVEL_OPTIONS } from '~/modules/config/utils';
+import { useLogsPage } from '~/modules/logs/hooks';
 import { LOG_TYPES, LOGS_HEIGHT_RATIO } from '~/modules/logs/utils';
 import { updateConfigs } from '~/store/configs';
 import { clearLogs } from '~/store/logs';

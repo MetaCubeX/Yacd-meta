@@ -217,7 +217,7 @@ async function switchProxyImpl(
       throw new Error(`failed to switch proxy: res.statusText`);
     }
   } catch (err) {
-    // eslint-disable-next-line no-console
+     
     console.log(err, 'failed to swith proxy');
     throw err;
   }

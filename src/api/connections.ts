@@ -60,7 +60,7 @@ function appendData(s: string) {
       }
     });
   } catch (err) {
-    // eslint-disable-next-line no-console
+     
     console.log('JSON.parse error', JSON.parse(s));
   }
   subscribers.forEach((s) => s.listner(o));

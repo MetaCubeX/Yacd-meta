@@ -1,7 +1,8 @@
 import React from 'react';
-import { Zap } from '~/components/shared/FeatherIcons';
 
 import Loading from '~/components/Loading';
+import { Zap } from '~/components/shared/FeatherIcons';
+
 
 import Button from './Button';
 import Input from './Input';

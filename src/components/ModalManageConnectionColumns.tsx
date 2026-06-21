@@ -1,9 +1,9 @@
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import React from 'react';
-import { ChevronDown, ChevronUp, Menu } from '~/components/shared/FeatherIcons';
 import { useTranslation } from 'react-i18next';
 
 import BaseModal from '~/components/shared/BaseModal';
+import { ChevronDown, ChevronUp, Menu } from '~/components/shared/FeatherIcons';
 import { ConnectionColumn } from '~/modules/connections/utils';
 
 import s from './ModalManageConnectionColumns.module.scss';

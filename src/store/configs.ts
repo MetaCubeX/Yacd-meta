@@ -82,12 +82,12 @@ export function updateConfigs(
       .then(
         (res) => {
           if (res.ok === false) {
-            // eslint-disable-next-line no-console
+             
             console.log('Error update configs', res.statusText);
           }
         },
         (err) => {
-          // eslint-disable-next-line no-console
+           
           console.log('Error update configs', err);
           throw err;
         }
@@ -109,12 +109,12 @@ export function reloadConfigFile(apiConfig: ClashAPIConfig) {
       .then(
         (res) => {
           if (res.ok === false) {
-            // eslint-disable-next-line no-console
+             
             console.log('Error reload config file', res.statusText);
           }
         },
         (err) => {
-          // eslint-disable-next-line no-console
+           
           console.log('Error reload config file', err);
           throw err;
         }
@@ -132,12 +132,12 @@ export function restartCore(apiConfig: ClashAPIConfig) {
       .then(
         (res) => {
           if (res.ok === false) {
-            // eslint-disable-next-line no-console
+             
             console.log('Error restart core', res.statusText);
           }
         },
         (err) => {
-          // eslint-disable-next-line no-console
+           
           console.log('Error restart core', err);
           throw err;
         }
@@ -155,12 +155,12 @@ export function upgradeCore(apiConfig: ClashAPIConfig) {
       .then(
         (res) => {
           if (res.ok === false) {
-            // eslint-disable-next-line no-console
+             
             console.log('Error upgrade core', res.statusText);
           }
         },
         (err) => {
-          // eslint-disable-next-line no-console
+           
           console.log('Error upgrade core', err);
           throw err;
         }
@@ -178,12 +178,12 @@ export function upgradeGeo(apiConfig: ClashAPIConfig) {
       .then(
         (res) => {
           if (res.ok === false) {
-            // eslint-disable-next-line no-console
+             
             console.log('Error upgrade geo', res.statusText);
           }
         },
         (err) => {
-          // eslint-disable-next-line no-console
+           
           console.log('Error upgrade geo', err);
           throw err;
         }
@@ -201,12 +201,12 @@ export function upgradeUI(apiConfig: ClashAPIConfig) {
       .then(
         (res) => {
           if (res.ok === false) {
-            // eslint-disable-next-line no-console
+             
             console.log('Error upgrade ui', res.statusText);
           }
         },
         (err) => {
-          // eslint-disable-next-line no-console
+           
           console.log('Error upgrade ui', err);
           throw err;
         }
@@ -224,12 +224,12 @@ export function flushFakeIPPool(apiConfig: ClashAPIConfig) {
       .then(
         (res) => {
           if (res.ok === false) {
-            // eslint-disable-next-line no-console
+             
             console.log('Error flush FakeIP pool', res.statusText);
           }
         },
         (err) => {
-          // eslint-disable-next-line no-console
+           
           console.log('Error flush FakeIP pool', err);
           throw err;
         }

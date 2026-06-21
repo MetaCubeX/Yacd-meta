@@ -2,9 +2,8 @@ import cx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Modal from './Modal';
-
 import Button from './Button';
+import Modal from './Modal';
 import modalStyle from './Modal.module.scss';
 import s from './ModalCloseAllConnections.module.scss';
 

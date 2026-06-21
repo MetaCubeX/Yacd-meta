@@ -1,14 +1,15 @@
 import cx from 'clsx';
 import { formatDistance } from 'date-fns';
+import { LazyMotion, domAnimation, m } from 'framer-motion';
 import * as React from 'react';
-import { ChevronDown, RotateCw, Zap } from '~/components/shared/FeatherIcons';
+
 
 import Button from '~/components/Button';
 import Collapsible from '~/components/Collapsible';
 import CollapsibleSectionHeader from '~/components/CollapsibleSectionHeader';
 import s0 from '~/components/proxies/ProxyGroup.module.scss';
+import { ChevronDown, RotateCw, Zap } from '~/components/shared/FeatherIcons';
 import { useStoreActions } from '~/components/StateProvider';
-import { LazyMotion, domAnimation, m } from 'framer-motion';
 import { useFilteredAndSorted, useUpdateProviderItem } from '~/modules/proxies/hooks';
 import { healthcheckProviderByName } from '~/store/proxies';
 import { DelayMapping, DispatchFn, ProxiesMapping, SubscriptionInfo } from '~/store/types';

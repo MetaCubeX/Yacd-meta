@@ -4,11 +4,11 @@ import cx from 'clsx';
 import { formatDistance, Locale } from 'date-fns';
 import { enUS, zhCN, zhTW } from 'date-fns/locale';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, ChevronDown, Sliders, XCircle } from '~/components/shared/FeatherIcons';
 import { useTranslation } from 'react-i18next';
 import { useSortBy, useTable } from 'react-table';
 import { List as VirtualList, RowComponentProps } from 'react-window';
 
+import { ArrowDown, ArrowUp, ChevronDown, Sliders, XCircle } from '~/components/shared/FeatherIcons';
 import { FormattedConn } from '~/store/connections';
 
 import * as connAPI from '../api/connections';

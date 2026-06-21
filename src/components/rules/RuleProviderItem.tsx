@@ -1,8 +1,8 @@
 import { formatDistance } from 'date-fns';
 import * as React from 'react';
-import { Activity, Database, RefreshCw } from '~/components/shared/FeatherIcons';
 
 import Button from '~/components/Button';
+import { Activity, Database, RefreshCw } from '~/components/shared/FeatherIcons';
 import { useUpdateRuleProviderItem } from '~/modules/rules/hooks';
 
 import s from './RuleProviderItem.module.scss';

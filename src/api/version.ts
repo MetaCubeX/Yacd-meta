@@ -20,7 +20,7 @@ export async function fetchVersion(
     }
   } catch (err) {
     // log and ignore
-    // eslint-disable-next-line no-console
+     
     console.log(`failed to fetch ${endpoint}`, err);
   }
   return json;

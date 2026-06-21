@@ -1,10 +1,10 @@
 import './Connections.css';
 
 import React from 'react';
-import { Pause, Play, RefreshCcw, Settings, Tag, X as IconClose } from '~/components/shared/FeatherIcons';
 import { useTranslation } from 'react-i18next';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 
+import { Pause, Play, RefreshCcw, Settings, Tag, X as IconClose } from '~/components/shared/FeatherIcons';
 import Select from '~/components/shared/Select';
 import {
   useConnectionColumns,

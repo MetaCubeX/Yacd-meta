@@ -1,5 +1,5 @@
+import { useSuspenseQuery } from '@tanstack/react-query';
 import * as React from 'react';
-import { useQuery } from 'react-query';
 
 import * as logsApi from '~/api/logs';
 import { fetchVersion } from '~/api/version';
@@ -22,7 +22,10 @@ const { useCallback, useEffect, useRef, useState } = React;
 type UpdateAppConfigFn = (name: string, value: unknown) => void;
 
 function useConfigVersionQuery(apiConfig: ClashAPIConfig) {
-  return useQuery(['/version', apiConfig], () => fetchVersion('/version', apiConfig));
+  return useSuspenseQuery({
+    queryKey: ['/version', apiConfig],
+    queryFn: () => fetchVersion('/version', apiConfig),
+  });
 }
 
 export function useConfigState(configs: ClashGeneralConfig) {
