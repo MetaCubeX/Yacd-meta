@@ -1,4 +1,3 @@
-import { Tooltip } from '@reach/tooltip';
 import cx from 'clsx';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +11,7 @@ import { ProxyProvider } from '~/components/proxies/ProxyProvider';
 import Settings from '~/components/proxies/Settings';
 import BaseModal from '~/components/shared/BaseModal';
 import { TextFilter } from '~/components/shared/TextFitler';
+import { Tooltip } from '~/components/shared/Tooltip';
 import { useStoreActions } from '~/components/StateProvider';
 import Equalizer from '~/components/svg/Equalizer';
 import { useProxiesPage } from '~/modules/proxies/hooks';

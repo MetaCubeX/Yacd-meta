@@ -1,7 +1,7 @@
-import { TooltipPopup, useTooltip } from '@reach/tooltip';
 import cx from 'clsx';
 import * as React from 'react';
 
+import { Tooltip } from '~/components/shared/Tooltip';
 import { keyCodes } from '~/misc/keycode';
 import { DispatchFn, ProxyItem } from '~/store/types';
 import { ClashAPIConfig } from '~/types';
@@ -131,28 +131,6 @@ function formatProxyType(t: string) {
   return t;
 }
 
-const positionProxyNameTooltip = (triggerRect: { left: number; top: number }) => {
-  return {
-    left: triggerRect.left + window.scrollX - 5,
-    top: triggerRect.top + window.scrollY - 38,
-  };
-};
-
-function ProxyNameTooltip({ children, label, 'aria-label': ariaLabel }) {
-  const [trigger, tooltip] = useTooltip();
-  return (
-    <>
-      {React.cloneElement(children, trigger)}
-      <TooltipPopup
-        {...tooltip}
-        label={label}
-        aria-label={ariaLabel}
-        position={positionProxyNameTooltip}
-      />
-    </>
-  );
-}
-
 export const Proxy = memo(function Proxy({
   now,
   name,
@@ -233,9 +211,9 @@ export const Proxy = memo(function Proxy({
       role={isSelectable ? 'menuitem' : ''}
     >
       <div className={cx(s0.proxyName, s0.row)}>
-        <ProxyNameTooltip label={name} aria-label={`proxy name: ${name}`}>
+        <Tooltip label={name} aria-label={`proxy name: ${name}`}>
           <span>{name}</span>
-        </ProxyNameTooltip>
+        </Tooltip>
         <span className={s0.udpType} style={{ paddingLeft: 4 }}>
           {formatUdpType(proxy.udp, proxy.xudp)}
         </span>

@@ -1,4 +1,3 @@
-import { Tooltip } from '@reach/tooltip';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import cx from 'clsx';
 import * as React from 'react';
@@ -9,6 +8,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { fetchVersion } from '~/api/version';
 import { Info } from '~/components/shared/FeatherIcons';
 import { ThemeSwitcher } from '~/components/shared/ThemeSwitcher';
+import { Tooltip } from '~/components/shared/Tooltip';
 import { connect } from '~/components/StateProvider';
 import { getClashAPIConfig } from '~/store/app';
 import { ClashAPIConfig } from '~/types';

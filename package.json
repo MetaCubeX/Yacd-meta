@@ -20,8 +20,7 @@
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
-    "@reach/tooltip": "0.18.0",
-    "@reach/visually-hidden": "0.18.0",
+    "@radix-ui/react-tooltip": "^1.2.10",
     "@tanstack/react-query": "^5.101.0",
     "@tanstack/react-table": "^8.21.3",
     "chartjs-adapter-date-fns": "^3.0.0",
