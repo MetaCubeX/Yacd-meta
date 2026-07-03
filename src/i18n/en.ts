@@ -47,6 +47,8 @@ export const data = {
   chart_style: 'Chart Style',
   latency_test_url: 'Latency Test URL',
   latency_test_timeout: 'Latency Test Timeout',
+  latency_test_expected_status: 'Expected Status',
+  prefer_backend_test_url: "Prefer group's backend test URL",
   lang: 'Language',
   proxy_provider: 'Proxy Provider',
   rule_provider: 'Rule Provider',

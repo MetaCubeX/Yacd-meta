@@ -17,7 +17,13 @@ import { ClashAPIConfig } from '~/types';
 import * as connAPI from '../api/connections';
 import * as proxiesAPI from '../api/proxies';
 
-import { getAutoCloseOldConns, getLatencyTestTimeout, getLatencyTestUrl } from './app';
+import {
+  getAutoCloseOldConns,
+  getLatencyTestExpectedStatus,
+  getLatencyTestTimeout,
+  getLatencyTestUrl,
+  getPreferBackendLatencyTestUrl,
+} from './app';
 
 export const initialState: StateProxies = {
   proxies: {},
@@ -52,6 +58,26 @@ export const getProxyGroupNames = (s: State) => s.proxies.groupNames;
 export const getProxyProviders = (s: State) => s.proxies.proxyProviders || [];
 export const getDangleProxyNames = (s: State) => s.proxies.dangleProxyNames;
 export const getShowModalClosePrevConns = (s: State) => s.proxies.showModalClosePrevConns;
+
+// The URL the backend is configured to test a group against: its `testUrl`,
+// falling back to the first key of `extra` (extra is keyed by test URL).
+function getGroupBackendTestUrl(s: State, groupName: string): string | undefined {
+  const g = getProxies(s)[groupName];
+  if (!g) return undefined;
+  if (g.testUrl) return g.testUrl;
+  const keys = g.extra ? Object.keys(g.extra) : [];
+  return keys.length > 0 ? keys[0] : undefined;
+}
+
+// Resolve the effective latency-test URL for a group test, honoring the
+// "prefer backend test URL" setting. Falls back to the panel URL.
+function resolveGroupTestUrl(s: State, groupName: string): string {
+  if (getPreferBackendLatencyTestUrl(s)) {
+    const backendUrl = getGroupBackendTestUrl(s, groupName);
+    if (backendUrl) return backendUrl;
+  }
+  return getLatencyTestUrl(s);
+}
 
 export function fetchProxies(apiConfig: ClashAPIConfig) {
   return async (dispatch: any, getState: any) => {
@@ -300,7 +326,8 @@ function requestDelayForProxyOnce(apiConfig: ClashAPIConfig, name: string) {
     try {
       const latencyTestUrl = getLatencyTestUrl(getState());
       const latencyTestTimeout = getLatencyTestTimeout(getState());
-      const res = await proxiesAPI.requestDelayForProxy(apiConfig, name, latencyTestUrl, latencyTestTimeout);
+      const expected = getLatencyTestExpectedStatus(getState());
+      const res = await proxiesAPI.requestDelayForProxy(apiConfig, name, latencyTestUrl, latencyTestTimeout, expected);
       if (res.ok === false) {
         error = res.statusText;
       }
@@ -341,6 +368,37 @@ export function requestDelayForProxies(apiConfig: ClashAPIConfig, names: string[
   };
 }
 
+// Test latency for a whole group. On Meta backends this uses the single
+// `/group/{name}/delay` endpoint (one request for the whole group), resolving
+// the test URL via resolveGroupTestUrl (backend-configured URL when preferred).
+// On non-Meta backends it falls back to testing each member proxy individually.
+export function requestDelayForGroup(
+  apiConfig: ClashAPIConfig,
+  groupName: string,
+  isMeta: boolean,
+  memberNames: string[],
+) {
+  return async (dispatch: DispatchFn, getState: GetStateFn) => {
+    if (isMeta) {
+      const state = getState();
+      const latencyTestUrl = resolveGroupTestUrl(state, groupName);
+      const latencyTestTimeout = getLatencyTestTimeout(state);
+      const expected = getLatencyTestExpectedStatus(state);
+      await proxiesAPI.requestDelayForProxyGroup(
+        apiConfig,
+        groupName,
+        latencyTestUrl,
+        latencyTestTimeout,
+        expected,
+      );
+      await dispatch(fetchProxies(apiConfig));
+    } else {
+      // requestDelayForProxies already refreshes proxies when done
+      await dispatch(requestDelayForProxies(apiConfig, memberNames));
+    }
+  };
+}
+
 export function requestDelayAll(apiConfig: ClashAPIConfig) {
   return async (dispatch: DispatchFn, getState: GetStateFn) => {
     const proxyNames = getDangleProxyNames(getState());
@@ -365,9 +423,10 @@ export function healthcheckProxy(apiConfig: ClashAPIConfig, name: string) {
       const providerName = proxy?.providerName;
       const latencyTestUrl = getLatencyTestUrl(getState());
       const latencyTestTimeout = getLatencyTestTimeout(getState());
+      const expected = getLatencyTestExpectedStatus(getState());
       const res = providerName
-        ? await proxiesAPI.healthcheckProviderProxy(apiConfig, providerName, name, latencyTestUrl, latencyTestTimeout)
-        : await proxiesAPI.requestDelayForProxy(apiConfig, name, latencyTestUrl, latencyTestTimeout);
+        ? await proxiesAPI.healthcheckProviderProxy(apiConfig, providerName, name, latencyTestUrl, latencyTestTimeout, expected)
+        : await proxiesAPI.requestDelayForProxy(apiConfig, name, latencyTestUrl, latencyTestTimeout, expected);
       if (res.ok === false) {
         error = res.statusText;
       }
@@ -455,6 +514,7 @@ function formatProxyProviders(providersInput: ProvidersRaw): {
 
 export const actions = {
   requestDelayForProxies,
+  requestDelayForGroup,
   closeModalClosePrevConns,
   closePrevConnsAndTheModal,
   healthcheckProxy,

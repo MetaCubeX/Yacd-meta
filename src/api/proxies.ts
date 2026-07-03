@@ -1,7 +1,16 @@
+import { DEFAULT_LATENCY_TEST_URL } from '../misc/constants';
 import { getURLAndInit } from '../misc/request-helper';
 import { ClashAPIConfig } from '../types';
 
 const endpoint = '/proxies';
+
+// Build the query string for a delay/healthcheck request. `expected` (HTTP status
+// like '200/204' or '200-299') is optional and only sent when non-empty.
+function buildDelayQuery(latencyTestUrl: string, timeout: number, expected?: string) {
+  const params = new URLSearchParams({ timeout: String(timeout), url: latencyTestUrl });
+  if (expected) params.set('expected', expected);
+  return params.toString();
+}
 
 /*
 $ curl "http://127.0.0.1:8080/proxies/Proxy" -XPUT -d '{ "name": "ss3" }' -i
@@ -35,11 +44,12 @@ export async function requestToSwitchProxy(apiConfig, name1, name2) {
 export async function requestDelayForProxy(
   apiConfig,
   name,
-  latencyTestUrl = 'https://www.gstatic.com/generate_204',
-  timeout = 5000
+  latencyTestUrl = DEFAULT_LATENCY_TEST_URL,
+  timeout = 5000,
+  expected?: string
 ) {
   const { url, init } = getURLAndInit(apiConfig);
-  const qs = `timeout=${timeout}&url=${encodeURIComponent(latencyTestUrl)}`;
+  const qs = buildDelayQuery(latencyTestUrl, timeout, expected);
   const fullURL = `${url}${endpoint}/${encodeURIComponent(name)}/delay?${qs}`;
   return await fetch(fullURL, init);
 }
@@ -47,11 +57,12 @@ export async function requestDelayForProxy(
 export async function requestDelayForProxyGroup(
   apiConfig,
   name,
-  latencyTestUrl = 'https://www.gstatic.com/generate_204',
-  timeout = 5000
+  latencyTestUrl = DEFAULT_LATENCY_TEST_URL,
+  timeout = 5000,
+  expected?: string
 ) {
   const { url, init } = getURLAndInit(apiConfig);
-  const qs = `url=${encodeURIComponent(latencyTestUrl)}&timeout=${timeout}`;
+  const qs = buildDelayQuery(latencyTestUrl, timeout, expected);
   const fullUrl = `${url}/group/${encodeURIComponent(name)}/delay?${qs}`;
   return await fetch(fullUrl, init);
 }
@@ -84,11 +95,12 @@ export async function healthcheckProviderProxy(
   config: ClashAPIConfig,
   providerName: string,
   proxyName: string,
-  latencyTestUrl = 'https://www.gstatic.com/generate_204',
-  timeout = 5000
+  latencyTestUrl = DEFAULT_LATENCY_TEST_URL,
+  timeout = 5000,
+  expected?: string
 ) {
   const { url, init } = getURLAndInit(config);
-  const qs = `timeout=${timeout}&url=${encodeURIComponent(latencyTestUrl)}`;
+  const qs = buildDelayQuery(latencyTestUrl, timeout, expected);
   const options = { ...init, method: 'GET' };
   return await fetch(
     `${url}/providers/proxies/${encodeURIComponent(providerName)}/${encodeURIComponent(

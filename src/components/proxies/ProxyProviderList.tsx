@@ -8,7 +8,7 @@ export function ProxyProviderList({
   items,
   delay,
   proxies,
-  latencyTestUrl,
+  httpsLatencyTest,
   hideUnavailableProxies,
   proxySortBy,
   dispatch,
@@ -18,7 +18,7 @@ export function ProxyProviderList({
   items: FormattedProxyProvider[];
   delay: DelayMapping;
   proxies: ProxiesMapping;
-  latencyTestUrl: string;
+  httpsLatencyTest: boolean;
   hideUnavailableProxies: boolean;
   proxySortBy: string;
   dispatch: DispatchFn;
@@ -38,7 +38,7 @@ export function ProxyProviderList({
           updatedAt={item.updatedAt}
           subscriptionInfo={item.subscriptionInfo}
           proxyMapping={proxies}
-          latencyTestUrl={latencyTestUrl}
+          httpsLatencyTest={httpsLatencyTest}
           delay={delay}
           hideUnavailableProxies={hideUnavailableProxies}
           proxySortBy={proxySortBy}

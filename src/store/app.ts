@@ -1,6 +1,7 @@
 import { DispatchFn, GetStateFn, State, StateApp } from '~/store/types';
 import type { ClashAPIConfig } from '~/types';
 
+import { DEFAULT_LATENCY_TEST_URL } from '../misc/constants';
 import { loadState, saveState } from '../misc/storage';
 import { debounce, trimTrailingSlash } from '../misc/utils';
 
@@ -17,6 +18,8 @@ export const getTheme = (s: State) => s.app.theme;
 export const getSelectedChartStyleIndex = (s: State) => s.app.selectedChartStyleIndex;
 export const getLatencyTestUrl = (s: State) => s.app.latencyTestUrl;
 export const getLatencyTestTimeout = (s: State) => s.app.latencyTestTimeout;
+export const getLatencyTestExpectedStatus = (s: State) => s.app.latencyTestExpectedStatus;
+export const getPreferBackendLatencyTestUrl = (s: State) => s.app.preferBackendLatencyTestUrl;
 export const getCollapsibleIsOpen = (s: State) => s.app.collapsibleIsOpen;
 export const getProxySortBy = (s: State) => s.app.proxySortBy;
 export const getHideUnavailableProxies = (s: State) => s.app.hideUnavailableProxies;
@@ -166,8 +169,10 @@ const defaultState: StateApp = {
   selectedClashAPIConfigIndex: 0,
   clashAPIConfigs: [defaultClashAPIConfig],
 
-  latencyTestUrl: 'https://www.gstatic.com/generate_204',
+  latencyTestUrl: DEFAULT_LATENCY_TEST_URL,
   latencyTestTimeout: 5000,
+  latencyTestExpectedStatus: '',
+  preferBackendLatencyTestUrl: true,
   selectedChartStyleIndex: 0,
   theme: 'auto',
 

@@ -3,12 +3,11 @@ import cx from 'clsx';
 import * as React from 'react';
 
 
-import * as proxiesAPI from '~/api/proxies';
 import { fetchVersion } from '~/api/version';
 import { ChevronDown, Zap } from '~/components/shared/FeatherIcons';
 import { useFilteredAndSorted } from '~/modules/proxies/hooks';
 import { getProxyLatency } from '~/modules/proxies/utils';
-import { fetchProxies, switchProxy } from '~/store/proxies';
+import { switchProxy } from '~/store/proxies';
 import { DelayMapping, DispatchFn, ProxiesMapping, ProxyItem } from '~/store/types';
 import { ClashAPIConfig } from '~/types';
 
@@ -92,8 +91,7 @@ type Props = {
   proxySortBy: string;
   proxies: ProxiesMapping;
   isOpen: boolean;
-  latencyTestUrl: string;
-  latencyTestTimeout?: number;
+  httpsLatencyTest: boolean;
   apiConfig: ClashAPIConfig;
   dispatch: DispatchFn;
   proxyGroupByProvider?: boolean;
@@ -106,8 +104,7 @@ export const ProxyGroup = memo(function ProxyGroup({
   proxySortBy,
   proxies,
   isOpen,
-  latencyTestUrl,
-  latencyTestTimeout = 5000,
+  httpsLatencyTest,
   apiConfig,
   dispatch,
   proxyGroupByProvider = false,
@@ -116,7 +113,6 @@ export const ProxyGroup = memo(function ProxyGroup({
   const { all: allItems = [], type, now } = group || {};
   const all = useFilteredAndSorted(allItems, delay, hideUnavailableProxies, proxySortBy, proxies);
 
-  const httpsLatencyTest = latencyTestUrl.startsWith('https://');
   const nowChain = useMemo(() => buildNowChain(proxies, name), [proxies, name]);
   const nowLatency = useMemo(
     () => (now ? getProxyLatency(proxies, delay, now) : undefined),
@@ -137,7 +133,7 @@ export const ProxyGroup = memo(function ProxyGroup({
 
   const {
     app: { updateCollapsibleIsOpen },
-    proxies: { requestDelayForProxies },
+    proxies: { requestDelayForGroup },
   } = useStoreActions();
 
   const toggle = useCallback(() => {
@@ -175,16 +171,10 @@ export const ProxyGroup = memo(function ProxyGroup({
   const testLatency = useCallback(async () => {
     setIsTestingLatency(true);
     try {
-      if (version.meta === true) {
-        await proxiesAPI.requestDelayForProxyGroup(apiConfig, name, latencyTestUrl, latencyTestTimeout);
-        await dispatch(fetchProxies(apiConfig));
-      } else {
-        await requestDelayForProxies(apiConfig, all);
-        await dispatch(fetchProxies(apiConfig));
-      }
+      await requestDelayForGroup(apiConfig, name, version.meta === true, all);
     } catch (err) {}
     setIsTestingLatency(false);
-  }, [all, apiConfig, dispatch, name, version.meta, latencyTestUrl, latencyTestTimeout, requestDelayForProxies]);
+  }, [all, apiConfig, name, version.meta, requestDelayForGroup]);
 
   return (
     <div className={s0.group}>
@@ -218,7 +208,7 @@ export const ProxyGroup = memo(function ProxyGroup({
             all={all}
             delay={delay}
             dispatch={dispatch}
-            latencyTestUrl={latencyTestUrl}
+            httpsLatencyTest={httpsLatencyTest}
             now={now}
             isSelectable={isSelectable}
             itemOnTapCallback={itemOnTapCallback}
@@ -230,7 +220,7 @@ export const ProxyGroup = memo(function ProxyGroup({
             all={all}
             delay={delay}
             dispatch={dispatch}
-            latencyTestUrl={latencyTestUrl}
+            httpsLatencyTest={httpsLatencyTest}
             now={now}
             isSelectable={isSelectable}
             itemOnTapCallback={itemOnTapCallback}
@@ -261,7 +251,7 @@ export const ProxyGroup = memo(function ProxyGroup({
               all={all}
               delay={delay}
               dispatch={dispatch}
-              latencyTestUrl={latencyTestUrl}
+              httpsLatencyTest={httpsLatencyTest}
               now={now}
               isSelectable={isSelectable}
               itemOnTapCallback={itemOnTapCallback}

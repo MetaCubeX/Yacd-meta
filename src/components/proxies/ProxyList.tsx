@@ -12,7 +12,7 @@ type ProxyListProps = {
   all: string[];
   proxies: ProxiesMapping;
   delay: DelayMapping;
-  latencyTestUrl: string;
+  httpsLatencyTest: boolean;
   apiConfig: ClashAPIConfig;
   dispatch: DispatchFn;
   now?: string;
@@ -25,7 +25,7 @@ export function ProxyList({
   all,
   proxies,
   delay,
-  latencyTestUrl,
+  httpsLatencyTest,
   apiConfig,
   dispatch,
   now,
@@ -33,7 +33,6 @@ export function ProxyList({
   itemOnTapCallback,
 }: ProxyListProps) {
   const proxyNames = all;
-  const httpsLatencyTest = latencyTestUrl.startsWith('https://');
 
   return (
     <div className={cx(s.list, s.detail)}>
@@ -68,15 +67,13 @@ export function ProxyListSummaryView({
   all,
   proxies,
   delay,
-  latencyTestUrl,
+  httpsLatencyTest,
   apiConfig,
   dispatch,
   now,
   isSelectable,
   itemOnTapCallback,
 }: ProxyListProps) {
-  const httpsLatencyTest = latencyTestUrl.startsWith('https://');
-
   return (
     <div className={cx(s.list, s.summary)}>
       {all.map((proxyName) => {
@@ -110,15 +107,13 @@ export function ProxyListGroupedByProvider({
   all,
   proxies,
   delay,
-  latencyTestUrl,
+  httpsLatencyTest,
   apiConfig,
   dispatch,
   now,
   isSelectable,
   itemOnTapCallback,
 }: ProxyListProps) {
-  const httpsLatencyTest = latencyTestUrl.startsWith('https://');
-
   // Group proxy names by their providerName
   const groups: { label: string; names: string[] }[] = React.useMemo(() => {
     const map = new Map<string, string[]>();

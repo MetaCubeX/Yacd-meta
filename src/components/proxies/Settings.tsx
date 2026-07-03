@@ -19,6 +19,8 @@ type AppConfig = {
   proxyGroupByProvider: boolean;
   latencyTestUrl: string;
   latencyTestTimeout: number;
+  latencyTestExpectedStatus: string;
+  preferBackendLatencyTestUrl: boolean;
 };
 
 type Props = {
@@ -63,6 +65,17 @@ export default function Settings({ appConfig }: Props) {
     [updateAppConfig],
   );
 
+  const handleExpectedStatusChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateAppConfig('latencyTestExpectedStatus', e.target.value.trim());
+    },
+    [updateAppConfig],
+  );
+
+  const handleExpectedStatusClear = useCallback(() => {
+    updateAppConfig('latencyTestExpectedStatus', '');
+  }, [updateAppConfig]);
+
   const { t } = useTranslation();
   return (
     <>
@@ -96,6 +109,34 @@ export default function Settings({ appConfig }: Props) {
             onChange={handleLatencyTimeoutChange}
           />
           <span className={s.timeoutUnit}>ms</span>
+        </div>
+      </div>
+      <div className={s.labeledInput}>
+        <span>{t('latency_test_expected_status')}</span>
+        <div className={s.urlInputWrapper}>
+          <input
+            className={s.urlInput}
+            type="text"
+            placeholder="200/204"
+            value={appConfig.latencyTestExpectedStatus}
+            onChange={handleExpectedStatusChange}
+            spellCheck={false}
+          />
+          {appConfig.latencyTestExpectedStatus && (
+            <button className={s.urlClearBtn} onClick={handleExpectedStatusClear} tabIndex={-1}>
+              ×
+            </button>
+          )}
+        </div>
+      </div>
+      <div className={s.labeledInput}>
+        <span>{t('prefer_backend_test_url')}</span>
+        <div>
+          <Switch
+            name="preferBackendLatencyTestUrl"
+            checked={appConfig.preferBackendLatencyTestUrl}
+            onChange={(v) => updateAppConfig('preferBackendLatencyTestUrl', v)}
+          />
         </div>
       </div>
       <hr />

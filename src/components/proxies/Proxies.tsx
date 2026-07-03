@@ -30,6 +30,8 @@ type AppConfig = {
   proxyGroupByProvider: boolean;
   latencyTestUrl: string;
   latencyTestTimeout: number;
+  latencyTestExpectedStatus: string;
+  preferBackendLatencyTestUrl: boolean;
 };
 
 type Props = {
@@ -55,7 +57,9 @@ export default function Proxies({
   showModalClosePrevConns,
   appConfig,
 }: Props) {
-  const { latencyTestUrl, latencyTestTimeout } = appConfig;
+  // the panel's configured test URL only feeds the latency-color threshold here;
+  // the actual URL used per request is resolved in the store thunks
+  const httpsLatencyTest = appConfig.latencyTestUrl.startsWith('https://');
   const {
     isSettingsModalOpen,
     openSettingsModal,
@@ -99,8 +103,7 @@ export default function Proxies({
                   hideUnavailableProxies={appConfig.hideUnavailableProxies}
                   proxySortBy={appConfig.proxySortBy}
                   isOpen={Boolean(collapsibleIsOpen[`proxyGroup:${name}`])}
-                  latencyTestUrl={latencyTestUrl}
-                  latencyTestTimeout={latencyTestTimeout}
+                  httpsLatencyTest={httpsLatencyTest}
                   proxyGroupByProvider={appConfig.proxyGroupByProvider}
                 />
               </div>
@@ -126,7 +129,7 @@ export default function Proxies({
                   updatedAt={item.updatedAt}
                   subscriptionInfo={item.subscriptionInfo}
                   proxyMapping={proxies}
-                  latencyTestUrl={latencyTestUrl}
+                  httpsLatencyTest={httpsLatencyTest}
                   delay={delay}
                   hideUnavailableProxies={appConfig.hideUnavailableProxies}
                   proxySortBy={appConfig.proxySortBy}

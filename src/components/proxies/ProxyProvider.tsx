@@ -31,7 +31,7 @@ type Props = {
   updatedAt?: string;
   subscriptionInfo?: SubscriptionInfo;
   proxyMapping: ProxiesMapping;
-  latencyTestUrl: string;
+  httpsLatencyTest: boolean;
   dispatch: DispatchFn;
   isOpen: boolean;
   apiConfig: ClashAPIConfig;
@@ -47,7 +47,7 @@ export const ProxyProvider = memo(function ProxyProvider({
   updatedAt,
   subscriptionInfo,
   proxyMapping,
-  latencyTestUrl,
+  httpsLatencyTest,
   isOpen,
   dispatch,
   apiConfig,
@@ -145,7 +145,7 @@ export const ProxyProvider = memo(function ProxyProvider({
           all={proxies}
           proxies={proxyMapping}
           delay={delay}
-          latencyTestUrl={latencyTestUrl}
+          httpsLatencyTest={httpsLatencyTest}
           apiConfig={apiConfig}
           dispatch={dispatch}
         />
@@ -164,7 +164,7 @@ export const ProxyProvider = memo(function ProxyProvider({
           all={proxies}
           proxies={proxyMapping}
           delay={delay}
-          latencyTestUrl={latencyTestUrl}
+          httpsLatencyTest={httpsLatencyTest}
           apiConfig={apiConfig}
           dispatch={dispatch}
         />

@@ -11,6 +11,10 @@ export default defineConfig(({ mode }) => ({
     __VERSION__: JSON.stringify(pkg.version),
   },
   base: './',
+  server: {
+    host: '127.0.0.1',
+    port: 3000,
+  },
   resolve: {
     alias: {
       '~': path.resolve(__dirname, './src'),

@@ -7,6 +7,11 @@ export type StateApp = {
 
   latencyTestUrl: string;
   latencyTestTimeout: number;
+  // expected HTTP status for the delay test (e.g. '200/204' or '200-299'); '' = don't send
+  latencyTestExpectedStatus: string;
+  // when true, group latency tests use the group's backend-configured testUrl,
+  // falling back to latencyTestUrl; single-proxy/provider tests always use latencyTestUrl
+  preferBackendLatencyTestUrl: boolean;
   selectedChartStyleIndex: number;
   theme: string;
 
@@ -69,6 +74,11 @@ export type ProxyItem = {
   all?: string[];
   now?: string;
   hidden?: boolean;
+  // group-only fields (Selector/URLTest/Fallback/LoadBalance) from GET /proxies
+  testUrl?: string;
+  expectedStatus?: string;
+  // extra latency history keyed by test URL — its keys are the URLs the backend tests against
+  extra?: Record<string, { alive?: boolean; history?: LatencyHistory }>;
 };
 export type ProxiesMapping = Record<string, ProxyItem>;
 export type DelayMapping = Record<
