@@ -4,18 +4,17 @@ import { useTranslation } from 'react-i18next';
 import { List as VirtualList, RowComponentProps } from 'react-window';
 
 import ContentHeader from '~/components/ContentHeader';
-import { RuleProviderItem } from '~/components/rules/RuleProviderItem';
-import { RulesPageFab } from '~/components/rules/RulesPageFab';
 import { TextFilter } from '~/components/shared/TextFitler';
+import useRemainingViewPortHeight from '~/hooks/useRemainingViewPortHeight';
 import { useRulesPage } from '~/modules/rules/hooks';
 import { formatQty, getItemSizeFactory, RulesListItemData } from '~/modules/rules/utils';
 import { ruleFilterText } from '~/store/rules';
 import { ClashAPIConfig } from '~/types';
 
-import useRemainingViewPortHeight from '../hooks/useRemainingViewPortHeight';
-
 import Rule from './Rule';
+import { RuleProviderItem } from './RuleProviderItem';
 import s from './Rules.module.scss';
+import { RulesPageFab } from './RulesPageFab';
 
 type RulesRowProps = {
   data: RulesListItemData;

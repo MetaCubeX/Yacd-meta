@@ -2,9 +2,10 @@ import cx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Button from './Button';
-import Modal from './Modal';
-import modalStyle from './Modal.module.scss';
+import Button from '~/components/Button';
+import Modal from '~/components/Modal';
+import modalStyle from '~/components/Modal.module.scss';
+
 import s from './ModalCloseAllConnections.module.scss';
 
 const { useRef, useCallback, useMemo } = React;

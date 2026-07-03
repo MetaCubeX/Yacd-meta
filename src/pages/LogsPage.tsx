@@ -1,4 +1,4 @@
-import Logs from '~/components/Logs';
+import Logs from '~/components/logs/Logs';
 import { connect } from '~/components/StateProvider';
 import { getClashAPIConfig, getLogStreamingPaused } from '~/store/app';
 import { getLogLevel } from '~/store/configs';

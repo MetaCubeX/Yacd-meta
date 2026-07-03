@@ -1,4 +1,4 @@
-import Home from '~/components/Home';
+import Home from '~/components/home/Home';
 import { connect } from '~/components/StateProvider';
 import { getClashAPIConfig, getSelectedChartStyleIndex } from '~/store/app';
 import { State } from '~/store/types';

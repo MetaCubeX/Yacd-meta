@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ContentHeader from '~/components/ContentHeader';
-import LogSearch from '~/components/LogSearch';
+import { Fab, position as fabPosition } from '~/components/shared/Fab';
 import { ArrowDown, Pause, Play, Trash2 } from '~/components/shared/FeatherIcons';
 import Select from '~/components/shared/Select';
 import { useStoreActions } from '~/components/StateProvider';
@@ -17,7 +17,7 @@ import { DispatchFn, Log } from '~/store/types';
 import { ClashAPIConfig } from '~/types';
 
 import s from './Logs.module.scss';
-import { Fab, position as fabPosition } from './shared/Fab';
+import LogSearch from './LogSearch';
 
 type LogLineProps = Partial<Log>;
 

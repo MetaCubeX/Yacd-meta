@@ -1,10 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import Button from '~/components/Button';
+import Input from '~/components/Input';
 import BaseModal from '~/components/shared/BaseModal';
 
-import Button from './Button';
-import Input from './Input';
 import s from './ModalSourceIP.module.scss';
 
 export default function ModalSourceIP({ isOpen, onRequestClose, sourceMap, setSourceMap }) {

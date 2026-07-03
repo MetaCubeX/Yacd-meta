@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import APIDiscovery from '~/components/APIDiscovery';
+import APIDiscovery from '~/components/backend/APIDiscovery';
 import { connect } from '~/components/StateProvider';
 import { useBackendDiscovery } from '~/modules/backend/hooks';
 import BackendPage from '~/pages/BackendPage';

@@ -1,4 +1,4 @@
-import Connections from '~/components/Connections';
+import Connections from '~/components/connections/Connections';
 import { connect } from '~/components/StateProvider';
 import { getClashAPIConfig } from '~/store/app';
 import { State } from '~/store/types';

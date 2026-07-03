@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import APIConfig from '~/components/APIConfig';
+import APIConfig from '~/components/backend/APIConfig';
 import { connect } from '~/components/StateProvider';
 import {
   addClashAPIConfig,

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Line } from 'react-chartjs-2';
 
-import { chartJSResource, chartStyles, commonDataSetProps } from '../misc/chart';
+import { chartJSResource, chartStyles, commonDataSetProps } from '~/misc/chart';
 
 const { useMemo } = React;
 

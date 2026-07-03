@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import Button from '~/components/Button';
+import Input from '~/components/Input';
+import { Selection2 } from '~/components/Selection';
 import {
   Cpu,
   DownloadCloud,
@@ -12,6 +15,9 @@ import {
   Trash2,
 } from '~/components/shared/FeatherIcons';
 import Select from '~/components/shared/Select';
+import TrafficChartSample from '~/components/shared/TrafficChartSample';
+import { useStoreActions } from '~/components/StateProvider';
+import Switch from '~/components/SwitchThemed';
 import { useConfigPage } from '~/modules/config/hooks';
 import {
   CONFIG_CHART_STYLE_PROPS,
@@ -25,13 +31,7 @@ import {
 import { ClashGeneralConfig, DispatchFn } from '~/store/types';
 import { ClashAPIConfig } from '~/types';
 
-import Button from './Button';
 import s0 from './Config.module.scss';
-import Input from './Input';
-import { Selection2 } from './Selection';
-import { useStoreActions } from './StateProvider';
-import Switch from './SwitchThemed';
-import TrafficChartSample from './TrafficChartSample';
 
 type Props = {
   dispatch: DispatchFn;

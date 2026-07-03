@@ -1,10 +1,10 @@
 import * as React from 'react';
 
+import Modal from '~/components/Modal';
 import { ThemeSwitcher } from '~/components/shared/ThemeSwitcher';
 import { DOES_NOT_SUPPORT_FETCH, errors } from '~/misc/errors';
 
 import s0 from './APIDiscovery.module.scss';
-import Modal from './Modal';
 
 type Props = {
   isOpen: boolean;

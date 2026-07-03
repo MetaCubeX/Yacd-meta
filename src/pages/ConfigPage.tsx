@@ -1,4 +1,4 @@
-import Config from '~/components/Config';
+import Config from '~/components/config/Config';
 import { connect } from '~/components/StateProvider';
 import { getClashAPIConfig, getSelectedChartStyleIndex } from '~/store/app';
 import { getConfigs } from '~/store/configs';

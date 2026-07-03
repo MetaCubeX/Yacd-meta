@@ -5,12 +5,11 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 
+import Modal from '~/components/Modal';
+import modalStyle from '~/components/Modal.module.scss';
+import prettyBytes from '~/misc/pretty-bytes';
 import { FormattedConn } from '~/store/connections';
 
-import prettyBytes from '../misc/pretty-bytes';
-
-import Modal from './Modal';
-import modalStyle from './Modal.module.scss';
 import s from './ModalConnectionDetails.module.scss';
 
 type Props = {

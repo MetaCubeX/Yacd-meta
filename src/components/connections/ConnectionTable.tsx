@@ -15,11 +15,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { List as VirtualList, RowComponentProps } from 'react-window';
 
+import * as connAPI from '~/api/connections';
 import { ArrowDown, ArrowUp, ChevronDown, Sliders, XCircle } from '~/components/shared/FeatherIcons';
+import prettyBytes from '~/misc/pretty-bytes';
 import { FormattedConn } from '~/store/connections';
 
-import * as connAPI from '../api/connections';
-import prettyBytes from '../misc/pretty-bytes';
 
 import ConnectionCard from './ConnectionCard';
 import s from './ConnectionTable.module.scss';

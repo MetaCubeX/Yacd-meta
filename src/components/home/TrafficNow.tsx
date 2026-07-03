@@ -9,14 +9,13 @@ import {
   Link as LinkIcon,
   Upload,
 } from '~/components/shared/FeatherIcons';
+import Sparkline from '~/components/shared/Sparkline';
+import useMemory from '~/hooks/useMemory';
+import useTraffic from '~/hooks/useTraffic';
+import { useConnectionSummary } from '~/modules/home/hooks';
+import { formatTrafficRate } from '~/modules/home/utils';
+import { ClashAPIConfig } from '~/types';
 
-import useMemory from '../hooks/useMemory';
-import useTraffic from '../hooks/useTraffic';
-import { useConnectionSummary } from '../modules/home/hooks';
-import { formatTrafficRate } from '../modules/home/utils';
-import { ClashAPIConfig } from '../types';
-
-import Sparkline from './Sparkline';
 import s0 from './TrafficNow.module.scss';
 
 type Props = {

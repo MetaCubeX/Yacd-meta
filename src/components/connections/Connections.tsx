@@ -4,8 +4,14 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 
+import * as connAPI from '~/api/connections';
+import ContentHeader from '~/components/ContentHeader';
+import Input from '~/components/Input';
+import { Fab, position as fabPosition } from '~/components/shared/Fab';
 import { Pause, Play, RefreshCcw, Settings, Tag, X as IconClose } from '~/components/shared/FeatherIcons';
 import Select from '~/components/shared/Select';
+import SvgYacd from '~/components/SvgYacd';
+import useRemainingViewPortHeight from '~/hooks/useRemainingViewPortHeight';
 import {
   useConnectionColumns,
   useConnectionFilters,
@@ -16,18 +22,11 @@ import { CONNECTIONS_PADDING_BOTTOM } from '~/modules/connections/utils';
 import { FormattedConn } from '~/store/connections';
 import { ClashAPIConfig } from '~/types';
 
-import * as connAPI from '../api/connections';
-import useRemainingViewPortHeight from '../hooks/useRemainingViewPortHeight';
-
 import s from './Connections.module.scss';
 import ConnectionTable from './ConnectionTable';
-import ContentHeader from './ContentHeader';
-import Input from './Input';
 import ModalCloseAllConnections from './ModalCloseAllConnections';
 import ModalManageConnectionColumns from './ModalManageConnectionColumns';
 import ModalSourceIP from './ModalSourceIP';
-import { Fab, position as fabPosition } from './shared/Fab';
-import SvgYacd from './SvgYacd';
 
 const { useState, useCallback } = React;
 

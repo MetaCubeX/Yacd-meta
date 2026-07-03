@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 
 import BaseModal from '~/components/shared/BaseModal';
 import { ChevronDown, ChevronUp, Menu } from '~/components/shared/FeatherIcons';
+import Switch from '~/components/SwitchThemed';
 import { ConnectionColumn } from '~/modules/connections/utils';
 
 import s from './ModalManageConnectionColumns.module.scss';
-import Switch from './SwitchThemed';
 
 const getItemStyle = (isDragging, draggableStyle) => {
   return {

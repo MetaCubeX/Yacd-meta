@@ -4,9 +4,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ArrowDown, ArrowDownCircle, ArrowUp, X } from '~/components/shared/FeatherIcons';
+import prettyBytes from '~/misc/pretty-bytes';
 import { FormattedConn } from '~/store/connections';
 
-import prettyBytes from '../misc/pretty-bytes';
 
 import s from './ConnectionCard.module.scss';
 
