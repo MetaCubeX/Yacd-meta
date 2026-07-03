@@ -92,4 +92,5 @@ export const data = {
   disconnect: '断开连接',
   internel: '内部链接',
   Clear: '清空',
+  group_fixed_tip: '该组已手动固定选择，点击测速可解除固定',
 };

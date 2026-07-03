@@ -85,4 +85,5 @@ export const data = {
   disconnect: '斷開連線',
   internel: '內部連線',
   Clear: '清空',
+  group_fixed_tip: '該組已手動固定選擇，點擊測速可解除固定',
 };

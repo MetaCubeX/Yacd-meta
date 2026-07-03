@@ -75,6 +75,9 @@ export type ProxyItem = {
   now?: string;
   hidden?: boolean;
   // group-only fields (Selector/URLTest/Fallback/LoadBalance) from GET /proxies
+  // set by URLTest/Fallback groups to the manually-fixed member name; cleared by the
+  // backend when the group is latency-tested via /group/{name}/delay
+  fixed?: string;
   testUrl?: string;
   expectedStatus?: string;
   // extra latency history keyed by test URL — its keys are the URLs the backend tests against

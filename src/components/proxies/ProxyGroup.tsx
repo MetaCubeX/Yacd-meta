@@ -109,8 +109,8 @@ export const ProxyGroup = memo(function ProxyGroup({
   dispatch,
   proxyGroupByProvider = false,
 }: Props) {
-  const group = proxies[name] as ProxyItem & { all?: string[]; now?: string };
-  const { all: allItems = [], type, now } = group || {};
+  const group = proxies[name] as ProxyItem & { all?: string[]; now?: string; fixed?: string };
+  const { all: allItems = [], type, now, fixed } = group || {};
   const all = useFilteredAndSorted(allItems, delay, hideUnavailableProxies, proxySortBy, proxies);
 
   const nowChain = useMemo(() => buildNowChain(proxies, name), [proxies, name]);
@@ -179,7 +179,13 @@ export const ProxyGroup = memo(function ProxyGroup({
   return (
     <div className={s0.group}>
       <div className={s0.groupHeader}>
-        <CollapsibleSectionHeader name={name} type={type} toggle={toggle} qty={qtyLabel} />
+        <CollapsibleSectionHeader
+          name={name}
+          type={type}
+          toggle={toggle}
+          qty={qtyLabel}
+          fixed={!!fixed}
+        />
         <div className={s0.btnGroup}>
           <Button
             kind="minimal"

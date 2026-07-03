@@ -17,6 +17,7 @@ export {
   Hash,
   Info,
   Link,
+  Lock,
   LogOut,
   Menu,
   Monitor,

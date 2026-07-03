@@ -91,4 +91,5 @@ export const data = {
   disconnect: 'Close Connection',
   internel: 'Internal Connection',
   Clear: 'Clear',
+  group_fixed_tip: 'This group has a manually fixed selection; run a latency test to release it',
 };

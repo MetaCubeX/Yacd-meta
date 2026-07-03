@@ -27,6 +27,14 @@
   margin-left: 5px;
 }
 
+.lock {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  color: var(--color-latency-medium, #d4b75c);
+  cursor: help;
+}
+
 /* TODO duplicate with connQty in Connections.module.css */
 .qty {
   font-family: var(--font-normal);
