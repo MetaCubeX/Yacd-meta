@@ -15,45 +15,41 @@ const ANIMATION_DURATION_MS = 450;
 
 export function ProxyLatency({ number, color, isTesting, error, onClick }: ProxyLatencyProps) {
   const hasNumber = typeof number === 'number';
-  const [displayNumber, setDisplayNumber] = React.useState(number);
+  const textRef = React.useRef<HTMLSpanElement>(null);
   const prevNumberRef = React.useRef(number);
-  const rafRef = React.useRef<number>();
 
+  // Animate by mutating the text node directly instead of setState: during a
+  // bulk latency test hundreds of these run concurrently, and going through
+  // React would mean hundreds of state updates per frame. React renders the
+  // final label; the rAF loop only writes intermediate values on top of it.
   React.useEffect(() => {
-    if (!hasNumber) {
-      prevNumberRef.current = number;
-      setDisplayNumber(number);
-      return;
-    }
-
     const from = prevNumberRef.current;
-    const to = number as number;
     prevNumberRef.current = number;
 
-    // no previous value (first load) or unchanged — snap, don't animate
-    if (typeof from !== 'number' || from === to) {
-      setDisplayNumber(to);
-      return;
-    }
+    // no previous value (first load), unchanged, or currently showing
+    // "Testing..." — snap, don't animate
+    if (!hasNumber || isTesting || typeof from !== 'number' || from === number) return;
 
+    const to = number as number;
     const startTime = performance.now();
+    let rafId: number;
 
     const tick = (now: number) => {
       const progress = Math.min((now - startTime) / ANIMATION_DURATION_MS, 1);
       const eased = 1 - (1 - progress) * (1 - progress);
-      setDisplayNumber(Math.round(from + (to - from) * eased));
+      if (textRef.current) {
+        textRef.current.textContent = `${Math.round(from + (to - from) * eased)} ms`;
+      }
       if (progress < 1) {
-        rafRef.current = requestAnimationFrame(tick);
+        rafId = requestAnimationFrame(tick);
       }
     };
-    rafRef.current = requestAnimationFrame(tick);
+    rafId = requestAnimationFrame(tick);
 
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, [number, hasNumber]);
+    return () => cancelAnimationFrame(rafId);
+  }, [number, hasNumber, isTesting]);
 
-  const label = isTesting ? 'Testing...' : hasNumber ? `${displayNumber} ms` : error || '--';
+  const label = isTesting ? 'Testing...' : hasNumber ? `${number} ms` : error || '--';
 
   const className = cx(s0.proxyLatency, {
     [s0.clickable]: Boolean(onClick),
@@ -93,7 +89,7 @@ export function ProxyLatency({ number, color, isTesting, error, onClick }: Proxy
       onKeyDown={handleKeyDown}
       title={label}
     >
-      <span>{label}</span>
+      <span ref={textRef}>{label}</span>
     </span>
   );
 }

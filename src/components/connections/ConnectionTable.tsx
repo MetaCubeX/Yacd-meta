@@ -9,8 +9,6 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import cx from 'clsx';
-import { formatDistance, Locale } from 'date-fns';
-import { enUS, zhCN, zhTW } from 'date-fns/locale';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { List as VirtualList, RowComponentProps } from 'react-window';
@@ -18,6 +16,7 @@ import { List as VirtualList, RowComponentProps } from 'react-window';
 import * as connAPI from '~/api/connections';
 import { ArrowDown, ArrowUp, ChevronDown, Sliders, XCircle } from '~/components/shared/FeatherIcons';
 import prettyBytes from '~/misc/pretty-bytes';
+import { formatElapsed, getDateFnsLocale } from '~/modules/connections/utils';
 import { FormattedConn } from '~/store/connections';
 
 
@@ -132,15 +131,7 @@ function Table({ data, columns, hiddenColumns, apiConfig, height }) {
 
   const currentSort = sorting[0] || sortById;
 
-  let locale: Locale;
-
-  if (i18n.language === 'zh-CN') {
-    locale = zhCN;
-  } else if (i18n.language === 'zh-TW') {
-    locale = zhTW;
-  } else {
-    locale = enUS;
-  }
+  const locale = getDateFnsLocale(i18n.language);
 
   const disconnectOperation = useCallback(() => {
     connAPI.closeConnById(apiConfig, operationId);
@@ -164,7 +155,7 @@ function Table({ data, columns, hiddenColumns, apiConfig, height }) {
             ></XCircle>
           );
         case 'start':
-          return formatDistance(cell.getValue(), 0, { locale: locale });
+          return formatElapsed(cell.getValue(), locale);
         case 'download':
         case 'upload':
           return prettyBytes(cell.getValue());

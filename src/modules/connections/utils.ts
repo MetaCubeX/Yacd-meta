@@ -1,3 +1,6 @@
+import { formatDistance, Locale } from 'date-fns';
+import { enUS, zhCN, zhTW } from 'date-fns/locale';
+
 import { ConnectionItem } from '~/api/connections';
 import { FormattedConn } from '~/store/connections';
 
@@ -127,6 +130,18 @@ export function filterConns(conns: FormattedConn[], keyword: string, sourceIp: s
   return result;
 }
 
+// getNameFromSource runs per connection per second; compile each pattern once.
+// No `g` flag: a cached RegExp with `g` would make `.test` stateful (lastIndex).
+const sourceRegExpCache = new Map<string, RegExp>();
+function getSourceRegExp(reg: string): RegExp {
+  let regExp = sourceRegExpCache.get(reg);
+  if (!regExp) {
+    regExp = new RegExp(reg.replace('/', ''));
+    sourceRegExpCache.set(reg, regExp);
+  }
+  return regExp;
+}
+
 export function getNameFromSource(
   source: string,
   sourceMap: SourceMapItem[],
@@ -138,9 +153,7 @@ export function getNameFromSource(
     if (!reg) return;
 
     if (reg.startsWith('/')) {
-      const regExp = new RegExp(reg.replace('/', ''), 'g');
-
-      if (regExp.test(source) && name) {
+      if (getSourceRegExp(reg).test(source) && name) {
         sourceName = `${name}(${source})`;
       }
     } else if (source === reg && name) {
@@ -149,6 +162,27 @@ export function getNameFromSource(
   });
 
   return sourceName;
+}
+
+export function getDateFnsLocale(language: string): Locale {
+  if (language === 'zh-CN') return zhCN;
+  if (language === 'zh-TW') return zhTW;
+  return enUS;
+}
+
+// formatDistance's output only depends on the elapsed time rounded to whole
+// minutes, but computing it is relatively expensive and it runs per visible
+// row per second — cache by (locale, minutes).
+const elapsedTextCache = new Map<string, string>();
+export function formatElapsed(ms: number, locale: Locale): string {
+  const minutes = Math.round(ms / 60000);
+  const key = `${locale.code}:${minutes}`;
+  let text = elapsedTextCache.get(key);
+  if (text === undefined) {
+    text = formatDistance(minutes * 60000, 0, { locale });
+    elapsedTextCache.set(key, text);
+  }
+  return text;
 }
 
 export function modifyChains(chains: string[]): string {

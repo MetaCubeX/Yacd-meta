@@ -1,10 +1,9 @@
-import { formatDistance, Locale } from 'date-fns';
-import { enUS, zhCN, zhTW } from 'date-fns/locale';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ArrowDown, ArrowDownCircle, ArrowUp, X } from '~/components/shared/FeatherIcons';
 import prettyBytes from '~/misc/pretty-bytes';
+import { formatElapsed, getDateFnsLocale } from '~/modules/connections/utils';
 import { FormattedConn } from '~/store/connections';
 
 
@@ -19,16 +18,7 @@ interface Props {
 const ConnectionCard = React.memo(function ConnectionCard({ conn, onDisconnect, onClick }: Props) {
   const { i18n } = useTranslation();
 
-  let locale: Locale;
-  if (i18n.language === 'zh-CN') {
-    locale = zhCN;
-  } else if (i18n.language === 'zh-TW') {
-    locale = zhTW;
-  } else {
-    locale = enUS;
-  }
-
-  const timeAgo = formatDistance(conn.start, 0, { locale });
+  const timeAgo = formatElapsed(conn.start, getDateFnsLocale(i18n.language));
 
   return (
     <div

@@ -172,6 +172,20 @@ export function useConnectionFilters({
   const [filterKeyword, setFilterKeyword] = useState('');
   const [filterSourceIpStr, setFilterSourceIpStr] = useState(ALL_SOURCE_IP);
 
+  // conns changes identity every second, but the set of source IPs rarely
+  // does — keep the previous array when the contents are unchanged so the
+  // connIpSet memo below (and the Select consuming it) doesn't churn
+  const sortedIpsRef = useRef<string[]>([]);
+  const sourceIps = useMemo(() => {
+    const next = Array.from(new Set(conns.map((x) => x.sourceIP))).sort();
+    const prev = sortedIpsRef.current;
+    if (prev.length === next.length && prev.every((ip, i) => ip === next[i])) {
+      return prev;
+    }
+    sortedIpsRef.current = next;
+    return next;
+  }, [conns]);
+
   const filteredConns = useMemo(
     () => filterConns(conns, filterKeyword, filterSourceIpStr),
     [conns, filterKeyword, filterSourceIpStr]
@@ -184,11 +198,12 @@ export function useConnectionFilters({
   const connIpSet = useMemo(() => {
     return [
       [ALL_SOURCE_IP, t('All')],
-      ...Array.from(new Set(conns.map((x) => x.sourceIP)))
-        .sort()
-        .map((value) => [value, getNameFromSource(value, sourceMap).trim() || t('internel')]),
+      ...sourceIps.map((value) => [
+        value,
+        getNameFromSource(value, sourceMap).trim() || t('internel'),
+      ]),
     ];
-  }, [conns, sourceMap, t]);
+  }, [sourceIps, sourceMap, t]);
 
   return {
     filterKeyword,

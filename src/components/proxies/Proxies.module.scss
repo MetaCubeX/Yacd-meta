@@ -41,6 +41,13 @@
 
 .group {
   padding: 10px 0;
+  // let the browser skip layout/paint for off-screen groups — large
+  // subscriptions can put thousands of proxy nodes in the DOM. `auto` in
+  // contain-intrinsic-size keeps the last rendered size as the placeholder
+  // so scrolling doesn't jump; 200px is only the pre-first-render estimate.
+  content-visibility: auto;
+  contain-intrinsic-size: auto 200px;
+
   @media (--breakpoint-not-small) {
     padding: 10px 0;
   }
