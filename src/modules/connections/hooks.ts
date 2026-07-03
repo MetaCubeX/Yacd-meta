@@ -76,32 +76,34 @@ export function useConnectionsStream(apiConfig: ClashAPIConfig, sourceMap: Sourc
 
   const read = useCallback(
     ({ connections }: { connections: ConnectionItem[] }) => {
+      // skip all processing while paused or in a background tab; prevConnsRef
+      // keeps the last committed snapshot as the baseline, so closed
+      // connections are still detected against it on the first message after
+      // resuming (speeds may spike for that one tick since the byte delta
+      // spans the whole gap)
+      if (isRefreshPaused || document.hidden) return;
+
       const prevConnsKv = arrayToIdKv(prevConnsRef.current);
       const now = Date.now();
       const nextConnections =
         connections?.map((item: ConnectionItem) =>
           formatConnectionDataItem(item, prevConnsKv, now, sourceMap)
         ) ?? [];
-      const closed: FormattedConn[] = [];
 
+      const nextIds = new Set<string>();
+      for (const conn of nextConnections) nextIds.add(conn.id);
+      const closed: FormattedConn[] = [];
       for (const connection of prevConnsRef.current) {
-        const idx = nextConnections.findIndex((conn) => conn.id === connection.id);
-        if (idx < 0) closed.push(connection);
+        if (!nextIds.has(connection.id)) closed.push(connection);
       }
 
       if (closed.length > 0) {
         setClosedConns((prev) => [...closed, ...prev].slice(0, MAX_CLOSED_CONNECTIONS + 1));
       }
 
-      if (
-        nextConnections &&
-        (nextConnections.length !== 0 || prevConnsRef.current.length !== 0) &&
-        !isRefreshPaused
-      ) {
+      if (nextConnections.length !== 0 || prevConnsRef.current.length !== 0) {
         prevConnsRef.current = nextConnections;
         setConns(nextConnections);
-      } else {
-        prevConnsRef.current = nextConnections;
       }
     },
     [isRefreshPaused, setClosedConns, setConns, sourceMap]

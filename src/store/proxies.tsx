@@ -80,6 +80,29 @@ function resolveGroupTestUrl(s: State, groupName: string): string {
   return getLatencyTestUrl(s);
 }
 
+// Structural equality for the plain JSON data coming from the API.
+function deepEqualJson(a: unknown, b: unknown): boolean {
+  if (a === b) return true;
+  if (Array.isArray(a)) {
+    if (!Array.isArray(b) || a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (!deepEqualJson(a[i], b[i])) return false;
+    }
+    return true;
+  }
+  if (a && b && typeof a === 'object' && typeof b === 'object' && !Array.isArray(b)) {
+    const aObj = a as Record<string, unknown>;
+    const bObj = b as Record<string, unknown>;
+    const aKeys = Object.keys(aObj);
+    if (aKeys.length !== Object.keys(bObj).length) return false;
+    for (const k of aKeys) {
+      if (!deepEqualJson(aObj[k], bObj[k])) return false;
+    }
+    return true;
+  }
+  return false;
+}
+
 export function fetchProxies(apiConfig: ClashAPIConfig) {
   return async (dispatch: any, getState: any) => {
     const [proxiesData, providersData] = await Promise.all([
@@ -100,15 +123,23 @@ export function fetchProxies(apiConfig: ClashAPIConfig) {
     }
     const [groupNames, proxyNames] = retrieveGroupNamesFrom(proxies);
 
-    const delayPrev = getDelay(getState());
+    // Everything below (until the dispatch) is synchronous, so this state
+    // snapshot can't go stale in between.
+    const state = getState();
+    const delayPrev = getDelay(state);
     const delayNext = { ...delayPrev };
+    let delayChanged = false;
 
     for (let i = 0; i < proxyNames.length; i++) {
       const name = proxyNames[i];
       const { history } = proxies[name] || { history: [] };
       const h = history[history.length - 1];
       if (h && typeof h.delay === 'number') {
+        const prev = delayPrev[name];
+        // keep the previous entry (and its identity) when it already carries this number
+        if (prev && prev.number === h.delay && !prev.error && !prev.testing) continue;
         delayNext[name] = { number: h.delay };
+        delayChanged = true;
       }
     }
 
@@ -118,12 +149,45 @@ export function fetchProxies(apiConfig: ClashAPIConfig) {
       if (!providerProxies[v]) dangleProxyNames.push(v);
     }
 
+    // Reuse previous references for entries that didn't change so memoized
+    // components (Proxy, ProxyGroup) can bail out of re-rendering; when
+    // nothing changed at all, every field keeps its identity and the dispatch
+    // below becomes a no-op (no re-render, e.g. on window-focus refetch).
+    const proxiesPrev = getProxies(state);
+    const proxyKeys = Object.keys(proxies);
+    let proxiesChanged = proxyKeys.length !== Object.keys(proxiesPrev).length;
+    for (const name of proxyKeys) {
+      const prev = proxiesPrev[name];
+      if (prev && deepEqualJson(prev, proxies[name])) {
+        proxies[name] = prev;
+      } else {
+        proxiesChanged = true;
+      }
+    }
+
+    const providersPrev = getProxyProviders(state);
+    let providersChanged = providersPrev.length !== proxyProviders.length;
+    for (let i = 0; i < proxyProviders.length; i++) {
+      const prev = providersPrev[i];
+      if (prev && deepEqualJson(prev, proxyProviders[i])) {
+        proxyProviders[i] = prev;
+      } else {
+        providersChanged = true;
+      }
+    }
+
+    const groupNamesPrev = getProxyGroupNames(state);
+    const danglePrev = getDangleProxyNames(state);
+
     dispatch('store/proxies#fetchProxies', (s: State) => {
-      s.proxies.proxies = proxies;
-      s.proxies.groupNames = groupNames;
-      s.proxies.delay = delayNext;
-      s.proxies.proxyProviders = proxyProviders;
-      s.proxies.dangleProxyNames = dangleProxyNames;
+      s.proxies.proxies = proxiesChanged ? proxies : proxiesPrev;
+      s.proxies.groupNames = deepEqualJson(groupNamesPrev, groupNames)
+        ? groupNamesPrev
+        : groupNames;
+      s.proxies.delay = delayChanged ? delayNext : delayPrev;
+      s.proxies.proxyProviders = providersChanged ? proxyProviders : providersPrev;
+      s.proxies.dangleProxyNames =
+        danglePrev && deepEqualJson(danglePrev, dangleProxyNames) ? danglePrev : dangleProxyNames;
     });
   };
 }
@@ -190,23 +254,28 @@ export function healthcheckProviderByName(apiConfig: ClashAPIConfig, name: strin
   };
 }
 
-function updateDelayEntry(
-  dispatch: DispatchFn,
-  getState: GetStateFn,
-  name: string,
-  patch: { number?: number; error?: string; testing?: boolean; updatedAt?: number },
-) {
-  const delayPrev = getDelay(getState());
-  const prev = delayPrev[name] || {};
-  dispatch('store/proxies#delay', (s: State) => {
-    s.proxies.delay = {
-      ...delayPrev,
-      [name]: {
-        ...prev,
-        ...patch,
-      },
-    };
-  });
+type DelayPatch = { number?: number; error?: string; testing?: boolean; updatedAt?: number };
+
+// Batch delay updates: during a bulk latency test each proxy's result lands
+// separately, and dispatching per result re-renders the whole proxies page N
+// times in a burst. Buffer the patches and flush them in one dispatch.
+const DELAY_FLUSH_INTERVAL_MS = 100;
+const pendingDelayPatches = new Map<string, DelayPatch>();
+let delayFlushTimer: ReturnType<typeof setTimeout> | null = null;
+
+function updateDelayEntry(dispatch: DispatchFn, name: string, patch: DelayPatch) {
+  pendingDelayPatches.set(name, { ...pendingDelayPatches.get(name), ...patch });
+  if (delayFlushTimer !== null) return;
+  delayFlushTimer = setTimeout(() => {
+    delayFlushTimer = null;
+    const patches = new Map(pendingDelayPatches);
+    pendingDelayPatches.clear();
+    dispatch('store/proxies#delay', (s: State) => {
+      for (const [proxyName, p] of patches) {
+        s.proxies.delay[proxyName] = { ...s.proxies.delay[proxyName], ...p };
+      }
+    });
+  }, DELAY_FLUSH_INTERVAL_MS);
 }
 
 async function closeGroupConns(
@@ -358,7 +427,7 @@ function requestDelayForProxyOnce(apiConfig: ClashAPIConfig, name: string) {
     const normalizedDelay =
       typeof delayNumber === 'number' && delayNumber > 0 ? delayNumber : undefined;
 
-    updateDelayEntry(dispatch, getState, name, {
+    updateDelayEntry(dispatch, name, {
       error,
       number: normalizedDelay,
       testing: false,
@@ -435,7 +504,7 @@ export function requestDelayAll(apiConfig: ClashAPIConfig) {
 
 export function healthcheckProxy(apiConfig: ClashAPIConfig, name: string) {
   return async (dispatch: DispatchFn, getState: GetStateFn) => {
-    updateDelayEntry(dispatch, getState, name, { testing: true, error: '' });
+    updateDelayEntry(dispatch, name, { testing: true, error: '' });
 
     let delayNumber: number | undefined;
     let error = '';
@@ -461,7 +530,7 @@ export function healthcheckProxy(apiConfig: ClashAPIConfig, name: string) {
       typeof delayNumber === 'number' && delayNumber > 0 ? delayNumber : undefined;
 
     const errorMessage = error || (normalizedDelay === undefined ? 'Timeout' : '');
-    updateDelayEntry(dispatch, getState, name, {
+    updateDelayEntry(dispatch, name, {
       number: normalizedDelay,
       error: errorMessage,
       testing: false,
