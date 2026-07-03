@@ -90,9 +90,9 @@ export default function Connections({ apiConfig }: Props) {
   const closeCloseFilterModal = useCallback(() => setIsCloseFilterModalOpen(false), []);
 
   const closeFilterConnections = useCallback(async () => {
-    for (const connection of filteredConns) {
-      await connAPI.closeConnById(apiConfig, connection.id);
-    }
+    await Promise.allSettled(
+      filteredConns.map((connection) => connAPI.closeConnById(apiConfig, connection.id))
+    );
     closeCloseFilterModal();
   }, [apiConfig, filteredConns, closeCloseFilterModal]);
   const [isCloseAllModalOpen, setIsCloseAllModalOpen] = useState(false);
