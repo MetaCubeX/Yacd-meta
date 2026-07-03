@@ -1,7 +1,7 @@
 import { DispatchFn, GetStateFn, State, StateApp } from '~/store/types';
 import type { ClashAPIConfig } from '~/types';
 
-import { DEFAULT_LATENCY_TEST_URL } from '../misc/constants';
+import { DEFAULT_LATENCY_TEST_URL, PROVIDER_HEALTHCHECK_TIMEOUT } from '../misc/constants';
 import { loadState, saveState } from '../misc/storage';
 import { debounce, trimTrailingSlash } from '../misc/utils';
 
@@ -20,6 +20,7 @@ export const getLatencyTestUrl = (s: State) => s.app.latencyTestUrl;
 export const getLatencyTestTimeout = (s: State) => s.app.latencyTestTimeout;
 export const getLatencyTestExpectedStatus = (s: State) => s.app.latencyTestExpectedStatus;
 export const getPreferBackendLatencyTestUrl = (s: State) => s.app.preferBackendLatencyTestUrl;
+export const getProviderHealthcheckTimeout = (s: State) => s.app.providerHealthcheckTimeout;
 export const getCollapsibleIsOpen = (s: State) => s.app.collapsibleIsOpen;
 export const getProxySortBy = (s: State) => s.app.proxySortBy;
 export const getHideUnavailableProxies = (s: State) => s.app.hideUnavailableProxies;
@@ -173,6 +174,7 @@ const defaultState: StateApp = {
   latencyTestTimeout: 5000,
   latencyTestExpectedStatus: '',
   preferBackendLatencyTestUrl: true,
+  providerHealthcheckTimeout: PROVIDER_HEALTHCHECK_TIMEOUT,
   selectedChartStyleIndex: 0,
   theme: 'auto',
 

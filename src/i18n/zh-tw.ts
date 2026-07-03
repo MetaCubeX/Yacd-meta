@@ -44,6 +44,7 @@ export const data = {
   chart_style: '流量圖樣式',
   latency_test_url: '延遲測速 URL',
   latency_test_timeout: '測速超時',
+  provider_healthcheck_timeout: '訂閱健康檢查超時',
   latency_test_expected_status: '期望狀態碼',
   prefer_backend_test_url: '策略組優先使用後端測速 URL',
   lang: '語言',

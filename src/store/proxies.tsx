@@ -23,6 +23,7 @@ import {
   getLatencyTestTimeout,
   getLatencyTestUrl,
   getPreferBackendLatencyTestUrl,
+  getProviderHealthcheckTimeout,
 } from './app';
 
 export const initialState: StateProxies = {
@@ -155,17 +156,34 @@ export function updateProviders(apiConfig: ClashAPIConfig, names: string[]) {
   };
 }
 
-async function healthcheckProviderByNameInternal(apiConfig: ClashAPIConfig, name: string) {
+// Run `fn` with a signal that aborts after `ms`, always clearing the timer.
+async function withTimeout(ms: number, fn: (signal: AbortSignal) => Promise<void>) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
   try {
-    await proxiesAPI.healthcheckProviderByName(apiConfig, name);
+    await fn(controller.signal);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function healthcheckProviderByNameInternal(
+  apiConfig: ClashAPIConfig,
+  name: string,
+  signal?: AbortSignal,
+) {
+  try {
+    await proxiesAPI.healthcheckProviderByName(apiConfig, name, signal);
   } catch (x) {
-    // ignore
+    // ignore (includes AbortError when the client-side timeout fires)
   }
 }
 
 export function healthcheckProviderByName(apiConfig: ClashAPIConfig, name: string) {
-  return async (dispatch: DispatchFn) => {
-    await healthcheckProviderByNameInternal(apiConfig, name);
+  return async (dispatch: DispatchFn, getState: GetStateFn) => {
+    await withTimeout(getProviderHealthcheckTimeout(getState()), (signal) =>
+      healthcheckProviderByNameInternal(apiConfig, name, signal),
+    );
     // should be optimized
     // but ¯\_(ツ)_/¯
     await dispatch(fetchProxies(apiConfig));
@@ -404,9 +422,12 @@ export function requestDelayAll(apiConfig: ClashAPIConfig) {
     const proxyNames = getDangleProxyNames(getState());
     await Promise.all(proxyNames.map((p) => dispatch(requestDelayForProxy(apiConfig, p))));
     const proxyProviders = getProxyProviders(getState());
-    // one by one
+    const providerHealthcheckTimeout = getProviderHealthcheckTimeout(getState());
+    // one by one, each bounded so a slow provider can't stall the whole run
     for (const p of proxyProviders) {
-      await healthcheckProviderByNameInternal(apiConfig, p.name);
+      await withTimeout(providerHealthcheckTimeout, (signal) =>
+        healthcheckProviderByNameInternal(apiConfig, p.name, signal),
+      );
     }
     await dispatch(fetchProxies(apiConfig));
   };

@@ -12,6 +12,8 @@ export type StateApp = {
   // when true, group latency tests use the group's backend-configured testUrl,
   // falling back to latencyTestUrl; single-proxy/provider tests always use latencyTestUrl
   preferBackendLatencyTestUrl: boolean;
+  // client-side timeout (ms) for a proxy-provider health check; see PROVIDER_HEALTHCHECK_TIMEOUT
+  providerHealthcheckTimeout: number;
   selectedChartStyleIndex: number;
   theme: string;
 

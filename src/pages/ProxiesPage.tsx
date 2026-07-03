@@ -11,6 +11,7 @@ import {
   getLatencyTestTimeout,
   getLatencyTestExpectedStatus,
   getPreferBackendLatencyTestUrl,
+  getProviderHealthcheckTimeout,
   getProxiesLayout,
   getProxySortBy,
   getProxyGroupByProvider,
@@ -34,6 +35,7 @@ const getAppConfig = createSelector(
   getLatencyTestTimeout,
   getLatencyTestExpectedStatus,
   getPreferBackendLatencyTestUrl,
+  getProviderHealthcheckTimeout,
   (
     proxySortBy,
     hideUnavailableProxies,
@@ -44,6 +46,7 @@ const getAppConfig = createSelector(
     latencyTestTimeout,
     latencyTestExpectedStatus,
     preferBackendLatencyTestUrl,
+    providerHealthcheckTimeout,
   ) => ({
     proxySortBy,
     hideUnavailableProxies,
@@ -54,6 +57,7 @@ const getAppConfig = createSelector(
     latencyTestTimeout,
     latencyTestExpectedStatus,
     preferBackendLatencyTestUrl,
+    providerHealthcheckTimeout,
   }),
 );
 

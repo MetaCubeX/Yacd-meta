@@ -32,6 +32,7 @@ type AppConfig = {
   latencyTestTimeout: number;
   latencyTestExpectedStatus: string;
   preferBackendLatencyTestUrl: boolean;
+  providerHealthcheckTimeout: number;
 };
 
 type Props = {

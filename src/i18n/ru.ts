@@ -47,6 +47,7 @@ export const data = {
   chart_style: 'Стиль графика',
   latency_test_url: 'URL для проверки задержки',
   latency_test_timeout: 'Таймаут проверки задержки',
+  provider_healthcheck_timeout: 'Таймаут проверки провайдера',
   lang: 'Язык',
   proxy_provider: 'Провайдер прокси',
   rule_provider: 'Провайдер правил',

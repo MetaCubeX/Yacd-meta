@@ -21,6 +21,7 @@ type AppConfig = {
   latencyTestTimeout: number;
   latencyTestExpectedStatus: string;
   preferBackendLatencyTestUrl: boolean;
+  providerHealthcheckTimeout: number;
 };
 
 type Props = {
@@ -61,6 +62,14 @@ export default function Settings({ appConfig }: Props) {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const v = parseInt(e.target.value, 10);
       if (!isNaN(v) && v > 0) updateAppConfig('latencyTestTimeout', v);
+    },
+    [updateAppConfig],
+  );
+
+  const handleProviderHealthcheckTimeoutChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const v = parseInt(e.target.value, 10);
+      if (!isNaN(v) && v > 0) updateAppConfig('providerHealthcheckTimeout', v);
     },
     [updateAppConfig],
   );
@@ -107,6 +116,21 @@ export default function Settings({ appConfig }: Props) {
             step={100}
             value={appConfig.latencyTestTimeout}
             onChange={handleLatencyTimeoutChange}
+          />
+          <span className={s.timeoutUnit}>ms</span>
+        </div>
+      </div>
+      <div className={s.labeledInput}>
+        <span>{t('provider_healthcheck_timeout')}</span>
+        <div className={s.timeoutInputWrapper}>
+          <input
+            className={s.timeoutInput}
+            type="number"
+            min={1000}
+            max={60000}
+            step={500}
+            value={appConfig.providerHealthcheckTimeout}
+            onChange={handleProviderHealthcheckTimeoutChange}
           />
           <span className={s.timeoutUnit}>ms</span>
         </div>

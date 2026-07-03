@@ -82,9 +82,9 @@ export async function updateProviderByName(config, name) {
   return await fetch(url + '/providers/proxies/' + encodeURIComponent(name), options);
 }
 
-export async function healthcheckProviderByName(config, name) {
+export async function healthcheckProviderByName(config, name, signal?: AbortSignal) {
   const { url, init } = getURLAndInit(config);
-  const options = { ...init, method: 'GET' };
+  const options = { ...init, method: 'GET', signal };
   return await fetch(
     url + '/providers/proxies/' + encodeURIComponent(name) + '/healthcheck',
     options

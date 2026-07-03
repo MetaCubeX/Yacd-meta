@@ -42,6 +42,7 @@ export const data = {
   chart_style: 'Kiểu biểu đồ',
   latency_test_url: 'URL kiểm tra độ trễ',
   latency_test_timeout: 'Thời gian chờ kiểm tra độ trễ',
+  provider_healthcheck_timeout: 'Thời gian chờ kiểm tra nhà cung cấp',
   lang: 'Ngôn ngữ',
   proxy_provider: 'nhà cung cấp proxy',
   update_all_rule_provider: 'Cập nhật tất cả nhà cung cấp quy tắc',
