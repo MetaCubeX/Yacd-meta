@@ -34,9 +34,9 @@ export function useLogsPage({
   const appendLogInternal = useCallback((log) => dispatch(appendLog(log)), [dispatch]);
 
   useEffect(() => {
-    fetchLogs({ ...apiConfig, logLevel }, appendLogInternal);
+    const unsubscribe = fetchLogs({ ...apiConfig, logLevel }, appendLogInternal);
     return () => {
-      stopLogs();
+      unsubscribe?.();
     };
   }, [apiConfig, logLevel, appendLogInternal]);
 

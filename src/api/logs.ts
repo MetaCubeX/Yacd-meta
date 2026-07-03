@@ -20,27 +20,38 @@ const getRandomStr = () => {
 };
 
 let even = false;
-let fetched = false;
 let decoded = '';
 let ws: WebSocket;
-let prevAppendLogFn: AppendLogFn;
+let controller: AbortController;
+let usingFetchFallback = false;
+let currentConnStr: string;
 
-function appendData(s: string, callback: AppendLogFn) {
+type UnsubscribeFn = () => void;
+// the WS/fetch stream is a module-level singleton so switching away from and
+// back to the Logs page doesn't tear down and re-handshake the connection —
+// only unsubscribe here, the connection itself outlives any single mount
+const subscribers: AppendLogFn[] = [];
+
+function broadcast(log: Log) {
+  subscribers.forEach((listener) => listener(log));
+}
+
+function appendData(s: string) {
   let o: Partial<Log>;
   try {
     o = JSON.parse(s);
   } catch (err) {
-     
-    console.log('JSON.parse error', JSON.parse(s));
+
+    console.log('JSON.parse error', s);
+    return;
   }
 
   const now = new Date();
   const time = formatDate(now);
-  // mutate input param in place intentionally
   o.time = time;
   o.id = +now - 0 + getRandomStr();
   o.even = even = !even;
-  callback(o as Log);
+  broadcast(o as Log);
 }
 
 function formatDate(d: Date) {
@@ -54,7 +65,7 @@ function formatDate(d: Date) {
   return `${YY}-${MM}-${dd} ${HH}:${mm}:${ss}`;
 }
 
-function pump(reader: ReadableStreamDefaultReader, appendLog: AppendLogFn) {
+function pump(reader: ReadableStreamDefaultReader) {
   return reader.read().then(({ done, value }) => {
     const str = textDecoder.decode(value, { stream: !done });
     decoded += str;
@@ -64,21 +75,21 @@ function pump(reader: ReadableStreamDefaultReader, appendLog: AppendLogFn) {
     const lastSplit = splits[splits.length - 1];
 
     for (let i = 0; i < splits.length - 1; i++) {
-      appendData(splits[i], appendLog);
+      appendData(splits[i]);
     }
 
     if (done) {
-      appendData(lastSplit, appendLog);
+      appendData(lastSplit);
       decoded = '';
 
-       
+
       console.log('GET /logs streaming done');
-      fetched = false;
+      usingFetchFallback = false;
       return;
     } else {
       decoded = lastSplit;
     }
-    return pump(reader, appendLog);
+    return pump(reader);
   });
 }
 
@@ -89,47 +100,75 @@ function makeConnStr(c: LogsAPIConfig) {
   return keys.map((k) => c[k]).join('|');
 }
 
-let prevConnStr: string;
-let controller: AbortController;
+function isConnectionLive() {
+  return (ws && ws.readyState === WebSocketReadyState.Open) || usingFetchFallback;
+}
 
-export function fetchLogs(apiConfig: LogsAPIConfig, appendLog: AppendLogFn) {
-  if (apiConfig.logLevel === 'uninit') return;
-  if (fetched || (ws && ws.readyState === WebSocketReadyState.Open)) return;
-  prevAppendLogFn = appendLog;
+function teardown() {
+  if (ws) {
+    ws.close();
+    ws = undefined;
+  }
+  if (controller) {
+    controller.abort();
+    controller = undefined;
+  }
+  usingFetchFallback = false;
+  decoded = '';
+}
+
+function subscribe(listener: AppendLogFn): UnsubscribeFn {
+  subscribers.push(listener);
+  return function unsubscribe() {
+    const idx = subscribers.indexOf(listener);
+    if (idx !== -1) subscribers.splice(idx, 1);
+  };
+}
+
+function openConnection(apiConfig: LogsAPIConfig) {
   const url = buildLogsWebSocketURL(apiConfig, endpoint);
   ws = new WebSocket(url);
   ws.addEventListener('error', () => {
-    fetchLogsWithFetch(apiConfig, appendLog);
+    ws = undefined;
+    fetchLogsWithFetch(apiConfig);
   });
   ws.addEventListener('message', function (event) {
-    appendData(event.data, appendLog);
+    appendData(event.data);
   });
 }
 
+export function fetchLogs(
+  apiConfig: LogsAPIConfig,
+  appendLog: AppendLogFn
+): UnsubscribeFn | undefined {
+  if (apiConfig.logLevel === 'uninit') return undefined;
+
+  const connStr = makeConnStr(apiConfig);
+  if (isConnectionLive() && connStr === currentConnStr) {
+    return subscribe(appendLog);
+  }
+
+  teardown();
+  currentConnStr = connStr;
+  openConnection(apiConfig);
+  return subscribe(appendLog);
+}
+
+/** explicitly stop streaming, e.g. when the user hits "pause" */
 export function stop() {
-  if (ws) {
-    ws.close();
-    fetched = false;
-  }
-  if (controller) controller.abort();
+  teardown();
 }
 
+/** explicitly force a fresh connection, e.g. after changing log level or hitting "resume" */
 export function reconnect(apiConfig: LogsAPIConfig) {
-  if (!prevAppendLogFn || !ws) return;
-  ws.close();
-  fetched = false;
-  fetchLogs(apiConfig, prevAppendLogFn);
+  teardown();
+  currentConnStr = makeConnStr(apiConfig);
+  openConnection(apiConfig);
 }
 
-function fetchLogsWithFetch(apiConfig: LogsAPIConfig, appendLog: AppendLogFn) {
-  if (controller && makeConnStr(apiConfig) !== prevConnStr) {
-    controller.abort();
-  } else if (fetched) {
-    return;
-  }
-
-  fetched = true;
-  prevConnStr = makeConnStr(apiConfig);
+function fetchLogsWithFetch(apiConfig: LogsAPIConfig) {
+  if (usingFetchFallback) return;
+  usingFetchFallback = true;
 
   controller = new AbortController();
   const signal = controller.signal;
@@ -141,13 +180,13 @@ function fetchLogsWithFetch(apiConfig: LogsAPIConfig, appendLog: AppendLogFn) {
   }).then(
     (response) => {
       const reader = response.body.getReader();
-      pump(reader, appendLog);
+      pump(reader);
     },
     (err) => {
-      fetched = false;
+      usingFetchFallback = false;
       if (signal.aborted) return;
 
-       
+
       console.log('GET /logs error:', err.message);
     },
   );
