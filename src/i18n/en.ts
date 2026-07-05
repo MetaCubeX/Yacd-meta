@@ -93,4 +93,9 @@ export const data = {
   internel: 'Internal Connection',
   Clear: 'Clear',
   group_fixed_tip: 'This group has a manually fixed selection; run a latency test to release it',
+  rule_entry_count: '{{count}} entries',
+  rule_hit_tip: 'Hit {{count}} times, last {{time}}',
+  rule_never_hit: 'Never hit',
+  rule_enable: 'Enable rule',
+  rule_disable: 'Disable rule',
 };

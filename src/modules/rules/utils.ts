@@ -15,7 +15,7 @@ export function itemKey(index: number, { rules, provider }: RulesListItemData) {
 
 export function getItemSizeFactory({ isRulesTab }: { isRulesTab: boolean }) {
   return function getItemSize() {
-    return isRulesTab ? 70 : 100;
+    return isRulesTab ? 88 : 100;
   };
 }
 

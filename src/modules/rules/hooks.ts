@@ -7,7 +7,7 @@ import {
   refreshRuleProviderByName,
   updateRuleProviders,
 } from '~/api/rule-provider';
-import { fetchRules } from '~/api/rules';
+import { fetchRules, updateRuleDisabledStatus } from '~/api/rules';
 import { ruleFilterText } from '~/store/rules';
 import type { ClashAPIConfig } from '~/types';
 
@@ -47,6 +47,22 @@ export function useUpdateAllRuleProviderItems(
     mutate({ names: provider.names, apiConfig });
   };
   return [onClickRefreshButton, isPending];
+}
+
+export function useToggleRuleDisabled(apiConfig: ClashAPIConfig) {
+  const queryClient = useQueryClient();
+  const { mutate, isPending } = useMutation({
+    mutationFn: ({ index, disabled }: { index: number; disabled: boolean }) =>
+      updateRuleDisabledStatus(apiConfig, { [index]: disabled }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/rules'] });
+    },
+  });
+  const toggleRule = useCallback(
+    (index: number, disabled: boolean) => mutate({ index, disabled }),
+    [mutate]
+  );
+  return { toggleRule, isPending };
 }
 
 export function useInvalidateQueries() {

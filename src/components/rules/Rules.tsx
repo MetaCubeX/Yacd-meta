@@ -36,7 +36,7 @@ function Row({ index, style, data }: RowComponentProps<RulesRowProps>) {
   const r = rules[index];
   return (
     <div style={style}>
-      <Rule {...r} />
+      <Rule {...r} apiConfig={apiConfig} provider={provider} />
     </div>
   );
 }

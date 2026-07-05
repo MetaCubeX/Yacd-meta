@@ -94,4 +94,9 @@ export const data = {
   internel: '内部链接',
   Clear: '清空',
   group_fixed_tip: '该组已手动固定选择，点击测速可解除固定',
+  rule_entry_count: '{{count}} 条规则',
+  rule_hit_tip: '已命中 {{count}} 次，最近一次{{time}}',
+  rule_never_hit: '从未命中',
+  rule_enable: '启用规则',
+  rule_disable: '禁用规则',
 };

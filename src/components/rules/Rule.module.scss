@@ -10,6 +10,10 @@
   &:hover {
     background-color: var(--bg-near-transparent);
   }
+
+  &.disabled {
+    opacity: 0.45;
+  }
 }
 
 .left {
@@ -78,4 +82,28 @@
 .proxyTag {
   font-weight: 600;
   letter-spacing: 0.02em;
+}
+
+.hitInfo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-text-secondary);
+  cursor: default;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.wrapSwitch {
+  display: flex;
+  align-items: center;
+  transform: scale(0.7);
+  transform-origin: right center;
+
+  &.pending {
+    opacity: 0.6;
+    pointer-events: none;
+  }
 }
