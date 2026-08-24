@@ -157,7 +157,7 @@ const AvailabilityBar = memo(function AvailabilityBar({
 });
 
 /**
- * 状态行：左侧当前节点，右侧节点圆点。圆点插槽的宽度由 flex 决定而不是内容，
+ * 状态行：左侧当前节点，右侧节点圆点（没有当前节点时圆点靠左）。圆点插槽的宽度由 flex 决定而不是内容，
  * 所以可以直接测量它来判断一行放不放得下——放不下就退化成可用率进度条。
  */
 export function ProxyCardStatusRow({
@@ -206,7 +206,7 @@ export function ProxyCardStatusRow({
           {nowName}
         </span>
       ) : null}
-      <div className={s.dotsSlot} ref={dotsSlotRef}>
+      <div className={cx(s.dotsSlot, { [s.dotsSlotStart]: !nowName })} ref={dotsSlotRef}>
         {showBar ? <AvailabilityBar all={allItems} delay={delay} /> : renderDots()}
       </div>
     </div>

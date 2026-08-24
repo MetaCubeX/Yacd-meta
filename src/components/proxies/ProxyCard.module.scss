@@ -185,7 +185,8 @@
   border-radius: 50%;
 }
 
-/* 圆点插槽靠右，宽度由 flex 决定而不是内容，测量它来决定圆点还是进度条 */
+/* 圆点插槽靠右（左侧没有当前节点时改为靠左），宽度由 flex 决定而不是内容，
+   测量它来决定圆点还是进度条 */
 .dotsSlot {
   flex: 1 1 auto;
   min-width: 0;
@@ -198,6 +199,14 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+}
+
+.dotsSlotStart {
+  justify-content: flex-start;
+  padding-right: 0;
+  margin-right: 0;
+  padding-left: 3px;
+  margin-left: -3px;
 }
 
 .availBar {
