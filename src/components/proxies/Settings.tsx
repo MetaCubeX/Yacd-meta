@@ -9,6 +9,7 @@ import {
   HEALTHCHECK_TIMEOUT_PRESETS,
   LATENCY_TIMEOUT_PRESETS,
   nextProxySortBy,
+  ProxiesAppConfig,
   ProxySortKey,
   withCurrentTimeout,
 } from '~/modules/proxies/utils';
@@ -18,21 +19,8 @@ import s from './Settings.module.scss';
 
 const { useCallback, useMemo } = React;
 
-type AppConfig = {
-  proxySortBy: string;
-  hideUnavailableProxies: boolean;
-  autoCloseOldConns: boolean;
-  proxiesLayout: string;
-  proxyGroupByProvider: boolean;
-  latencyTestUrl: string;
-  latencyTestTimeout: number;
-  latencyTestExpectedStatus: string;
-  preferBackendLatencyTestUrl: boolean;
-  providerHealthcheckTimeout: number;
-};
-
 type Props = {
-  appConfig: AppConfig;
+  appConfig: ProxiesAppConfig;
 };
 
 function Row({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {

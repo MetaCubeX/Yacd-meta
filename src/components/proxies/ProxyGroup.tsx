@@ -7,18 +7,20 @@ import {
   useFilterAwareCollapse,
   useFilteredAndSorted,
   useFilterSegments,
+  useSwitchProxy,
+  useTestGroupLatency,
+  useTestProxyLatency,
 } from '~/modules/proxies/hooks';
-import { getProxyLatency, matchesFilter } from '~/modules/proxies/utils';
-import { switchProxy } from '~/store/proxies';
+import { getProxyLatency, matchesFilter, ProxiesAppConfig } from '~/modules/proxies/utils';
 import { useStoreActions } from '~/store/StateProvider';
-import { DelayMapping, DispatchFn, ProxiesMapping, ProxyItem } from '~/store/types';
+import { DelayMapping, ProxiesMapping, ProxyItem } from '~/store/types';
 import { ClashAPIConfig } from '~/types';
 
 import { getLatencyColor, ProxyCard, ProxyCardHeader, ProxyCardStatusRow } from './ProxyCard';
 import s0 from './ProxyCard.module.scss';
 import { ProxyList, ProxyListGroupedByProvider, ProxyListSummaryView } from './ProxyList';
 
-const { memo, useCallback, useMemo, useState } = React;
+const { memo, useCallback, useMemo } = React;
 
 function buildNowChain(proxies: ProxiesMapping, groupName: string): string | null {
   const group = proxies[groupName] as ProxyItem & { now?: string };
@@ -42,27 +44,21 @@ function buildNowChain(proxies: ProxiesMapping, groupName: string): string | nul
 type Props = {
   name: string;
   delay: DelayMapping;
-  hideUnavailableProxies: boolean;
-  proxySortBy: string;
   proxies: ProxiesMapping;
   isOpen: boolean;
   httpsLatencyTest: boolean;
   apiConfig: ClashAPIConfig;
-  dispatch: DispatchFn;
-  proxyGroupByProvider?: boolean;
+  appConfig: ProxiesAppConfig;
 };
 
 export const ProxyGroup = memo(function ProxyGroup({
   name,
   delay,
-  hideUnavailableProxies,
-  proxySortBy,
   proxies,
   isOpen,
   httpsLatencyTest,
   apiConfig,
-  dispatch,
-  proxyGroupByProvider = false,
+  appConfig,
 }: Props) {
   const { t } = useTranslation();
   const group = proxies[name] as ProxyItem & { all?: string[]; now?: string; fixed?: string };
@@ -73,8 +69,8 @@ export const ProxyGroup = memo(function ProxyGroup({
   const all = useFilteredAndSorted(
     allItems,
     delay,
-    hideUnavailableProxies,
-    proxySortBy,
+    appConfig.hideUnavailableProxies,
+    appConfig.proxySortBy,
     proxies,
     nameMatched,
   );
@@ -95,7 +91,6 @@ export const ProxyGroup = memo(function ProxyGroup({
 
   const {
     app: { updateCollapsibleIsOpen },
-    proxies: { requestDelayForGroup },
   } = useStoreActions();
 
   const onToggle = useCallback(
@@ -104,32 +99,31 @@ export const ProxyGroup = memo(function ProxyGroup({
   );
   const [effectiveIsOpen, toggle] = useFilterAwareCollapse({ isOpen, nameMatched, onToggle });
 
+  const switchProxy = useSwitchProxy(apiConfig, appConfig.autoCloseOldConns);
   const itemOnTapCallback = useCallback(
     (proxyName: string) => {
       if (!isSelectable) return;
-      dispatch(switchProxy(apiConfig, name, proxyName));
+      switchProxy(name, proxyName);
     },
-    [apiConfig, dispatch, name, isSelectable],
+    [switchProxy, name, isSelectable],
   );
 
-  const [isTestingLatency, setIsTestingLatency] = useState(false);
-  const testLatency = useCallback(async () => {
-    setIsTestingLatency(true);
-    try {
-      await requestDelayForGroup(apiConfig, name, version.meta === true, all);
-    } catch (err) {}
-    setIsTestingLatency(false);
-  }, [all, apiConfig, name, version.meta, requestDelayForGroup]);
+  const [testGroup, isTestingLatency] = useTestGroupLatency(apiConfig, appConfig);
+  const testLatency = useCallback(
+    () => testGroup({ groupName: name, isMeta: version.meta === true, memberNames: all }),
+    [testGroup, name, version.meta, all],
+  );
+
+  const onTestLatency = useTestProxyLatency(apiConfig, appConfig);
 
   const listProps = {
-    apiConfig,
     all,
     delay,
-    dispatch,
     httpsLatencyTest,
     now,
     isSelectable,
     itemOnTapCallback,
+    onTestLatency,
     proxies,
   };
 
@@ -163,7 +157,7 @@ export const ProxyGroup = memo(function ProxyGroup({
       />
 
       <Collapsible isOpen={effectiveIsOpen}>
-        {proxyGroupByProvider ? (
+        {appConfig.proxyGroupByProvider ? (
           <ProxyListGroupedByProvider {...listProps} />
         ) : (
           <ProxyList {...listProps} />

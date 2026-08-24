@@ -8,51 +8,48 @@ import {
   useFilterAwareCollapse,
   useFilteredAndSorted,
   useFilterSegments,
+  useHealthcheckProvider,
+  useTestProxyLatency,
   useUpdateProviderItem,
 } from '~/modules/proxies/hooks';
-import { matchesFilter } from '~/modules/proxies/utils';
-import { healthcheckProviderByName } from '~/store/proxies';
+import { matchesFilter, ProxiesAppConfig } from '~/modules/proxies/utils';
 import { useStoreActions } from '~/store/StateProvider';
-import { DelayMapping, DispatchFn, ProxiesMapping, SubscriptionInfo } from '~/store/types';
+import { DelayMapping, ProxiesMapping, SubscriptionInfo } from '~/store/types';
 import { ClashAPIConfig } from '~/types';
 
 import { ProxyCard, ProxyCardAction, ProxyCardHeader, ProxyCardStatusRow } from './ProxyCard';
 import { ProxyList, ProxyListSummaryView } from './ProxyList';
 import s from './ProxyProvider.module.scss';
 
-const { memo, useState, useCallback } = React;
+const { memo, useCallback } = React;
 
 type Props = {
   name: string;
   proxies: Array<string>;
   delay: DelayMapping;
-  hideUnavailableProxies: boolean;
-  proxySortBy: string;
   type: 'Proxy' | 'Rule';
   vehicleType: 'HTTP' | 'File' | 'Compatible';
   updatedAt?: string;
   subscriptionInfo?: SubscriptionInfo;
   proxyMapping: ProxiesMapping;
   httpsLatencyTest: boolean;
-  dispatch: DispatchFn;
   isOpen: boolean;
   apiConfig: ClashAPIConfig;
+  appConfig: ProxiesAppConfig;
 };
 
 export const ProxyProvider = memo(function ProxyProvider({
   name,
   proxies: all,
   delay,
-  hideUnavailableProxies,
-  proxySortBy,
   vehicleType,
   updatedAt,
   subscriptionInfo,
   proxyMapping,
   httpsLatencyTest,
   isOpen,
-  dispatch,
   apiConfig,
+  appConfig,
 }: Props) {
   const { t } = useTranslation();
   // 提供商名本身命中搜索时，旗下节点原样展示，不再逐个过滤
@@ -61,28 +58,20 @@ export const ProxyProvider = memo(function ProxyProvider({
   const proxies = useFilteredAndSorted(
     all,
     delay,
-    hideUnavailableProxies,
-    proxySortBy,
+    appConfig.hideUnavailableProxies,
+    appConfig.proxySortBy,
     undefined,
     nameMatched,
   );
-  const [isHealthcheckLoading, setIsHealthcheckLoading] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
 
-  const updateProviderItem = useUpdateProviderItem({ dispatch, apiConfig, name });
-  const updateProvider = useCallback(async () => {
-    setIsUpdating(true);
-    try {
-      await updateProviderItem();
-    } catch (err) {}
-    setIsUpdating(false);
-  }, [updateProviderItem]);
+  const [updateProviderItem, isUpdating] = useUpdateProviderItem(apiConfig);
+  const updateProvider = useCallback(() => updateProviderItem(name), [updateProviderItem, name]);
 
-  const healthcheckProvider = useCallback(async () => {
-    setIsHealthcheckLoading(true);
-    await dispatch(healthcheckProviderByName(apiConfig, name));
-    setIsHealthcheckLoading(false);
-  }, [apiConfig, dispatch, name]);
+  const [healthcheck, isHealthcheckLoading] = useHealthcheckProvider(
+    apiConfig,
+    appConfig.providerHealthcheckTimeout,
+  );
+  const healthcheckProvider = useCallback(() => healthcheck(name), [healthcheck, name]);
 
   const {
     app: { updateCollapsibleIsOpen },
@@ -94,13 +83,14 @@ export const ProxyProvider = memo(function ProxyProvider({
   );
   const [effectiveIsOpen, toggle] = useFilterAwareCollapse({ isOpen, nameMatched, onToggle });
 
+  const onTestLatency = useTestProxyLatency(apiConfig, appConfig);
+
   const listProps = {
     all: proxies,
     proxies: proxyMapping,
     delay,
     httpsLatencyTest,
-    apiConfig,
-    dispatch,
+    onTestLatency,
   };
 
   const timeAgo = updatedAt ? formatDistance(new Date(updatedAt), new Date()) : null;

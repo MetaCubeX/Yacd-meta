@@ -3,8 +3,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getProxyLatency } from '~/modules/proxies/utils';
-import { DelayMapping, DispatchFn, ProxiesMapping } from '~/store/types';
-import { ClashAPIConfig } from '~/types';
+import { DelayMapping, ProxiesMapping } from '~/store/types';
 
 import { Proxy, ProxySmall } from './Proxy';
 import s from './ProxyList.module.scss';
@@ -14,8 +13,7 @@ type ProxyListProps = {
   proxies: ProxiesMapping;
   delay: DelayMapping;
   httpsLatencyTest: boolean;
-  apiConfig: ClashAPIConfig;
-  dispatch: DispatchFn;
+  onTestLatency: (name: string, providerName?: string) => void;
   now?: string;
   isSelectable?: boolean;
   itemOnTapCallback?: (x: string) => void;
@@ -27,8 +25,7 @@ export function ProxyList({
   proxies,
   delay,
   httpsLatencyTest,
-  apiConfig,
-  dispatch,
+  onTestLatency,
   now,
   isSelectable,
   itemOnTapCallback,
@@ -47,9 +44,8 @@ export function ProxyList({
         };
         return (
           <Proxy
-            apiConfig={apiConfig}
-            dispatch={dispatch}
             proxy={proxy}
+            onTestLatency={onTestLatency}
             latency={getProxyLatency(proxies, delay, proxyName)}
             httpsLatencyTest={httpsLatencyTest}
             key={proxyName}
@@ -69,8 +65,6 @@ export function ProxyListSummaryView({
   proxies,
   delay,
   httpsLatencyTest,
-  apiConfig,
-  dispatch,
   now,
   isSelectable,
   itemOnTapCallback,
@@ -87,8 +81,6 @@ export function ProxyListSummaryView({
         };
         return (
           <ProxySmall
-            apiConfig={apiConfig}
-            dispatch={dispatch}
             proxy={proxy}
             latency={getProxyLatency(proxies, delay, proxyName)}
             httpsLatencyTest={httpsLatencyTest}
@@ -109,8 +101,7 @@ export function ProxyListGroupedByProvider({
   proxies,
   delay,
   httpsLatencyTest,
-  apiConfig,
-  dispatch,
+  onTestLatency,
   now,
   isSelectable,
   itemOnTapCallback,
@@ -148,9 +139,8 @@ export function ProxyListGroupedByProvider({
               };
               return (
                 <Proxy
-                  apiConfig={apiConfig}
-                  dispatch={dispatch}
                   proxy={proxy}
+                  onTestLatency={onTestLatency}
                   latency={getProxyLatency(proxies, delay, proxyName)}
                   httpsLatencyTest={httpsLatencyTest}
                   key={proxyName}

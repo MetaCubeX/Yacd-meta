@@ -81,15 +81,19 @@ changing an endpoint wrapper.
 1. **Custom Redux-like store** (`src/store/StateProvider.tsx` + `src/store/*`): a hand-rolled
    context/reducer store using `immer.produce` for updates, not Redux. Actions are plain functions
    dispatched via `dispatch(actionCreator(...))`; an action creator can itself be a thunk
-   `(dispatch, getState) => {...}` for async/side-effecting work (see `src/store/app.ts`,
-   `src/store/proxies.tsx`). Components read state via `connect(mapStateToProps)` (see
-   `src/store/index.ts` for the root `initialState`/`actions` shape). This holds `app` (API config,
-   theme, UI prefs — persisted to localStorage via `src/misc/storage.ts`), `modals`, `configs`,
-   `proxies`, `logs`.
-2. **jotai atoms + TanStack Query**: newer code (added during the recoil/react-table migration —
-   see git history) uses jotai for small local/UI state and `@tanstack/react-query` for
-   server-state fetching/caching. Prefer this pattern for *new* data-fetching code; the legacy
-   store is being incrementally migrated away from, not extended.
+   `(dispatch, getState) => {...}` for async/side-effecting work (see `src/store/app.ts`).
+   Components read state via `connect(mapStateToProps)` (see `src/store/index.ts` for the root
+   `initialState`/`actions` shape). What is left in it is `app` (API config, theme, UI prefs —
+   persisted to localStorage via `src/misc/storage.ts`), `modals` and `configs`.
+2. **jotai atoms + TanStack Query**: every feature's server data (`proxies`, `rules`,
+   `connections`, `logs`) goes through `useQuery`/`useSuspenseQuery` + `useMutation` in
+   `src/modules/<feature>/hooks.ts`, with jotai atoms in `src/store/<feature>.ts` for the small
+   pieces of client state that sit alongside it (search text, in-flight latency results). This is
+   the only direction new code goes; don't add a slice to the legacy store.
+
+`src/modules/proxies/hooks.ts` is the fullest worked example of pattern 2 — optimistic update with
+rollback, mutations that `invalidateQueries`, and a query whose `staleTime` replaces a hand-rolled
+window-focus refetch guard.
 
 ### Layered layout — top-level dirs are layers, feature names repeat across them
 
@@ -98,10 +102,11 @@ name therefore appears once per layer, which is the intended shape and not dupli
 end to end (`proxies`):
 
     app/router.tsx -> pages/ProxiesPage.tsx -> components/proxies/*
-      -> modules/proxies/{hooks,utils}.ts -> store/proxies.tsx -> api/proxies.ts
+      -> modules/proxies/{hooks,utils}.ts -> store/proxies.ts (jotai atoms) -> api/proxies.ts
 
 - `src/api/<resource>.ts` — thin fetch wrappers. No React, no state.
-- `src/store/*` — legacy global store slices plus `StateProvider.tsx` (see *State management*).
+- `src/store/*` — legacy global store slices plus `StateProvider.tsx`, and the jotai atoms that
+  replaced the migrated slices (see *State management*).
 - `src/modules/<feature>/hooks.ts` — the feature's logic as hooks: fetching, filtering/sorting,
   derived state.
 - `src/modules/<feature>/utils.ts` — pure helpers, no React import.
@@ -131,8 +136,8 @@ that, both of which had been violated before, so check them when adding code:
 `src/store/toast.ts` exposes `toast(kind, message)` and writes to jotai's default store, so it works
 outside React and store thunks can call it directly. mihomo answers failures with
 `{ "message": "..." }` — parse it with `readErrorMessage` from `src/misc/request-helper.ts` rather
-than falling back to `res.statusText`. When an optimistic UI update fails, re-fetch to roll it back
-*and* toast; `onSwitchProxyFailed` in `src/store/proxies.tsx` is the reference.
+than falling back to `res.statusText`. When an optimistic UI update fails, roll the cache back
+*and* toast; `useSwitchProxy` in `src/modules/proxies/hooks.ts` is the reference.
 
 ### Path alias
 

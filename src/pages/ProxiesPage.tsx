@@ -15,13 +15,6 @@ import {
   getProxyGroupByProvider,
   getProxySortBy,
 } from '~/store/app';
-import {
-  getDelay,
-  getProxies,
-  getProxyGroupNames,
-  getProxyProviders,
-  getShowModalClosePrevConns,
-} from '~/store/proxies';
 import { connect } from '~/store/StateProvider';
 import { State } from '~/store/types';
 
@@ -61,14 +54,11 @@ const getAppConfig = createSelector(
   }),
 );
 
+// 代理数据本身走 TanStack Query（modules/proxies/hooks），这里只映射旧 store 里
+// 那部分持久化的 UI 偏好
 const mapState = (state: State) => ({
   apiConfig: getClashAPIConfig(state),
-  groupNames: getProxyGroupNames(state),
-  proxies: getProxies(state),
-  proxyProviders: getProxyProviders(state),
-  delay: getDelay(state),
   collapsibleIsOpen: getCollapsibleIsOpen(state),
-  showModalClosePrevConns: getShowModalClosePrevConns(state),
   appConfig: getAppConfig(state),
 });
 
