@@ -1,19 +1,14 @@
-import { produce, setAutoFreeze } from 'immer';
+import { produce } from 'immer';
 import React from 'react';
 
 import type { DispatchFn, State } from './types';
-
-// autofreeze 会在每次 dispatch 后深冻结整棵 state，代价压在最大的那块
-// （s.proxies.proxies 是几百个对象）。这里保持关闭，代价是 produce 外改写
-// state 不会当场报错，见 TODO.md
-setAutoFreeze(false);
 
 const { createContext, memo, useMemo, useRef, useEffect, useCallback, useContext, useState } =
   React;
 
 /**
  * 绑定后的 action 树，形状由 store/index.ts 的 actions 决定，深度不定。
- * 这套自研 store 正在被 jotai 取代（见 TODO.md），不为它补精确类型。
+ * 这套自研 store 正在被 jotai + TanStack Query 取代（见 TODO.md），不为它补精确类型。
  */
 type BoundActions = Record<string, any>;
 
