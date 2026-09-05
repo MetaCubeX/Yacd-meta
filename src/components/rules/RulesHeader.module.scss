@@ -1,0 +1,20 @@
+/**
+ * 只放规则页特有的东西，顶栏本身的样式在 shared/PageHeader.module.scss。
+ *
+ * 同代理页：DOM 顺序就是桌面端的视觉顺序（标题 · 标签 · 搜索 · 操作），
+ * 窄屏要把操作钮提到第一行、搜索独占第二行，所以这里只拨 order。
+ * 不这么排的话搜索会先换行并吃掉整行（它的 flex-basis 是 100%），
+ * 把操作钮挤成第三行。
+ */
+
+.actions {
+  @media (max-width: 1024px) {
+    order: 1;
+  }
+}
+
+.search {
+  @media (max-width: 1024px) {
+    order: 2;
+  }
+}

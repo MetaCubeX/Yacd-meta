@@ -14,6 +14,8 @@ import { TextFilter } from '~/components/shared/TextFilter';
 import type { RulesTabKey } from '~/modules/rules/utils';
 import { ruleFilterText } from '~/store/rules';
 
+import s from './RulesHeader.module.scss';
+
 type Props = {
   activeTab: RulesTabKey;
   setActiveTab: (tab: RulesTabKey) => void;
@@ -59,13 +61,13 @@ export function RulesHeader({
         ) : null}
       </HeaderTabs>
 
-      <HeaderSearch>
+      <HeaderSearch className={s.search}>
         <TextFilter textAtom={ruleFilterText} placeholder={t('search_rules_placeholder')} />
       </HeaderSearch>
 
-      <HeaderActions>
-        {/* 和代理页一致：更新全部只在提供商标签页出现 */}
-        {activeTab === 'providers' && providerCount > 0 ? (
+      {/* 和代理页一致：更新全部只在提供商标签页出现 */}
+      {activeTab === 'providers' && providerCount > 0 ? (
+        <HeaderActions className={s.actions}>
           <HeaderButton
             variant="primary"
             icon={<RotateIcon isRotating={isUpdatingProviders} />}
@@ -73,8 +75,8 @@ export function RulesHeader({
             busy={isUpdatingProviders}
             onClick={onUpdateAllProviders}
           />
-        ) : null}
-      </HeaderActions>
+        </HeaderActions>
+      ) : null}
     </PageHeader>
   );
 }
