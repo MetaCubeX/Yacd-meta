@@ -132,17 +132,16 @@ const variantClass: Record<ButtonVariant, string> = {
   paused: s.btnPaused,
 };
 
+/**
+ * HeaderButton 是顶栏的操作钮。只画图标，label 不上屏，
+ * 读屏和 tooltip 全靠 aria-label 和 title 兜住。
+ */
 export function HeaderButton({
   variant = 'ghost',
   icon,
   label,
   /** 悬停提示，省略则用 label。展开说明按钮作用时才需要单独给 */
   title,
-  /**
-   * 文字收起的宽度门槛。'sm' 只在窄屏收（默认，适合主要操作），
-   * 'md' 中等宽度就收（次要操作，给主要操作腾地方）
-   */
-  hideLabelAt = 'sm',
   busy,
   disabled,
   onClick,
@@ -151,7 +150,6 @@ export function HeaderButton({
   icon: React.ReactNode;
   label: string;
   title?: string;
-  hideLabelAt?: 'sm' | 'md';
   busy?: boolean;
   disabled?: boolean;
   onClick: () => void;
@@ -162,12 +160,10 @@ export function HeaderButton({
       className={cx(s.btn, variantClass[variant], { [s.btnBusy]: busy })}
       onClick={onClick}
       disabled={disabled}
-      // 文字会在窄屏被藏掉，读屏和 tooltip 都得靠这两个属性兜住
       aria-label={label}
       title={title ?? label}
     >
       {icon}
-      <span className={hideLabelAt === 'md' ? s.btnText : s.btnTextSm}>{label}</span>
     </button>
   );
 }

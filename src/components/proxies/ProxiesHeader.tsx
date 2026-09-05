@@ -94,7 +94,6 @@ export function ProxiesHeader({
           <HeaderButton
             icon={<RotateIcon isRotating={isUpdatingProviders} />}
             label={t('update_all_proxy_provider')}
-            hideLabelAt="md"
             onClick={onUpdateAllProviders}
           />
         ) : null}

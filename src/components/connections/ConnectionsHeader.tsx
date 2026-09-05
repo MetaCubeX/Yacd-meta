@@ -97,7 +97,6 @@ export function ConnectionsHeader({
           variant={isRefreshPaused ? 'paused' : 'ghost'}
           icon={isRefreshPaused ? <Play size={14} /> : <Pause size={14} />}
           label={isRefreshPaused ? t('Resume Refresh') : t('Pause Refresh')}
-          hideLabelAt="md"
           onClick={toggleIsRefreshPaused}
         />
 

@@ -5,7 +5,7 @@
  *   >1024  一行排下：标题 · 分段标签 · 搜索 · 操作钮
  *   ≤1024  搜索换到第二行，操作钮靠 margin 顶到第一行右端
  *   ≤768   顶栏拉平到页面底色（窄屏顶部已经有一条不透明的导航条，
- *          顶栏再铺一层外壳色会夹出第三条色带），按钮退化成正方形图标钮，
+ *          顶栏再铺一层外壳色会夹出第三条色带），
  *          凹陷的控件（分段标签轨道、输入框）翻成浮起
  */
 
@@ -267,17 +267,14 @@
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
   appearance: none;
+  width: 38px;
   height: 38px;
-  padding: 0 15px;
+  padding: 0;
   border-radius: 10px;
   border: 1px solid transparent;
-  font-family: inherit;
-  font-size: 0.85rem;
-  font-weight: 500;
   cursor: pointer;
-  white-space: nowrap;
   transition:
     background-color 0.15s ease,
     border-color 0.15s ease,
@@ -289,13 +286,9 @@
     outline-offset: 2px;
   }
 
-  // 窄屏下文字全部收起，按钮退化成正方形图标钮
   @media (max-width: 768px) {
-    gap: 0;
     width: 34px;
     height: 34px;
-    padding: 0;
-    justify-content: center;
   }
 }
 
@@ -340,20 +333,6 @@
 
 .btnBusy {
   opacity: 0.75;
-}
-
-/** 中等宽度就收起的文字，让给更重要的按钮 */
-.btnText {
-  @media (max-width: 1200px) {
-    display: none;
-  }
-}
-
-/** 比 .btnText 保留得久一些：只有窄屏才收起 */
-.btnTextSm {
-  @media (max-width: 768px) {
-    display: none;
-  }
 }
 
 .iconBtn {
