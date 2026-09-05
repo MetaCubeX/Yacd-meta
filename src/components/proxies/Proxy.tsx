@@ -67,7 +67,7 @@ export const ProxySmall = memo(function ProxySmall({
   isSelectable,
   onClick,
 }: ProxyBaseProps) {
-  const delay = proxy.history[proxy.history.length - 1]?.delay;
+  const delay = latency?.failed ? undefined : proxy.history[proxy.history.length - 1]?.delay;
   const latencyNumber = latency?.number ?? delay;
   const color = useMemo(
     () => getLabelColor({ number: latencyNumber }, httpsLatencyTest),
@@ -155,7 +155,7 @@ export const Proxy = memo(function Proxy({
   onClick,
   onTestLatency,
 }: ProxyProps) {
-  const delay = proxy.history[proxy.history.length - 1]?.delay;
+  const delay = latency?.failed ? undefined : proxy.history[proxy.history.length - 1]?.delay;
   const latencyNumber =
     typeof latency?.number === 'number'
       ? latency.number
