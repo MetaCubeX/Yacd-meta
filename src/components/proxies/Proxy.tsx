@@ -48,7 +48,7 @@ type ProxyBaseProps = {
   name: string;
   now?: boolean;
   proxy: ProxyItem;
-  latency?: { number?: number; error?: string; testing?: boolean };
+  latency?: { number?: number; failed?: boolean; testing?: boolean };
   httpsLatencyTest: boolean;
   isSelectable?: boolean;
   onClick?: (proxyName: string) => unknown;
@@ -185,7 +185,7 @@ export const Proxy = memo(function Proxy({
   const className = useMemo(() => {
     return cx(s0.proxy, {
       [s0.now]: now,
-      [s0.error]: latency && latency.error,
+      [s0.failed]: latency && latency.failed,
       [s0.selectable]: isSelectable,
     });
   }, [isSelectable, now, latency]);
@@ -224,7 +224,6 @@ export const Proxy = memo(function Proxy({
           number={hasLatencyNumber ? latencyNumber : undefined}
           color={color}
           isTesting={isTestingLatency}
-          error={latency?.error}
           onClick={runLatencyTest}
         />
       </div>

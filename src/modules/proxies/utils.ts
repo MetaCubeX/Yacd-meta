@@ -97,7 +97,7 @@ export function getProxyLatency(
   visited.add(name);
 
   const latency = delay[name];
-  if (latency && (latency.testing || typeof latency.number === 'number' || latency.error)) {
+  if (latency && (latency.testing || typeof latency.number === 'number' || latency.failed)) {
     return latency;
   }
 
@@ -185,7 +185,7 @@ type DelayEntry = DelayMapping[string];
 function sameDelayEntry(a: DelayEntry, b: DelayEntry) {
   return (
     a.number === b.number &&
-    a.error === b.error &&
+    a.failed === b.failed &&
     a.testing === b.testing &&
     a.updatedAt === b.updatedAt
   );

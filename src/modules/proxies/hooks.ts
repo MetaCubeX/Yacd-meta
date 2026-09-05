@@ -189,17 +189,18 @@ export function useSwitchProxy(apiConfig: ClashAPIConfig, autoCloseOldConns: boo
 
 /**
  * 单个节点测速。结果只落在 delay patch 里，不动查询缓存——后端的 history 会在
- * 下一次刷新时带上同样的数字。
+ * 下一次刷新时带上同样的数字。失败原因走 toast，patch 里只留 failed 标志。
+ * silent 供批量测速用：几百个节点各弹一条通知没法看。
  */
 export function useTestProxyLatency(apiConfig: ClashAPIConfig, appConfig: ProxiesAppConfig) {
   const { latencyTestUrl, latencyTestTimeout, latencyTestExpectedStatus } = appConfig;
 
   return useCallback(
-    async (name: string, providerName?: string) => {
-      setDelayPatch(name, { testing: true, error: '' });
+    async (name: string, providerName?: string, options?: { silent?: boolean }) => {
+      setDelayPatch(name, { testing: true, failed: false });
 
       let delayNumber: number | undefined;
-      let error = '';
+      let message = '';
       try {
         const res = providerName
           ? await proxiesAPI.healthcheckProviderProxy(
@@ -217,19 +218,22 @@ export function useTestProxyLatency(apiConfig: ClashAPIConfig, appConfig: Proxie
               latencyTestTimeout,
               latencyTestExpectedStatus,
             );
-        if (!res.ok) error = res.statusText;
-        const body = await res.json().catch((): undefined => undefined);
-        delayNumber = body?.delay;
+        if (res.ok) {
+          const body = await res.json().catch((): undefined => undefined);
+          delayNumber = body?.delay;
+        } else {
+          message = await readErrorMessage(res);
+        }
       } catch (err) {
-        error = (err as Error).message || 'Request failed';
+        message = (err as Error).message || 'Request failed';
       }
 
       const number = typeof delayNumber === 'number' && delayNumber > 0 ? delayNumber : undefined;
-      setDelayPatch(name, {
-        number,
-        error: error || (number === undefined ? 'Timeout' : ''),
-        testing: false,
-      });
+      const failed = Boolean(message) || number === undefined;
+      setDelayPatch(name, { number, failed, testing: false });
+      if (failed && !options?.silent) {
+        toast('error', i18n.t('test_latency_failed', { name, message: message || 'Timeout' }));
+      }
     },
     [apiConfig, latencyTestUrl, latencyTestTimeout, latencyTestExpectedStatus],
   );
@@ -279,7 +283,9 @@ export function useTestGroupLatency(
       }
       const dangle = getData()?.dangleProxyNames ?? [];
       await Promise.all(
-        memberNames.filter((name) => dangle.indexOf(name) > -1).map((name) => testProxy(name)),
+        memberNames
+          .filter((name) => dangle.indexOf(name) > -1)
+          .map((name) => testProxy(name, undefined, { silent: true })),
       );
     },
     onSettled: () => invalidate(),
@@ -301,7 +307,9 @@ export function useTestAllLatency(
     mutationFn: async () => {
       const data = getData();
       if (!data) return;
-      await Promise.all(data.dangleProxyNames.map((name) => testProxy(name)));
+      await Promise.all(
+        data.dangleProxyNames.map((name) => testProxy(name, undefined, { silent: true })),
+      );
       // 一个一个来，每个都设上限，免得某个慢提供商拖住整轮
       for (const provider of data.proxyProviders) {
         await healthcheckProvider(apiConfig, provider.name, providerHealthcheckTimeout);

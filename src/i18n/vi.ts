@@ -40,6 +40,7 @@ export const data = {
   settings_behavior: 'Hành vi',
   group_fixed: 'Đã ghim',
   switch_proxy_failed: 'Không thể chuyển {{group}}: {{message}}',
+  test_latency_failed: 'Kiểm tra độ trễ {{name}} thất bại: {{message}}',
   group_fixed_tip: 'Nhóm này đang ghim lựa chọn thủ công; chạy kiểm tra độ trễ để bỏ ghim',
   expire_at: 'Hết hạn {{date}}',
   updated_ago: 'Cập nhật {{time}} trước',

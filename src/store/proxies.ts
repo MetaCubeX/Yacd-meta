@@ -7,7 +7,7 @@ export const proxyFilterText = atom('');
 
 /**
  * 本地测速结果。服务端那份延迟数据在 /proxies 的 history 里，这里只放前端发起的
- * 测速产生的东西：进行中的 testing 标志、失败原因、以及后端数据回来之前的临时值。
+ * 测速产生的东西：进行中的 testing 标志、失败标志、以及后端数据回来之前的临时值。
  * 合并规则见 modules/proxies/utils 的 mergeDelayMapping
  */
 export const delayPatchesAtom = atom<DelayMapping>({});
@@ -23,7 +23,7 @@ let flushTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function setDelayPatch(
   name: string,
-  patch: { number?: number; error?: string; testing?: boolean },
+  patch: { number?: number; failed?: boolean; testing?: boolean },
 ) {
   // updatedAt 记的是测速时刻而不是刷新时刻，晚 100ms 写进去会盖掉这期间回来的后端数据
   pending.set(name, { ...pending.get(name), ...patch, updatedAt: Date.now() });

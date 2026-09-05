@@ -156,6 +156,7 @@ export const data = {
   internel: '內部連線',
   Clear: '清空',
   switch_proxy_failed: '切換 {{group}} 失敗：{{message}}',
+  test_latency_failed: '{{name}} 測速失敗：{{message}}',
   group_fixed_tip: '該組已手動固定選擇，點擊測速可解除固定',
   search_rules_placeholder: '搜尋規則或提供商',
   rules_empty_title: '沒有符合的規則',

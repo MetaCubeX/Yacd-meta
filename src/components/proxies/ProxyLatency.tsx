@@ -7,13 +7,12 @@ type ProxyLatencyProps = {
   number?: number;
   color: string;
   isTesting?: boolean;
-  error?: string;
   onClick?: () => void;
 };
 
 const ANIMATION_DURATION_MS = 450;
 
-export function ProxyLatency({ number, color, isTesting, error, onClick }: ProxyLatencyProps) {
+export function ProxyLatency({ number, color, isTesting, onClick }: ProxyLatencyProps) {
   const hasNumber = typeof number === 'number';
   const textRef = React.useRef<HTMLSpanElement>(null);
   const prevNumberRef = React.useRef(number);
@@ -49,11 +48,11 @@ export function ProxyLatency({ number, color, isTesting, error, onClick }: Proxy
     return () => cancelAnimationFrame(rafId);
   }, [number, hasNumber, isTesting]);
 
-  const label = isTesting ? 'Testing...' : hasNumber ? `${number} ms` : error || '--';
+  const label = isTesting ? 'Testing...' : hasNumber ? `${number} ms` : '--';
 
   const className = cx(s0.proxyLatency, {
     [s0.clickable]: Boolean(onClick),
-    [s0.placeholder]: !hasNumber || Boolean(error),
+    [s0.placeholder]: !hasNumber,
     [s0.testing]: isTesting,
   });
 

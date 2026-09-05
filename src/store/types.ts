@@ -89,7 +89,7 @@ export type ProxyItem = {
 export type ProxiesMapping = Record<string, ProxyItem>;
 export type DelayMapping = Record<
   string,
-  { number?: number; error?: string; testing?: boolean; updatedAt?: number }
+  { number?: number; failed?: boolean; testing?: boolean; updatedAt?: number }
 >;
 
 export type ProxyProvider = {

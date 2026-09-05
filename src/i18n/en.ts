@@ -162,6 +162,7 @@ export const data = {
   internel: 'Internal Connection',
   Clear: 'Clear',
   switch_proxy_failed: 'Failed to switch {{group}}: {{message}}',
+  test_latency_failed: 'Latency test failed for {{name}}: {{message}}',
   group_fixed_tip: 'This group has a manually fixed selection; run a latency test to release it',
   rule_entry_count: '{{count}} entries',
   rule_hit_tip: 'Hit {{count}} times, last {{time}}',
