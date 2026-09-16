@@ -12,7 +12,10 @@
  *
  * DBs loaded:
  *   - ip2region_v4.xdb  -> primary for IPv4
- *   - qqwry.dat         -> fallback for IPv4 (better China coverage)
+ *   - qqwry-N.bin (×6)  -> fallback for IPv4 (better China coverage).
+ *                          qqwry.dat exceeds Cloudflare Pages' 25 MiB
+ *                          per-file limit, so it's split into 6 chunks
+ *                          plus a manifest; see fetchQqwryBytes().
  *   - zxipv6wry.db      -> primary for IPv6
  *   - cdn.yml           -> used by `lookupCdn(host)` for host columns
  */
@@ -57,10 +60,39 @@ async function fetchBytes(url: string): Promise<Uint8Array> {
   return new Uint8Array(buf);
 }
 
+// TEMP: qqwry.dat is 26.3 MB which exceeds Cloudflare Pages' 25 MiB per-file
+// limit, so we ship it as 6 chunks plus a manifest. Concatenate in order.
+// Replace with a single fetchBytes('/geoip/qqwry.dat') once the dashboard
+// is hosted somewhere without the per-file cap (R2, self-host, etc.).
+interface QqwryManifest {
+  name: string;
+  totalSize: number;
+  chunkSize: number;
+  chunks: string[];
+}
+async function fetchQqwryBytes(manifestUrl: string): Promise<Uint8Array> {
+  const mres = await fetch(manifestUrl);
+  if (!mres.ok) throw new Error(`HTTP ${mres.status} for ${manifestUrl}`);
+  const manifest = (await mres.json()) as QqwryManifest;
+  const parts = await Promise.all(
+    manifest.chunks.map((name) => fetchBytes(`${manifestUrl.replace(/[^/]*$/, '')}${name}`)),
+  );
+  const out = new Uint8Array(manifest.totalSize);
+  let off = 0;
+  for (const p of parts) {
+    out.set(p, off);
+    off += p.length;
+  }
+  if (off !== manifest.totalSize) {
+    throw new Error(`qqwry: chunk size mismatch: got ${off}, want ${manifest.totalSize}`);
+  }
+  return out;
+}
+
 async function loadAll(): Promise<void> {
   const [ip2Buf, qqrBuf, zxBuf, cdnText] = await Promise.all([
     fetchBytes('/geoip/ip2region_v4.xdb'),
-    fetchBytes('/geoip/qqwry.dat'),
+    fetchQqwryBytes('/geoip/qqwry.manifest.json'),
     fetchBytes('/geoip/zxipv6wry.db'),
     fetch('/geoip/cdn.yml').then((r) => (r.ok ? r.text() : '')),
   ]);
