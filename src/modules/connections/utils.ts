@@ -37,6 +37,7 @@ export const CONNECTION_COLUMNS_DEFAULT: ConnectionColumn[] = [
   { Header: 'c_source', accessor: 'source' },
   { Header: 'c_destination_ip', accessor: 'destinationIP' },
   { Header: 'c_destination_location', accessor: 'destinationLocation' },
+  { Header: 'c_remote_location', accessor: 'remoteDestinationLocation' },
   { Header: 'c_sni', accessor: 'sniffHost' },
   { Header: 'c_ctrl', accessor: 'ctrl' },
 ];
@@ -113,6 +114,7 @@ export function filterConns(conns: FormattedConn[], keyword: string, sourceIp: s
         conn.sourceIP,
         conn.sourcePort,
         conn.destinationIP,
+        conn.remoteDestination,
         conn.chains,
         conn.rule,
         conn.type,
@@ -216,6 +218,15 @@ export function formatConnectionDataItem(
     downloadSpeedCurr: 0,
     uploadSpeedCurr: 0,
     process: process || '-',
-    destinationIP: remoteDestination || destinationIP || host,
+    // Keep the real destination reported by mihomo. It is empty when the
+    // target is a domain that mihomo never resolved locally (proxied by
+    // domain, or TUN + fake-ip where the fake IP is discarded).
+    // `remoteDestination` is NOT the target: it is the peer the outbound
+    // connection actually dialed, i.e. the proxy node when the connection
+    // goes through a proxy. Overriding destinationIP with it made the
+    // "Destination IP" / "Destination Location" columns show the node's
+    // address and geo location. The node address is still available as
+    // `remoteDestination` (see the Next-hop Location column).
+    destinationIP: destinationIP || '',
   };
 }

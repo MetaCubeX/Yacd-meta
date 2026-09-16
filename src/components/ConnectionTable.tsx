@@ -23,6 +23,25 @@ import ModalConnectionDetails from './ModalConnectionDetails';
 
 const sortById = { id: 'id', desc: true };
 
+/**
+ * Renders a geo-located cell for an IP address. `geoip.lookupIp` is
+ * synchronous once `init()` has resolved; before that it returns '' and we
+ * render an em-dash. Empty/unknown addresses render as the cell's fallback.
+ */
+function renderLocationCell(ip: string) {
+  if (!ip) return '';
+  const region = geoip.lookupIp(ip);
+  const text = region || '—';
+  // The column is 220px wide; long Chinese region strings get truncated.
+  // Wrap the text in a tooltip so the user can hover to see the full value.
+  if (!region) return text;
+  return (
+    <Tooltip label={region}>
+      <span style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>{text}</span>
+    </Tooltip>
+  );
+}
+
 const COLUMN_WIDTHS = {
   ctrl: 50,
   start: 100,
@@ -37,6 +56,7 @@ const COLUMN_WIDTHS = {
   source: 170,
   destinationIP: 170,
   destinationLocation: 220,
+  remoteDestinationLocation: 220,
   process: 130,
   sniffHost: 150,
 };
@@ -157,27 +177,17 @@ function Table({ data, columns, hiddenColumns, apiConfig, height }) {
         case 'downloadSpeedCurr':
         case 'uploadSpeedCurr':
           return prettyBytes(cell.value) + '/s';
-        case 'destinationLocation': {
-          // `destinationLocation` is a virtual column: the cell value
-          // is computed from the row's destinationIP at render time.
-          const ip = cell.row.original.destinationIP;
-          if (!ip) return '';
-          // geoip.lookupIp is sync once init() has resolved; before
-          // that it returns '' and we render an em-dash.
-          const region = geoip.lookupIp(ip);
-          const text = region || '—';
-          // The column is 220px wide; long Chinese region strings get
-          // truncated. Wrap the text in a tooltip so the user can
-          // hover to see the full value.
-          if (!region) return text;
-          return (
-            <Tooltip label={region}>
-              <span style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {text}
-              </span>
-            </Tooltip>
-          );
-        }
+        // Both location columns are virtual: the cell value is computed at
+        // render time from an IP address.
+        //   destinationLocation         -> real destination IP reported by
+        //                                  mihomo (empty when unknown)
+        //   remoteDestinationLocation   -> the peer the outbound connection
+        //                                  actually dialed, i.e. the proxy
+        //                                  node for proxied connections
+        case 'destinationLocation':
+          return renderLocationCell(cell.row.original.destinationIP);
+        case 'remoteDestinationLocation':
+          return renderLocationCell(cell.row.original.remoteDestination);
         default:
           return cell.value;
       }

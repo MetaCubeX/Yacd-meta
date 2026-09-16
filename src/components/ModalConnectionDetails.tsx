@@ -37,12 +37,23 @@ export default function ModalConnectionDetails({ isOpen, onRequestClose, connect
     { label: 'Host', value: connection.host },
     { label: 'Sniff Host', value: connection.sniffHost },
     { label: 'Process', value: connection.process },
-    { label: 'Destination', value: `${connection.destinationIP}:${connection.destinationPort}` },
+    {
+      label: 'Destination',
+      // The real destination reported by mihomo; '-' when the target is a
+      // domain mihomo never resolved locally.
+      value: connection.destinationIP
+        ? `${connection.destinationIP}:${connection.destinationPort}`
+        : '',
+    },
     {
       label: 'Destination Location',
       value: connection.destinationIP ? geoip.lookupIp(connection.destinationIP) : '',
     },
     { label: 'Remote Destination', value: connection.remoteDestination },
+    {
+      label: 'Remote Destination Location',
+      value: connection.remoteDestination ? geoip.lookupIp(connection.remoteDestination) : '',
+    },
     { label: 'Rule', value: connection.rule },
     { label: 'Chains', value: connection.chains },
     { label: 'Type', value: connection.type },
