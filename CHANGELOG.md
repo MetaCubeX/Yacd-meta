@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/MetaCubeX/Yacd-meta/compare/v0.4.0...v0.5.0) (2026-09-18)
+
+
+### Features
+
+* `mips` stack ([e2a7bc6](https://github.com/MetaCubeX/Yacd-meta/commit/e2a7bc6c47b3c93bf0ba2de5461b8be0fd4110bb))
+
+
+### Bug Fixes
+
+* urltest后连接未自动断开 ([590bd1c](https://github.com/MetaCubeX/Yacd-meta/commit/590bd1c4600d70cd7b1334d8c3a467da60515f5f))
+
 ## [0.4.0](https://github.com/MetaCubeX/Yacd-meta/compare/v0.3.8...v0.4.0) (2026-09-09)
 
 
