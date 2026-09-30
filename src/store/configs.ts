@@ -99,119 +99,62 @@ export function updateConfigs(
   };
 }
 
-export function reloadConfigFile(apiConfig: ClashAPIConfig) {
-  return async (dispatch: DispatchFn) => {
-    configsAPI
-      .reloadConfigFile(apiConfig)
-      .then(
-        (res) => {
-          if (res.ok === false) {
-            console.log('Error reload config file', res.statusText);
-          }
-        },
-        (err) => {
-          console.log('Error reload config file', err);
-          throw err;
-        },
-      )
-      .then(() => {
-        dispatch(fetchConfigs(apiConfig));
-      });
-  };
-}
+export type ActionResult = { ok: boolean; message?: string };
 
-export function restartCore(apiConfig: ClashAPIConfig) {
-  return async (dispatch: DispatchFn) => {
-    configsAPI
-      .restartCore(apiConfig)
-      .then(
-        (res) => {
-          if (res.ok === false) {
-            console.log('Error restart core', res.statusText);
-          }
-        },
-        (err) => {
-          console.log('Error restart core', err);
-          throw err;
-        },
-      )
-      .then(() => {
-        dispatch(fetchConfigs(apiConfig));
-      });
-  };
-}
-
-export type UpgradeResult = { ok: boolean; message?: string };
-
-// 把 upgrade 类接口的响应收敛成 { ok, message }，交给调用方决定怎么提示
-async function toUpgradeResult(request: Promise<Response>, logLabel: string) {
+// 把一次性动作类接口的响应收敛成 { ok, message }：2xx 算成功，否则带上接口返回的内容，交给调用方决定怎么提示
+async function toActionResult(request: Promise<Response>, logLabel: string): Promise<ActionResult> {
   let res: Response;
   try {
     res = await request;
   } catch (err) {
-    console.log(logLabel, err);
+    console.error(logLabel, err);
     return { ok: false, message: err instanceof Error ? err.message : String(err) };
   }
   if (!res.ok) {
-    const message = await readErrorMessage(res);
-    console.log(logLabel, message);
-    return { ok: false, message };
+    return { ok: false, message: await readErrorMessage(res, logLabel) };
   }
   return { ok: true };
 }
 
+// 动作成功后配置可能变了，回头拉一次 configs
+function thenRefetchConfigs(
+  apiConfig: ClashAPIConfig,
+  send: (apiConfig: ClashAPIConfig) => Promise<Response>,
+  logLabel: string,
+) {
+  return async (dispatch: DispatchFn): Promise<ActionResult> => {
+    const result = await toActionResult(send(apiConfig), logLabel);
+    if (result.ok) dispatch(fetchConfigs(apiConfig));
+    return result;
+  };
+}
+
+export function reloadConfigFile(apiConfig: ClashAPIConfig) {
+  return thenRefetchConfigs(apiConfig, configsAPI.reloadConfigFile, 'Error reload config file');
+}
+
+export function restartCore(apiConfig: ClashAPIConfig) {
+  return thenRefetchConfigs(apiConfig, configsAPI.restartCore, 'Error restart core');
+}
+
 export function upgradeCore(apiConfig: ClashAPIConfig, channel?: configsAPI.UpgradeChannel) {
   // 内核更新成功后会自行重启，这里不再立刻拉配置，否则大概率打在重启窗口上
-  return async (): Promise<UpgradeResult> =>
-    toUpgradeResult(configsAPI.upgradeCore(apiConfig, channel), 'Error upgrade core');
+  return async (): Promise<ActionResult> =>
+    toActionResult(configsAPI.upgradeCore(apiConfig, channel), 'Error upgrade core');
 }
 
 export function upgradeGeo(apiConfig: ClashAPIConfig) {
-  return async (dispatch: DispatchFn) => {
-    configsAPI
-      .upgradeGeo(apiConfig)
-      .then(
-        (res) => {
-          if (res.ok === false) {
-            console.log('Error upgrade geo', res.statusText);
-          }
-        },
-        (err) => {
-          console.log('Error upgrade geo', err);
-          throw err;
-        },
-      )
-      .then(() => {
-        dispatch(fetchConfigs(apiConfig));
-      });
-  };
+  return thenRefetchConfigs(apiConfig, configsAPI.upgradeGeo, 'Error upgrade geo');
 }
 
 export function upgradeUI(apiConfig: ClashAPIConfig) {
   // 只是把面板静态文件换掉，内核配置没变，不需要回头拉 configs
-  return async (): Promise<UpgradeResult> =>
-    toUpgradeResult(configsAPI.upgradeUI(apiConfig), 'Error upgrade ui');
+  return async (): Promise<ActionResult> =>
+    toActionResult(configsAPI.upgradeUI(apiConfig), 'Error upgrade ui');
 }
 
 export function flushFakeIPPool(apiConfig: ClashAPIConfig) {
-  return async (dispatch: DispatchFn) => {
-    configsAPI
-      .flushFakeIPPool(apiConfig)
-      .then(
-        (res) => {
-          if (res.ok === false) {
-            console.log('Error flush FakeIP pool', res.statusText);
-          }
-        },
-        (err) => {
-          console.log('Error flush FakeIP pool', err);
-          throw err;
-        },
-      )
-      .then(() => {
-        dispatch(fetchConfigs(apiConfig));
-      });
-  };
+  return thenRefetchConfigs(apiConfig, configsAPI.flushFakeIPPool, 'Error flush FakeIP pool');
 }
 
 export const initialState: StateConfigs = {

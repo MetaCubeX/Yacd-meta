@@ -61,6 +61,7 @@ export default function Config({ dispatch, configs, selectedChartStyleIndex, api
     handleUpgradeUI,
     isUpgradingUI,
     handleFlushFakeIPPool,
+    pendingAction,
     versionQuery: { data: version },
     coreUpdate,
   } = useConfigPage({
@@ -266,6 +267,8 @@ export default function Config({ dispatch, configs, selectedChartStyleIndex, api
                   <Button
                     start={<RotateCw size={16} />}
                     label={t('reload_config_file')}
+                    isLoading={pendingAction === 'reload_config'}
+                    disabled={pendingAction !== null}
                     onClick={handleReloadConfigFile}
                   />
                 </div>
@@ -275,6 +278,8 @@ export default function Config({ dispatch, configs, selectedChartStyleIndex, api
                     <Button
                       start={<DownloadCloud size={16} />}
                       label={t('upgrade_geo')}
+                      isLoading={pendingAction === 'upgrade_geo'}
+                      disabled={pendingAction !== null}
                       onClick={handleUpgradeGeo}
                     />
                   </div>
@@ -284,6 +289,8 @@ export default function Config({ dispatch, configs, selectedChartStyleIndex, api
                   <Button
                     start={<Trash2 size={16} />}
                     label={t('flush_fake_ip_pool')}
+                    isLoading={pendingAction === 'flush_fake_ip_pool'}
+                    disabled={pendingAction !== null}
                     onClick={handleFlushFakeIPPool}
                   />
                 </div>
@@ -293,6 +300,8 @@ export default function Config({ dispatch, configs, selectedChartStyleIndex, api
                     <Button
                       start={<RotateCw size={16} />}
                       label={t('restart_core')}
+                      isLoading={pendingAction === 'restart_core'}
+                      disabled={pendingAction !== null}
                       onClick={handleRestartCore}
                     />
                   </div>

@@ -185,8 +185,14 @@ export function useSwitchProxy(apiConfig: ClashAPIConfig, autoCloseOldConns: boo
 
   const { mutate } = useMutation({
     mutationFn: async ({ groupName, itemName }: SwitchTo) => {
-      const res = await proxiesAPI.requestToSwitchProxy(apiConfig, groupName, itemName);
-      if (!res.ok) throw new Error(await readErrorMessage(res));
+      let res: Response;
+      try {
+        res = await proxiesAPI.requestToSwitchProxy(apiConfig, groupName, itemName);
+      } catch (err) {
+        console.error('Error switch proxy', err);
+        throw err;
+      }
+      if (!res.ok) throw new Error(await readErrorMessage(res, 'Error switch proxy'));
     },
     onMutate: async ({ groupName, itemName }: SwitchTo) => {
       await queryClient.cancelQueries({ queryKey });
@@ -227,8 +233,16 @@ export function useResumeAutomaticSelection(
   const { queryClient, queryKey } = useProxiesCache(apiConfig);
   const { mutate, isPending } = useMutation({
     mutationFn: async (groupName: string) => {
-      const res = await proxiesAPI.requestToUnfixProxy(apiConfig, groupName);
-      if (!res.ok) throw new Error(await readErrorMessage(res));
+      let res: Response;
+      try {
+        res = await proxiesAPI.requestToUnfixProxy(apiConfig, groupName);
+      } catch (err) {
+        console.error('Error resume automatic selection', err);
+        throw err;
+      }
+      if (!res.ok) {
+        throw new Error(await readErrorMessage(res, 'Error resume automatic selection'));
+      }
     },
     onError: (err, groupName) => {
       toast(
@@ -304,9 +318,10 @@ export function useTestProxyLatency(apiConfig: ClashAPIConfig, appConfig: Proxie
           const body = await res.json().catch((): undefined => undefined);
           delayNumber = body?.delay;
         } else {
-          message = await readErrorMessage(res);
+          message = await readErrorMessage(res, `Error test latency: ${name}`);
         }
       } catch (err) {
+        console.error(`Error test latency: ${name}`, err);
         message = (err as Error).message || 'Request failed';
       }
 

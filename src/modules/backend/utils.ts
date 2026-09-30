@@ -95,14 +95,22 @@ export async function testAPIConfig(apiConfig: ClashAPIConfig): Promise<Connecti
   let res: Response;
   try {
     res = await requestVersion(apiConfig, AbortSignal.timeout(TEST_TIMEOUT_MS));
-  } catch {
+  } catch (err) {
+    console.error('Error test API config', err);
     return { ok: false, reason: 'unreachable' };
   }
-  if (!res.ok) return { ok: false, reason: 'http', message: await readErrorMessage(res) };
+  if (!res.ok) {
+    return {
+      ok: false,
+      reason: 'http',
+      message: await readErrorMessage(res, 'Error test API config'),
+    };
+  }
   try {
     const data: { version?: unknown } = await res.json();
     return { ok: true, version: typeof data.version === 'string' ? data.version : '' };
-  } catch {
+  } catch (err) {
+    console.error('Error test API config: response is not a Clash /version payload', err);
     return { ok: false, reason: 'not_clash' };
   }
 }
