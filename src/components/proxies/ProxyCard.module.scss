@@ -78,6 +78,43 @@
   flex-shrink: 0;
 }
 
+.resumeAction {
+  appearance: none;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  padding: 4px 7px;
+  background: transparent;
+  color: var(--color-focus-blue);
+  font: inherit;
+  font-size: 0.68rem;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--color-hover-soft);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-blue);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+@media (max-width: 480px) {
+  .cardHeader:has(.resumeAction) {
+    flex-wrap: wrap;
+
+    .name {
+      flex-basis: 100%;
+    }
+  }
+}
+
 .iconAction {
   display: inline-flex;
   align-items: center;

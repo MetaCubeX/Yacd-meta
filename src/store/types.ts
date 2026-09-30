@@ -79,7 +79,7 @@ export type ProxyItem = {
   hidden?: boolean;
   // group-only fields (Selector/URLTest/Fallback/LoadBalance) from GET /proxies
   // set by URLTest/Fallback groups to the manually-fixed member name; cleared by the
-  // backend when the group is latency-tested via /group/{name}/delay
+  // backend via DELETE /proxies/{name} or a latency test at /group/{name}/delay
   fixed?: string;
   testUrl?: string;
   expectedStatus?: string;

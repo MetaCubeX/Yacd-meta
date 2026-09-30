@@ -52,6 +52,14 @@ export async function requestToSwitchProxy(
   });
 }
 
+export async function requestToUnfixProxy(apiConfig: ClashAPIConfig, name: string) {
+  const { url, init } = getURLAndInit(apiConfig);
+  return await fetch(`${url}${endpoint}/${encodeURIComponent(name)}`, {
+    ...init,
+    method: 'DELETE',
+  });
+}
+
 export async function requestDelayForProxy(
   apiConfig: ClashAPIConfig,
   name: string,

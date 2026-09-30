@@ -7,6 +7,7 @@ import {
   useFilterAwareCollapse,
   useFilteredAndSorted,
   useFilterSegments,
+  useResumeAutomaticSelection,
   useSwitchProxy,
   useTestGroupLatency,
   useTestProxyLatency,
@@ -100,12 +101,18 @@ export const ProxyGroup = memo(function ProxyGroup({
   const [effectiveIsOpen, toggle] = useFilterAwareCollapse({ isOpen, nameMatched, onToggle });
 
   const switchProxy = useSwitchProxy(apiConfig, appConfig.autoCloseOldConns);
+  const [resumeAutomaticSelection, isResuming] = useResumeAutomaticSelection(
+    apiConfig,
+    appConfig.autoCloseOldConns,
+  );
+  const canResumeAutomaticSelection =
+    version.meta && !version.premium && Boolean(fixed) && ['URLTest', 'Fallback'].includes(type);
   const itemOnTapCallback = useCallback(
     (proxyName: string) => {
-      if (!isSelectable) return;
+      if (!isSelectable || isResuming) return;
       switchProxy(name, proxyName);
     },
-    [switchProxy, name, isSelectable],
+    [switchProxy, name, isSelectable, isResuming],
   );
 
   const [testGroup, isTestingLatency] = useTestGroupLatency(apiConfig, appConfig);
@@ -121,7 +128,7 @@ export const ProxyGroup = memo(function ProxyGroup({
     delay,
     httpsLatencyTest,
     now,
-    isSelectable,
+    isSelectable: isSelectable && !isResuming,
     itemOnTapCallback,
     onTestLatency,
     proxies,
@@ -138,6 +145,21 @@ export const ProxyGroup = memo(function ProxyGroup({
         latencyColor={nowLatencyColor}
         onTest={testLatency}
         isTesting={isTestingLatency}
+        extraActions={
+          canResumeAutomaticSelection ? (
+            <button
+              type="button"
+              className={s0.resumeAction}
+              title={t('resume_automatic_selection_tip')}
+              onClick={() => resumeAutomaticSelection(name)}
+              onKeyDown={(event) => event.stopPropagation()}
+              disabled={isResuming || isTestingLatency}
+              aria-busy={isResuming}
+            >
+              {t('resume_automatic_selection')}
+            </button>
+          ) : null
+        }
         badges={
           fixed ? (
             <span className={s0.fixedBadge} title={t('group_fixed_tip')}>

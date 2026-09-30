@@ -39,9 +39,14 @@ export const data = {
   settings_display: 'Hiển thị',
   settings_behavior: 'Hành vi',
   group_fixed: 'Đã ghim',
+  resume_automatic_selection: 'Tự động',
+  resume_automatic_selection_tip: 'Bỏ ghim lựa chọn để nhóm tự động chọn nút',
+  resume_automatic_selection_failed:
+    'Không thể khôi phục lựa chọn tự động cho {{group}}: {{message}}',
   switch_proxy_failed: 'Không thể chuyển {{group}}: {{message}}',
   test_latency_failed: 'Kiểm tra độ trễ {{name}} thất bại: {{message}}',
-  group_fixed_tip: 'Nhóm này đang ghim lựa chọn thủ công; chạy kiểm tra độ trễ để bỏ ghim',
+  group_fixed_tip:
+    'Nhóm này đang ghim lựa chọn thủ công; chọn Tự động hoặc kiểm tra độ trễ nhóm để bỏ ghim',
   expire_at: 'Hết hạn {{date}}',
   updated_ago: 'Cập nhật {{time}} trước',
   sort_in_grp: 'Sắp xếp trong nhóm',
