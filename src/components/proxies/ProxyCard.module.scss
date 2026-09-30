@@ -66,6 +66,48 @@
   cursor: help;
 }
 
+.fixedPin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: var(--color-accent-soft-bg);
+  color: var(--color-accent-soft-fg);
+  font-size: 13px;
+  cursor: pointer;
+
+  .pinOffIcon {
+    display: none;
+  }
+
+  // Hovering previews the action: the pin turns into "unpin"
+  &:hover:not([aria-disabled='true']) {
+    .pinIcon {
+      display: none;
+    }
+
+    .pinOffIcon {
+      display: block;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-blue);
+    outline-offset: 2px;
+  }
+
+  &[aria-disabled='true'] {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
 .headerSpacer {
   flex: 1;
   min-width: 8px;
@@ -76,43 +118,6 @@
   align-items: center;
   gap: 2px;
   flex-shrink: 0;
-}
-
-.resumeAction {
-  appearance: none;
-  border: 1px solid currentColor;
-  border-radius: 6px;
-  padding: 4px 7px;
-  background: transparent;
-  color: var(--color-focus-blue);
-  font: inherit;
-  font-size: 0.68rem;
-  white-space: nowrap;
-  cursor: pointer;
-
-  &:hover:not(:disabled) {
-    background: var(--color-hover-soft);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--color-focus-blue);
-    outline-offset: 2px;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: default;
-  }
-}
-
-@media (max-width: 480px) {
-  .cardHeader:has(.resumeAction) {
-    flex-wrap: wrap;
-
-    .name {
-      flex-basis: 100%;
-    }
-  }
 }
 
 .iconAction {

@@ -43,14 +43,13 @@ export const data = {
   settings_display: 'Отображение',
   settings_behavior: 'Поведение',
   group_fixed: 'Закреплено',
-  resume_automatic_selection: 'Автовыбор',
-  resume_automatic_selection_tip: 'Снять закрепление и возобновить автоматический выбор узла',
+  group_fixed_resume_tip: 'Закреплено за {{name}}; нажмите, чтобы вернуть автоматический выбор',
   resume_automatic_selection_failed:
     'Не удалось возобновить автоматический выбор для {{group}}: {{message}}',
   switch_proxy_failed: 'Не удалось переключить {{group}}: {{message}}',
   test_latency_failed: 'Не удалось проверить задержку {{name}}: {{message}}',
   group_fixed_tip:
-    'Выбор закреплён вручную; нажмите «Автовыбор» или проверьте задержку группы, чтобы снять закрепление',
+    'В этой группе выбор закреплён вручную; запустите проверку задержки, чтобы снять закрепление',
   expire_at: 'Истекает {{date}}',
   updated_ago: 'Обновлено {{time}} назад',
   sort_in_grp: 'Сортировка в группе',

@@ -237,11 +237,28 @@ export function useResumeAutomaticSelection(
       );
     },
     onSuccess: async (_data, groupName) => {
-      const data = await queryClient.fetchQuery({
-        queryKey,
-        queryFn: () => fetchProxiesData(apiConfig),
-        staleTime: 0,
+      // The backend has already released the pin, so drop `fixed` right away; the refetch
+      // below only exists to learn the new `now`.
+      queryClient.setQueryData<ProxiesData>(queryKey, (old) => {
+        const group = old?.proxies[groupName];
+        if (!old || !group) return old;
+        return {
+          ...old,
+          proxies: { ...old.proxies, [groupName]: { ...group, fixed: undefined } },
+        };
       });
+      // Anything thrown from onSuccess turns the mutation into an error and fires onError,
+      // which would report a successful DELETE as a failed resume.
+      let data: ProxiesData;
+      try {
+        data = await queryClient.fetchQuery({
+          queryKey,
+          queryFn: () => fetchProxiesData(apiConfig),
+          staleTime: 0,
+        });
+      } catch {
+        return;
+      }
       const now = data.proxies[groupName]?.now;
       if (autoCloseOldConns && now) {
         closePrevConns(apiConfig, data.proxies, { groupName, itemName: now });

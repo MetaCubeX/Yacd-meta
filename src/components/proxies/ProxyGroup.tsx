@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { LuPin, LuPinOff } from 'react-icons/lu';
 
 import Collapsible from '~/components/shared/Collapsible';
 import { useVersion } from '~/hooks/useVersion';
@@ -116,6 +117,7 @@ export const ProxyGroup = memo(function ProxyGroup({
   );
 
   const [testGroup, isTestingLatency] = useTestGroupLatency(apiConfig, appConfig);
+  const isResumeBlocked = isResuming || isTestingLatency;
   const testLatency = useCallback(
     () => testGroup({ groupName: name, isMeta: version.meta === true, memberNames: all }),
     [testGroup, name, version.meta, all],
@@ -145,23 +147,28 @@ export const ProxyGroup = memo(function ProxyGroup({
         latencyColor={nowLatencyColor}
         onTest={testLatency}
         isTesting={isTestingLatency}
-        extraActions={
+        badges={
           canResumeAutomaticSelection ? (
+            // The pin sits inside the header's click-to-collapse row, so both click and key
+            // events must stop here. aria-disabled instead of disabled: a click on a disabled
+            // button is not guaranteed to stay off the header across browsers.
             <button
               type="button"
-              className={s0.resumeAction}
-              title={t('resume_automatic_selection_tip')}
-              onClick={() => resumeAutomaticSelection(name)}
-              onKeyDown={(event) => event.stopPropagation()}
-              disabled={isResuming || isTestingLatency}
+              className={s0.fixedPin}
+              title={t('group_fixed_resume_tip', { name: fixed })}
+              aria-label={t('group_fixed_resume_tip', { name: fixed })}
+              aria-disabled={isResumeBlocked}
               aria-busy={isResuming}
+              onClick={(event) => {
+                event.stopPropagation();
+                if (!isResumeBlocked) resumeAutomaticSelection(name);
+              }}
+              onKeyDown={(event) => event.stopPropagation()}
             >
-              {t('resume_automatic_selection')}
+              <LuPin className={s0.pinIcon} aria-hidden />
+              <LuPinOff className={s0.pinOffIcon} aria-hidden />
             </button>
-          ) : null
-        }
-        badges={
-          fixed ? (
+          ) : fixed ? (
             <span className={s0.fixedBadge} title={t('group_fixed_tip')}>
               {t('group_fixed')}
             </span>

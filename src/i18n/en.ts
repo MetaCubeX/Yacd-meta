@@ -51,9 +51,7 @@ export const data = {
   settings_display: 'Display',
   settings_behavior: 'Behavior',
   group_fixed: 'Fixed',
-  resume_automatic_selection: 'Resume auto',
-  resume_automatic_selection_tip:
-    'Clear the fixed selection and let this group choose automatically',
+  group_fixed_resume_tip: 'Fixed to {{name}}; click to resume automatic selection',
   resume_automatic_selection_failed:
     'Failed to resume automatic selection for {{group}}: {{message}}',
   expire_at: 'Expires {{date}}',
@@ -168,8 +166,7 @@ export const data = {
   Clear: 'Clear',
   switch_proxy_failed: 'Failed to switch {{group}}: {{message}}',
   test_latency_failed: 'Latency test failed for {{name}}: {{message}}',
-  group_fixed_tip:
-    'This group has a manually fixed selection; resume auto or run a group latency test to release it',
+  group_fixed_tip: 'This group has a manually fixed selection; run a latency test to release it',
   rule_entry_count: '{{count}} entries',
   rule_hit_tip: 'Hit {{count}} times, last {{time}}',
   rule_never_hit: 'Never hit',
