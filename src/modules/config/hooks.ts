@@ -7,6 +7,7 @@ import * as logsApi from '~/api/logs';
 import { fetchVersion } from '~/api/version';
 import { useCoreUpdate } from '~/hooks/useCoreUpdate';
 import {
+  ActionResult,
   fetchConfigs,
   flushFakeIPPool,
   reloadConfigFile,
@@ -26,6 +27,9 @@ const { useCallback, useEffect, useRef, useState } = React;
 
 // 面板更新成功后到自动刷新之间的间隔，够看清通知即可
 const UI_RELOAD_DELAY_MS = 1500;
+
+// 值同时是 i18n key 的前缀：`${action}_success` / `${action}_failed`
+type ConfigAction = 'reload_config' | 'restart_core' | 'upgrade_geo' | 'flush_fake_ip_pool';
 
 type UpdateAppConfigFn = (name: string, value: unknown) => void;
 
@@ -158,13 +162,31 @@ export function useConfigPage({
     [apiConfig, dispatch, updateAppConfig],
   );
 
+  // 正在执行的一次性动作，null 表示空闲；用来给按钮做 loading 并防止重复点击
+  const [pendingAction, setPendingAction] = useState<ConfigAction | null>(null);
+
+  const runAction = useCallback(
+    async (action: ConfigAction, thunk: (dispatch: DispatchFn) => Promise<ActionResult>) => {
+      if (pendingAction !== null) return;
+      setPendingAction(action);
+      const result = await dispatch(thunk);
+      setPendingAction(null);
+      if (result.ok) {
+        toast('success', t(`${action}_success`));
+      } else {
+        toast('error', t(`${action}_failed`, { message: result.message }));
+      }
+    },
+    [dispatch, pendingAction, t],
+  );
+
   const handleReloadConfigFile = useCallback(() => {
-    dispatch(reloadConfigFile(apiConfig));
-  }, [apiConfig, dispatch]);
+    runAction('reload_config', reloadConfigFile(apiConfig));
+  }, [apiConfig, runAction]);
 
   const handleRestartCore = useCallback(() => {
-    dispatch(restartCore(apiConfig));
-  }, [apiConfig, dispatch]);
+    runAction('restart_core', restartCore(apiConfig));
+  }, [apiConfig, runAction]);
 
   // 正在更新的通道，null 表示空闲；同时用来给两个按钮做 loading / 互斥
   const [upgradingChannel, setUpgradingChannel] = useState<UpgradeChannel | null>(null);
@@ -185,8 +207,8 @@ export function useConfigPage({
   );
 
   const handleUpgradeGeo = useCallback(() => {
-    dispatch(upgradeGeo(apiConfig));
-  }, [apiConfig, dispatch]);
+    runAction('upgrade_geo', upgradeGeo(apiConfig));
+  }, [apiConfig, runAction]);
 
   const [isUpgradingUI, setIsUpgradingUI] = useState(false);
 
@@ -205,8 +227,8 @@ export function useConfigPage({
   }, [apiConfig, dispatch, isUpgradingUI, t]);
 
   const handleFlushFakeIPPool = useCallback(() => {
-    dispatch(flushFakeIPPool(apiConfig));
-  }, [apiConfig, dispatch]);
+    runAction('flush_fake_ip_pool', flushFakeIPPool(apiConfig));
+  }, [apiConfig, runAction]);
 
   return {
     configState,
@@ -221,6 +243,7 @@ export function useConfigPage({
     handleUpgradeUI,
     isUpgradingUI,
     handleFlushFakeIPPool,
+    pendingAction,
     versionQuery,
     coreUpdate,
   };
