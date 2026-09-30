@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.0](https://github.com/MetaCubeX/Yacd-meta/compare/v0.5.0...v0.6.0) (2026-09-30)
+
+
+### Features
+
+* **config:** show versions beside upgrade actions and flag mihomo updates ([853fb8e](https://github.com/MetaCubeX/Yacd-meta/commit/853fb8e3f9ce76082115350f2871af0eef010d33))
+* **proxies:** click the fixed pin to resume automatic selection ([#126](https://github.com/MetaCubeX/Yacd-meta/issues/126)) ([ad560a6](https://github.com/MetaCubeX/Yacd-meta/commit/ad560a6176a12d2080848c43eee6fc247ecfcb71))
+
 ## [0.5.0](https://github.com/MetaCubeX/Yacd-meta/compare/v0.4.0...v0.5.0) (2026-09-28)
 
 
