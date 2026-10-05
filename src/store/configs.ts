@@ -134,7 +134,9 @@ export function reloadConfigFile(apiConfig: ClashAPIConfig) {
 }
 
 export function restartCore(apiConfig: ClashAPIConfig) {
-  return thenRefetchConfigs(apiConfig, configsAPI.restartCore, 'Error restart core');
+  // mihomo 先回 200 再重启进程，紧接着拉配置大概率撞上重启窗口，失败会弹出后端配置框
+  return async (): Promise<ActionResult> =>
+    toActionResult(configsAPI.restartCore(apiConfig), 'Error restart core');
 }
 
 export function upgradeCore(apiConfig: ClashAPIConfig, channel?: configsAPI.UpgradeChannel) {

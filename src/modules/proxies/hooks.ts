@@ -185,13 +185,7 @@ export function useSwitchProxy(apiConfig: ClashAPIConfig, autoCloseOldConns: boo
 
   const { mutate } = useMutation({
     mutationFn: async ({ groupName, itemName }: SwitchTo) => {
-      let res: Response;
-      try {
-        res = await proxiesAPI.requestToSwitchProxy(apiConfig, groupName, itemName);
-      } catch (err) {
-        console.error('Error switch proxy', err);
-        throw err;
-      }
+      const res = await proxiesAPI.requestToSwitchProxy(apiConfig, groupName, itemName);
       if (!res.ok) throw new Error(await readErrorMessage(res, 'Error switch proxy'));
     },
     onMutate: async ({ groupName, itemName }: SwitchTo) => {
@@ -208,6 +202,7 @@ export function useSwitchProxy(apiConfig: ClashAPIConfig, autoCloseOldConns: boo
       return { snapshot };
     },
     onError: (err, { groupName }, ctx) => {
+      console.error('Error switch proxy', err);
       if (ctx?.snapshot) queryClient.setQueryData(queryKey, ctx.snapshot);
       toast('error', i18n.t('switch_proxy_failed', { group: groupName, message: err.message }));
     },
@@ -233,18 +228,13 @@ export function useResumeAutomaticSelection(
   const { queryClient, queryKey } = useProxiesCache(apiConfig);
   const { mutate, isPending } = useMutation({
     mutationFn: async (groupName: string) => {
-      let res: Response;
-      try {
-        res = await proxiesAPI.requestToUnfixProxy(apiConfig, groupName);
-      } catch (err) {
-        console.error('Error resume automatic selection', err);
-        throw err;
-      }
+      const res = await proxiesAPI.requestToUnfixProxy(apiConfig, groupName);
       if (!res.ok) {
         throw new Error(await readErrorMessage(res, 'Error resume automatic selection'));
       }
     },
     onError: (err, groupName) => {
+      console.error('Error resume automatic selection', err);
       toast(
         'error',
         i18n.t('resume_automatic_selection_failed', { group: groupName, message: err.message }),

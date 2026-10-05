@@ -30,7 +30,7 @@ const MAX_ERROR_TEXT_LENGTH = 200;
 
 // mihomo 出错时返回 { "message": "..." }。返回给界面的是精简过的提示，
 // 完整的状态和原文一律打到控制台，方便排查
-export async function readErrorMessage(res: Response, logLabel = 'Request failed') {
+export async function readErrorMessage(res: Response, logLabel: string) {
   const statusLine = res.statusText || String(res.status);
   let raw = '';
   try {
