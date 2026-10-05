@@ -1,4 +1,3 @@
-import { readErrorMessage } from '~/misc/request-helper';
 import {
   ClashGeneralConfig,
   DispatchFn,
@@ -97,66 +96,6 @@ export function updateConfigs(
       s.configs.configs = { ...s.configs.configs, ...partialConfg } as generalConfig;
     });
   };
-}
-
-export type ActionResult = { ok: boolean; message?: string };
-
-// 把一次性动作类接口的响应收敛成 { ok, message }：2xx 算成功，否则带上接口返回的内容，交给调用方决定怎么提示
-async function toActionResult(request: Promise<Response>, logLabel: string): Promise<ActionResult> {
-  let res: Response;
-  try {
-    res = await request;
-  } catch (err) {
-    console.error(logLabel, err);
-    return { ok: false, message: err instanceof Error ? err.message : String(err) };
-  }
-  if (!res.ok) {
-    return { ok: false, message: await readErrorMessage(res, logLabel) };
-  }
-  return { ok: true };
-}
-
-// 动作成功后配置可能变了，回头拉一次 configs
-function thenRefetchConfigs(
-  apiConfig: ClashAPIConfig,
-  send: (apiConfig: ClashAPIConfig) => Promise<Response>,
-  logLabel: string,
-) {
-  return async (dispatch: DispatchFn): Promise<ActionResult> => {
-    const result = await toActionResult(send(apiConfig), logLabel);
-    if (result.ok) dispatch(fetchConfigs(apiConfig));
-    return result;
-  };
-}
-
-export function reloadConfigFile(apiConfig: ClashAPIConfig) {
-  return thenRefetchConfigs(apiConfig, configsAPI.reloadConfigFile, 'Error reload config file');
-}
-
-export function restartCore(apiConfig: ClashAPIConfig) {
-  // mihomo 先回 200 再重启进程，紧接着拉配置大概率撞上重启窗口，失败会弹出后端配置框
-  return async (): Promise<ActionResult> =>
-    toActionResult(configsAPI.restartCore(apiConfig), 'Error restart core');
-}
-
-export function upgradeCore(apiConfig: ClashAPIConfig, channel?: configsAPI.UpgradeChannel) {
-  // 内核更新成功后会自行重启，这里不再立刻拉配置，否则大概率打在重启窗口上
-  return async (): Promise<ActionResult> =>
-    toActionResult(configsAPI.upgradeCore(apiConfig, channel), 'Error upgrade core');
-}
-
-export function upgradeGeo(apiConfig: ClashAPIConfig) {
-  return thenRefetchConfigs(apiConfig, configsAPI.upgradeGeo, 'Error upgrade geo');
-}
-
-export function upgradeUI(apiConfig: ClashAPIConfig) {
-  // 只是把面板静态文件换掉，内核配置没变，不需要回头拉 configs
-  return async (): Promise<ActionResult> =>
-    toActionResult(configsAPI.upgradeUI(apiConfig), 'Error upgrade ui');
-}
-
-export function flushFakeIPPool(apiConfig: ClashAPIConfig) {
-  return thenRefetchConfigs(apiConfig, configsAPI.flushFakeIPPool, 'Error flush FakeIP pool');
 }
 
 export const initialState: StateConfigs = {

@@ -53,15 +53,9 @@ export default function Config({ dispatch, configs, selectedChartStyleIndex, api
     openAPIConfigModal,
     handleInputOnChange,
     handleInputOnBlur,
-    handleReloadConfigFile,
-    handleRestartCore,
-    handleUpgradeCore,
-    upgradingChannel,
-    handleUpgradeGeo,
-    handleUpgradeUI,
-    isUpgradingUI,
-    handleFlushFakeIPPool,
+    runAction,
     pendingAction,
+    upgradingChannel,
     versionQuery: { data: version },
     coreUpdate,
   } = useConfigPage({
@@ -235,16 +229,16 @@ export default function Config({ dispatch, configs, selectedChartStyleIndex, api
                         start={<DownloadCloud size={16} />}
                         label={t('upgrade_core_release')}
                         isLoading={upgradingChannel === 'release'}
-                        disabled={upgradingChannel !== null}
-                        onClick={() => handleUpgradeCore('release')}
+                        disabled={pendingAction !== null}
+                        onClick={() => runAction('upgrade_core', 'release')}
                       />
                       <Button
                         className={coreUpdate?.channel === 'alpha' ? s0.withUpdateDot : undefined}
                         start={<DownloadCloud size={16} />}
                         label={t('upgrade_core_alpha')}
                         isLoading={upgradingChannel === 'alpha'}
-                        disabled={upgradingChannel !== null}
-                        onClick={() => handleUpgradeCore('alpha')}
+                        disabled={pendingAction !== null}
+                        onClick={() => runAction('upgrade_core', 'alpha')}
                       />
                     </div>
                   </div>
@@ -256,9 +250,9 @@ export default function Config({ dispatch, configs, selectedChartStyleIndex, api
                     <Button
                       start={<DownloadCloud size={16} />}
                       label={t('upgrade_ui')}
-                      isLoading={isUpgradingUI}
-                      disabled={isUpgradingUI}
-                      onClick={handleUpgradeUI}
+                      isLoading={pendingAction === 'upgrade_ui'}
+                      disabled={pendingAction !== null}
+                      onClick={() => runAction('upgrade_ui')}
                     />
                   </div>
                 )}
@@ -269,7 +263,7 @@ export default function Config({ dispatch, configs, selectedChartStyleIndex, api
                     label={t('reload_config_file')}
                     isLoading={pendingAction === 'reload_config'}
                     disabled={pendingAction !== null}
-                    onClick={handleReloadConfigFile}
+                    onClick={() => runAction('reload_config')}
                   />
                 </div>
                 {version.meta && !version.premium && (
@@ -280,7 +274,7 @@ export default function Config({ dispatch, configs, selectedChartStyleIndex, api
                       label={t('upgrade_geo')}
                       isLoading={pendingAction === 'upgrade_geo'}
                       disabled={pendingAction !== null}
-                      onClick={handleUpgradeGeo}
+                      onClick={() => runAction('upgrade_geo')}
                     />
                   </div>
                 )}
@@ -291,7 +285,7 @@ export default function Config({ dispatch, configs, selectedChartStyleIndex, api
                     label={t('flush_fake_ip_pool')}
                     isLoading={pendingAction === 'flush_fake_ip_pool'}
                     disabled={pendingAction !== null}
-                    onClick={handleFlushFakeIPPool}
+                    onClick={() => runAction('flush_fake_ip_pool')}
                   />
                 </div>
                 {version.meta && !version.premium && (
@@ -302,7 +296,7 @@ export default function Config({ dispatch, configs, selectedChartStyleIndex, api
                       label={t('restart_core')}
                       isLoading={pendingAction === 'restart_core'}
                       disabled={pendingAction !== null}
-                      onClick={handleRestartCore}
+                      onClick={() => runAction('restart_core')}
                     />
                   </div>
                 )}
