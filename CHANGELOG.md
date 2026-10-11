@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.7.0](https://github.com/MetaCubeX/Yacd-meta/compare/v0.6.0...v0.7.0) (2026-10-11)
+
+
+### Features
+
+* **config:** report success or failure of reload, GEO update, FakeIP flush and restart ([293268f](https://github.com/MetaCubeX/Yacd-meta/commit/293268fe6886443e8f83367134130c13c216047d))
+
+
+### Bug Fixes
+
+* **config:** refresh core version after a core upgrade ([7fe17d8](https://github.com/MetaCubeX/Yacd-meta/commit/7fe17d8fe0a36a83b3f528845013e9bbcf124b73))
+
 ## [0.6.0](https://github.com/MetaCubeX/Yacd-meta/compare/v0.5.0...v0.6.0) (2026-09-30)
 
 
