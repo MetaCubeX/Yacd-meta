@@ -51,6 +51,25 @@
   border-bottom: 1px solid var(--color-card-border);
 }
 
+.providerScroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+// 分隔线画在每格的右、下外沿（box-shadow 不占布局），末行不满时空位不会被
+// 涂上线色；最右一列的竖线落在卡片边框上，被 overflow 裁掉
+.providerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+
+  > * {
+    box-shadow:
+      1px 0 0 var(--color-card-border),
+      0 1px 0 var(--color-card-border);
+  }
+}
+
 /* ---------- 空态 ---------- */
 
 .empty {
@@ -59,7 +78,8 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
 }
 
 .emptyTitle {

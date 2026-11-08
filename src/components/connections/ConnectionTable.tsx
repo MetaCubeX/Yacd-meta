@@ -4,14 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { RowComponentProps, List as VirtualList } from 'react-window';
 
 import { ArrowDown, ArrowUp, ChevronDown, Sliders, X } from '~/components/shared/FeatherIcons';
+import { useMediaQuery } from '~/hooks/useMediaQuery';
+import { getDateFnsLocale } from '~/misc/date-locale';
 import prettyBytes from '~/misc/pretty-bytes';
 import { useElementWidth } from '~/modules/connections/hooks';
-import {
-  ConnectionColumn,
-  formatElapsed,
-  getDateFnsLocale,
-  SortState,
-} from '~/modules/connections/utils';
+import { ConnectionColumn, formatElapsed, SortState } from '~/modules/connections/utils';
 import { FormattedConn } from '~/store/connections';
 
 import ConnectionCard from './ConnectionCard';
@@ -296,17 +293,9 @@ export default function ConnectionTable({
   const { t, i18n } = useTranslation();
   // 只存 id，每次渲染从实时 data 里取最新对象，弹窗里的流量/时长才能实时更新
   const [detailId, setDetailId] = React.useState<string | null>(null);
-  const [isMobile, setIsMobile] = React.useState(false);
+  const isMobile = useMediaQuery('(max-width: 768px)');
   const [containerRef, containerWidth] = useElementWidth<HTMLDivElement>();
   const headRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    const mql = window.matchMedia('(max-width: 768px)');
-    setIsMobile(mql.matches);
-    const listener = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mql.addEventListener('change', listener);
-    return () => mql.removeEventListener('change', listener);
-  }, []);
 
   const locale = getDateFnsLocale(i18n.language);
 

@@ -2,28 +2,29 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { RowComponentProps, List as VirtualList } from 'react-window';
 
+import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useRulesPage, useUpdateAllRuleProviderItems } from '~/modules/rules/hooks';
-import { PROVIDER_ROW_HEIGHT, RULE_ROW_HEIGHT, type RulesRowProps } from '~/modules/rules/utils';
+import { RULE_ROW_HEIGHT, RULE_ROW_HEIGHT_NARROW, type RulesRowProps } from '~/modules/rules/utils';
 import { ClashAPIConfig } from '~/types';
 
-import Rule from './Rule';
+import Rule, { RuleListHeader } from './Rule';
 import { RuleProviderItem } from './RuleProviderItem';
 import s from './Rules.module.scss';
 import { RulesHeader } from './RulesHeader';
 
-function Row({ index, style, rules, provider, apiConfig }: RowComponentProps<RulesRowProps>) {
-  if (!rules) {
-    const item = provider.byName[provider.names[index]];
-    return (
-      <div style={style} className={s.row}>
-        <RuleProviderItem apiConfig={apiConfig} {...item} />
-      </div>
-    );
-  }
+const NO_USAGE: string[] = [];
 
+function Row({
+  index,
+  style,
+  rules,
+  provider,
+  apiConfig,
+  maxHits,
+}: RowComponentProps<RulesRowProps>) {
   return (
     <div style={style} className={s.row}>
-      <Rule {...rules[index]} apiConfig={apiConfig} provider={provider} />
+      <Rule {...rules[index]} apiConfig={apiConfig} provider={provider} maxHits={maxHits} />
     </div>
   );
 }
@@ -34,28 +35,77 @@ type RulesProps = {
 
 export default function Rules({ apiConfig }: RulesProps) {
   const { t } = useTranslation();
-  const { rules, provider, providerCount, activeTab, setActiveTab, isRulesTab } =
-    useRulesPage(apiConfig);
+  const {
+    rules,
+    provider,
+    providerCount,
+    maxHits,
+    providerUsage,
+    activeTab,
+    setActiveTab,
+    isRulesTab,
+  } = useRulesPage(apiConfig);
   const [updateAllProviders, isUpdatingProviders] = useUpdateAllRuleProviderItems(apiConfig);
+  const isNarrow = useMediaQuery('(max-width: 768px)');
 
   const rowCount = isRulesTab ? rules.length : provider.names.length;
 
   // rowProps 每次渲染新建对象会让所有行跟着重渲染，虚拟列表就白做了
   const rowProps = React.useMemo<RulesRowProps>(
-    () => ({ rules: isRulesTab ? rules : null, provider, apiConfig }),
-    [isRulesTab, rules, provider, apiConfig],
+    () => ({ rules, provider, apiConfig, maxHits }),
+    [rules, provider, apiConfig, maxHits],
   );
 
-  const rowHeight = React.useCallback(
-    () => (isRulesTab ? RULE_ROW_HEIGHT : PROVIDER_ROW_HEIGHT),
-    [isRulesTab],
-  );
+  const rowHeight = isNarrow ? RULE_ROW_HEIGHT_NARROW : RULE_ROW_HEIGHT;
 
   const rowKey = React.useCallback(
-    (index: number, { rules, provider }: RulesRowProps) =>
-      rules ? rules[index].id : provider.names[index],
+    (index: number, { rules }: RulesRowProps) => rules[index].id,
     [],
   );
+
+  let body: React.ReactNode;
+  if (rowCount === 0) {
+    body = (
+      <div className={s.empty}>
+        <span className={s.emptyTitle}>
+          {t(isRulesTab ? 'rules_empty_title' : 'rule_providers_empty_title')}
+        </span>
+        <span className={s.emptyHint}>{t('rules_empty_hint')}</span>
+      </div>
+    );
+  } else if (isRulesTab) {
+    body = (
+      <>
+        <RuleListHeader />
+        <div className={s.listWrap}>
+          <VirtualList
+            style={{ height: '100%', width: '100%' }}
+            rowCount={rowCount}
+            rowHeight={rowHeight}
+            rowComponent={Row}
+            rowKey={rowKey}
+            rowProps={rowProps}
+          />
+        </div>
+      </>
+    );
+  } else {
+    // 提供商通常只有几十个，直接铺网格，不走虚拟列表
+    body = (
+      <div className={s.providerScroll}>
+        <div className={s.providerGrid}>
+          {provider.names.map((name) => (
+            <RuleProviderItem
+              key={name}
+              apiConfig={apiConfig}
+              usedBy={providerUsage[name] ?? NO_USAGE}
+              {...provider.byName[name]}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={s.page}>
@@ -71,25 +121,7 @@ export default function Rules({ apiConfig }: RulesProps) {
 
       <div className={s.listArea}>
         <div className={s.card}>
-          <div className={s.listWrap}>
-            {rowCount === 0 ? (
-              <div className={s.empty}>
-                <span className={s.emptyTitle}>
-                  {t(isRulesTab ? 'rules_empty_title' : 'rule_providers_empty_title')}
-                </span>
-                <span className={s.emptyHint}>{t('rules_empty_hint')}</span>
-              </div>
-            ) : (
-              <VirtualList
-                style={{ height: '100%', width: '100%' }}
-                rowCount={rowCount}
-                rowHeight={rowHeight}
-                rowComponent={Row}
-                rowKey={rowKey}
-                rowProps={rowProps}
-              />
-            )}
-          </div>
+          {body}
 
           <div className={s.footer}>
             <span>{t('rules_shown', { count: rowCount })}</span>

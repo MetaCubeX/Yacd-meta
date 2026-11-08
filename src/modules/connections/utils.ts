@@ -1,5 +1,4 @@
 import { formatDistance, Locale } from 'date-fns';
-import { enUS, zhCN, zhTW } from 'date-fns/locale';
 
 import { ConnectionItem } from '~/api/connections';
 import { FormattedConn } from '~/store/connections';
@@ -298,12 +297,6 @@ export function getNameFromSource(
   });
 
   return sourceName;
-}
-
-export function getDateFnsLocale(language: string): Locale {
-  if (language === 'zh-CN') return zhCN;
-  if (language === 'zh-TW') return zhTW;
-  return enUS;
 }
 
 // formatDistance's output only depends on the elapsed time rounded to whole

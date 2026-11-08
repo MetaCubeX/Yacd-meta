@@ -1,45 +1,17 @@
 .item {
   display: flex;
-  align-items: center;
-  height: 100%;
-  padding: 12px 18px;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px 16px;
   transition: background-color 0.15s ease;
 
   &:hover {
     background: var(--color-hover-soft);
-
-    .refreshBtn {
-      opacity: 1;
-    }
-  }
-
-  @media (max-width: 768px) {
-    padding: 12px;
   }
 }
 
-.index {
-  width: 40px;
-  flex-shrink: 0;
-  color: var(--color-text-secondary);
-  font-size: 0.68rem;
-  opacity: 0.5;
-  font-family: var(--font-mono);
-
-  @media (max-width: 768px) {
-    width: 28px;
-  }
-}
-
-.main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.nameRow {
+.head {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -47,7 +19,9 @@
 }
 
 .name {
-  font-size: 0.85rem;
+  flex: 1;
+  min-width: 0;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--color-text-highlight);
   overflow: hidden;
@@ -55,11 +29,16 @@
   white-space: nowrap;
 }
 
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  flex-shrink: 0;
   font-size: 0.62rem;
   color: var(--color-badge-fg);
   background: var(--color-badge-bg);
@@ -69,16 +48,59 @@
   letter-spacing: 0.02em;
 }
 
-.infoRow {
+.stats {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.7rem;
+  gap: 6px;
+  font-size: 0.72rem;
   color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.count {
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
 }
 
 .dot {
-  opacity: 0.4;
+  opacity: 0.5;
+}
+
+.usage {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.usageLabel {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+}
+
+.policy {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-accent-soft-fg);
+  background: var(--color-accent-soft-bg);
+  padding: 1px 7px;
+  border-radius: 5px;
+  font-weight: 500;
+}
+
+.more {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+}
+
+// /rules 只列顶层规则，被 SUB-RULE 引用的提供商也会落到这里，所以不用警示色
+.unused {
+  color: var(--color-text-secondary);
+  opacity: 0.7;
 }
 
 .refreshBtn {
@@ -87,18 +109,14 @@
   justify-content: center;
   appearance: none;
   flex-shrink: 0;
-  margin-left: 12px;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border: none;
-  border-radius: 8px;
+  border-radius: 7px;
   background: none;
   color: var(--color-text-secondary);
   cursor: pointer;
-  // 悬停在整行上才完全显形，静态时不抢眼
-  opacity: 0.45;
   transition:
-    opacity 0.15s ease,
     background-color 0.15s ease,
     color 0.15s ease;
 
@@ -108,17 +126,11 @@
   }
 
   &:focus-visible {
-    opacity: 1;
     outline: 2px solid var(--color-focus-blue);
     outline-offset: 2px;
   }
 
   &:disabled {
     cursor: default;
-  }
-
-  // 触屏没有 hover，直接常显
-  @media (hover: none) {
-    opacity: 1;
   }
 }

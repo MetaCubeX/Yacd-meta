@@ -2,8 +2,9 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { X } from '~/components/shared/FeatherIcons';
+import { getDateFnsLocale } from '~/misc/date-locale';
 import prettyBytes from '~/misc/pretty-bytes';
-import { formatElapsed, getDateFnsLocale } from '~/modules/connections/utils';
+import { formatElapsed } from '~/modules/connections/utils';
 import { FormattedConn } from '~/store/connections';
 
 import s from './ConnectionDetailModal.module.scss';

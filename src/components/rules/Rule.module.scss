@@ -1,11 +1,20 @@
+/**
+ * 一行一条规则，宽屏按列对齐成表格；表头 .header 复用同一套网格，列宽只在这里定义。
+ * 窄屏改成两行：payload 一行，类型 · 策略 · 命中一行，开关拨到行尾。
+ * 行高由 RULE_ROW_HEIGHT / RULE_ROW_HEIGHT_NARROW 固定，改网格行数要同步那两个数。
+ */
 .rule {
-  display: flex;
+  display: grid;
+  grid-template-columns: 36px 32px 128px minmax(0, 1fr) minmax(120px, 220px) 132px;
+  grid-template-areas: 'sw idx type payload proxy hits';
   align-items: center;
+  column-gap: 12px;
   height: 100%;
-  padding: 10px 18px;
+  padding: 0 18px;
+  font-size: 0.75rem;
   transition: background-color 0.15s ease;
 
-  &:hover {
+  &:hover:not(.header) {
     background-color: var(--color-hover-soft);
   }
 
@@ -14,49 +23,131 @@
   }
 
   @media (max-width: 768px) {
-    padding: 10px 12px;
+    grid-template-columns: 24px auto minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      'idx payload payload payload sw'
+      'idx type proxy hits sw';
+    align-content: center;
+    row-gap: 6px;
+    column-gap: 10px;
+    padding: 0 12px;
+  }
+}
+
+.header {
+  height: 36px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--color-card-border);
+  color: var(--color-text-secondary);
+  font-size: 0.7rem;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.switch {
+  grid-area: sw;
+  display: flex;
+  align-items: center;
+
+  &.pending {
+    opacity: 0.6;
+    pointer-events: none;
   }
 }
 
 .index {
-  width: 40px;
-  flex-shrink: 0;
+  grid-area: idx;
   color: var(--color-text-secondary);
   font-size: 0.68rem;
-  opacity: 0.5;
   font-family: var(--font-mono);
+  opacity: 0.6;
+  text-align: right;
 
   @media (max-width: 768px) {
-    width: 28px;
+    align-self: start;
+    padding-top: 2px;
+    text-align: left;
   }
 }
 
-.main {
-  flex: 1;
+.typeTag {
+  grid-area: type;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+  color: var(--color-badge-fg);
+  background: var(--color-badge-bg);
+  padding: 2px 7px;
+  border-radius: 5px;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.62rem;
+    letter-spacing: 0.02em;
+  }
 }
 
-.payloadRow {
+.headType {
+  grid-area: type;
+}
+
+.payloadCell {
+  grid-area: payload;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
   min-width: 0;
 }
 
 .payload {
+  min-width: 0;
   font-family: var(--font-mono);
   font-size: 0.8rem;
   color: var(--color-text);
   line-height: 1.4;
   word-break: break-all;
-  // 定高行装不下第三行，超出的部分省略掉
+  // 定高行最多容纳两行，超出的部分省略掉，完整内容见 title
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    -webkit-line-clamp: 1;
+  }
+}
+
+// 逻辑规则 payload 的分词着色，类名由 PayloadTokenKind 拼出
+.tok_paren,
+.tok_sep {
+  color: var(--color-text-secondary);
+  opacity: 0.6;
+}
+
+.tok_op {
+  color: var(--color-focus-blue);
+  font-weight: 700;
+}
+
+.tok_type {
+  color: var(--color-text-secondary);
+}
+
+.tok_value {
+  color: var(--color-text-highlight);
 }
 
 .entryCount {
@@ -69,33 +160,9 @@
   white-space: nowrap;
 }
 
-.metaRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.7rem;
-  min-width: 0;
-}
-
-.typeTag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-  color: var(--color-badge-fg);
-  background: var(--color-badge-bg);
-  padding: 2px 7px;
-  border-radius: 5px;
-
-  span {
-    font-weight: 500;
-    text-transform: uppercase;
-    font-size: 0.62rem;
-    letter-spacing: 0.02em;
-  }
-}
-
 .proxy {
+  grid-area: proxy;
+  min-width: 0;
   font-weight: 600;
   letter-spacing: 0.01em;
   overflow: hidden;
@@ -103,33 +170,49 @@
   white-space: nowrap;
 }
 
-.hitInfo {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-  margin-left: auto;
-  color: var(--color-text-secondary);
-  cursor: default;
+.headProxy {
+  grid-area: proxy;
 }
 
-// DOM 里排在最前，桌面端就在行首；用 mini 尺寸的开关，
-// 布局盒子和看到的一样大，不需要再拿 scale + transform-origin 去凑
-.switch {
+.hits {
+  grid-area: hits;
   display: flex;
   align-items: center;
-  flex-shrink: 0;
-  margin-right: 12px;
+  justify-content: flex-end;
+  gap: 8px;
+  color: var(--color-text-secondary);
+  cursor: default;
 
-  &.pending {
-    opacity: 0.6;
-    pointer-events: none;
+  &.noHits {
+    opacity: 0.5;
   }
+}
 
-  // 窄屏维持原样：拨到行尾
+.hitTrack {
+  flex: 1;
+  max-width: 72px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-track);
+  overflow: hidden;
+
   @media (max-width: 768px) {
-    order: 1;
-    margin-right: 0;
-    margin-left: 12px;
+    width: 40px;
+    flex: none;
   }
+}
+
+.hitBar {
+  display: block;
+  height: 100%;
+  background: var(--color-focus-blue);
+  transform-origin: left center;
+}
+
+.hitCount {
+  min-width: 3.2em;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
 }

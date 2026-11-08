@@ -5,6 +5,8 @@ export type RuleProvider = RuleProviderAPIItem & { idx: number };
 
 export type RuleProviderAPIItem = {
   behavior: string;
+  /** e.g. "MrsRule" / "YamlRule" / "TextRule"; absent on older cores */
+  format?: string;
   name: string;
   ruleCount: number;
   type: 'Rule';
