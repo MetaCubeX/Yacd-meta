@@ -11,6 +11,12 @@
   }
 }
 
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .list {
   display: flex;
   flex-direction: column;
@@ -49,6 +55,30 @@
   @media (max-width: 640px) {
     flex: none;
     max-height: 260px;
+  }
+}
+
+// Chips in a row that wraps; the list grows with its content instead of filling its parent.
+.listBodyWrap {
+  flex: none;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  min-height: 52px;
+  max-height: none;
+  overflow: visible;
+
+  .row {
+    max-width: 100%;
+  }
+
+  .label {
+    flex: initial;
+  }
+
+  .empty {
+    margin: 0;
+    padding: 6px 8px;
   }
 }
 
