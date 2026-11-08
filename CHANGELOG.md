@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.7.0](https://github.com/MetaCubeX/Yacd-meta/compare/v0.6.0...v0.7.0) (2026-11-08)
+
+
+### Features
+
+* **config:** report success or failure of reload, GEO update, FakeIP flush and restart ([293268f](https://github.com/MetaCubeX/Yacd-meta/commit/293268fe6886443e8f83367134130c13c216047d))
+* **connections:** turn connection settings into a docked side panel ([04032a0](https://github.com/MetaCubeX/Yacd-meta/commit/04032a0db49eb7520cc599b4e8bae6763351b683))
+* **rules:** lay out rules as aligned columns and providers as a grid ([42b29d6](https://github.com/MetaCubeX/Yacd-meta/commit/42b29d6b7bd175dc976be61582daa6f68e641e45))
+* **rules:** show each rule's place in the match funnel ([476691e](https://github.com/MetaCubeX/Yacd-meta/commit/476691e18512acdfcfa3f09cc9879133514efaa8))
+* **ui:** build the browser tab title from live data ([2a1f2cb](https://github.com/MetaCubeX/Yacd-meta/commit/2a1f2cb8d57a2eeeb8595ba9a75ce2bb48af322a))
+* **ui:** slide the selected highlight in the sidebar and header tabs ([05e1e16](https://github.com/MetaCubeX/Yacd-meta/commit/05e1e16c0727c544fcc1136019517881c0c39464))
+* **ui:** switch backends from the sidebar footer ([bede3d4](https://github.com/MetaCubeX/Yacd-meta/commit/bede3d4fef550940e28d1270685cdd74b275d5fb))
+
+
+### Bug Fixes
+
+* **backend:** return to the dashboard after picking a backend on /backend ([cbadad4](https://github.com/MetaCubeX/Yacd-meta/commit/cbadad4b2cdf3203140e5c9684bbb63252aea710))
+* **config:** refresh core version after a core upgrade ([7fe17d8](https://github.com/MetaCubeX/Yacd-meta/commit/7fe17d8fe0a36a83b3f528845013e9bbcf124b73))
+* **config:** 修正中文語言選單的語碼大小寫 ([#131](https://github.com/MetaCubeX/Yacd-meta/issues/131)) ([24151c3](https://github.com/MetaCubeX/Yacd-meta/commit/24151c331027ff176b45ed417180c6f1220474a3))
+* **proxies:** show provider update time in the UI language ([9cc3b95](https://github.com/MetaCubeX/Yacd-meta/commit/9cc3b95f512cb47c115cfc53b114bae2e425207b))
+* **ui:** reserve scrollbar space in the main content area ([f584ed0](https://github.com/MetaCubeX/Yacd-meta/commit/f584ed09e51ce9e5e3624e961a0d79b8c941a166))
+
 ## [0.6.0](https://github.com/MetaCubeX/Yacd-meta/compare/v0.5.0...v0.6.0) (2026-09-30)
 
 
