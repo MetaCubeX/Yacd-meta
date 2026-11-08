@@ -5,8 +5,13 @@
  */
 .rule {
   display: grid;
-  grid-template-columns: 36px 32px 128px minmax(0, 1fr) minmax(120px, 220px) 132px;
+  // minmax 带固定上限的列会先撑到上限，剩下的才分给 1fr，所以中等宽度要单独收窄
+  grid-template-columns: 36px 32px 128px minmax(0, 1fr) minmax(120px, 200px) 240px;
   grid-template-areas: 'sw idx type payload proxy hits';
+
+  @media (max-width: 1200px) {
+    grid-template-columns: 36px 28px 110px minmax(0, 1fr) 130px 150px;
+  }
   align-items: center;
   column-gap: 12px;
   height: 100%;
@@ -183,30 +188,45 @@
   color: var(--color-text-secondary);
   cursor: default;
 
-  &.noHits {
+  // 零命中只淡化数字，漏斗条照常画：「到达很多却从不命中」正是要看出来的东西
+  &.noHits .hitCount,
+  &.noHits .hitShare {
     opacity: 0.5;
   }
 }
 
-.hitTrack {
+.headHits {
+  justify-content: flex-start;
+  cursor: help;
+}
+
+// 轨道本身不画底色：浅色段和轨道底色在亮色主题下几乎分不开
+.funnelTrack {
+  display: flex;
   flex: 1;
-  max-width: 72px;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--color-track);
-  overflow: hidden;
+  min-width: 0;
+  height: 6px;
 
   @media (max-width: 768px) {
-    width: 40px;
+    width: 48px;
     flex: none;
   }
 }
 
-.hitBar {
-  display: block;
+.funnelReached {
+  display: flex;
+  justify-content: flex-end;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--color-accent-soft-bg);
+  overflow: hidden;
+}
+
+.funnelHit {
+  // 命中再少也留两像素，和零命中区分开
+  min-width: 2px;
   height: 100%;
   background: var(--color-focus-blue);
-  transform-origin: left center;
 }
 
 .hitCount {
@@ -215,4 +235,15 @@
   font-family: var(--font-mono);
   font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
+}
+
+.hitShare {
+  min-width: 3.4em;
+  text-align: right;
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+
+  @media (max-width: 1200px) {
+    display: none;
+  }
 }

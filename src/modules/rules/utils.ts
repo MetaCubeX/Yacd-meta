@@ -1,5 +1,5 @@
 import type { RuleProvider } from '~/api/rule-provider';
-import type { RuleItem } from '~/api/rules';
+import type { RuleExtra, RuleItem } from '~/api/rules';
 import type { ClashAPIConfig } from '~/types';
 
 export type RuleProviderIndex = {
@@ -13,8 +13,8 @@ export type RulesRowProps = {
   rules: RuleItem[];
   provider: RuleProviderIndex;
   apiConfig: ClashAPIConfig;
-  /** 当前规则表里最大的命中数，命中条按它归一 */
-  maxHits: number;
+  /** 漏斗最宽处的检查次数，见 totalEvaluations */
+  totalEvals: number;
 };
 
 // 虚拟列表要求定高。宽屏一行排开，payload 最多折两行；
@@ -72,12 +72,39 @@ export function collectProviderUsage(rules: RuleItem[]): Record<string, string[]
   return usage;
 }
 
+export type RuleFunnel = {
+  /** 轮到本条规则检查的次数 */
+  reached: number;
+  hits: number;
+  /** reached / total */
+  reachedRatio: number;
+  /** hits / total */
+  hitRatio: number;
+};
+
 /**
- * hitBarRatio returns the bar length in [0, 1] for a hit count.
- * Log scale: MATCH 一类兜底规则的命中数常比其他规则高两三个数量级，
- * 线性刻度下其余规则的条全都看不见。
+ * ruleFunnel places one rule on the match funnel. `total` is the number of
+ * evaluations that reached the first enabled rule, see totalEvaluations.
+ *
+ * reached 取本条自己的 hit + miss，不用上一条的 miss 推算：命中不等于被吃掉
+ * （策略为 PASS、找不到策略、UDP 不支持时 mihomo 会接着往下匹配），
+ * 禁用的规则计数冻结也会让推算断掉。
  */
-export function hitBarRatio(hits: number, maxHits: number): number {
-  if (hits <= 0 || maxHits <= 0) return 0;
-  return Math.log1p(hits) / Math.log1p(maxHits);
+export function ruleFunnel(extra: RuleExtra, total: number): RuleFunnel {
+  const hits = extra.hitCount;
+  const reached = hits + extra.missCount;
+  if (total <= 0) return { reached, hits, reachedRatio: 0, hitRatio: 0 };
+  return { reached, hits, reachedRatio: reached / total, hitRatio: hits / total };
+}
+
+/**
+ * totalEvaluations is the widest point of the funnel: the most evaluations any
+ * single rule saw. 计数从核心启动或配置重载时归零，这里只对同一批计数有意义。
+ */
+export function totalEvaluations(rules: RuleItem[]): number {
+  let max = 0;
+  for (const r of rules) {
+    if (r.extra) max = Math.max(max, r.extra.hitCount + r.extra.missCount);
+  }
+  return max;
 }

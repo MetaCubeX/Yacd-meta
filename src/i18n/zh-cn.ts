@@ -176,7 +176,12 @@ export const data = {
   test_latency_failed: '{{name}} 测速失败：{{message}}',
   group_fixed_tip: '该组已手动固定选择，点击测速可解除固定',
   rule_entry_count: '{{count}} 条规则',
-  rule_hit_tip: '已命中 {{count}} 次，最近一次{{time}}',
+  rule_funnel_tip: '到达 {{reached}} 次，命中 {{hits}} 次，占全部匹配的 {{share}}',
+  rule_last_hit: '最近一次命中：{{time}}',
+  rule_counts_frozen: '已禁用，计数已冻结',
+  rule_funnel_legend:
+    '浅色条：轮到本条规则检查的次数。深色段：其中命中的次数。按第一条规则的检查次数归一；核心启动或重载配置时计数归零。',
+  rules_total_evals: '共 {{total}} 次匹配',
   rule_never_hit: '从未命中',
   rule_enable: '启用规则',
   rule_disable: '禁用规则',

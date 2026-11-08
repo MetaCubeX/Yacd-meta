@@ -9,8 +9,8 @@ import SwitchThemed from '~/components/shared/SwitchThemed';
 import { getDateFnsLocale } from '~/misc/date-locale';
 import { useToggleRuleDisabled } from '~/modules/rules/hooks';
 import {
-  hitBarRatio,
   isLogicPayload,
+  ruleFunnel,
   tokenizeLogicPayload,
   type RuleProviderIndex,
 } from '~/modules/rules/utils';
@@ -75,6 +75,30 @@ function getEntryCount({
   return undefined;
 }
 
+function formatShare(ratio: number): string {
+  if (ratio <= 0) return '0%';
+  const pct = ratio * 100;
+  if (pct < 0.1) return '<0.1%';
+  return `${pct < 10 ? pct.toFixed(1) : Math.round(pct)}%`;
+}
+
+/**
+ * 漏斗的一级：浅色段是轮到本条检查的次数，深色段是其中命中的部分，贴在浅色段右端。
+ * 各行左对齐、同一刻度，下一行的浅色段因此正好收到本行深色段的起点，逐行连成台阶。
+ */
+function FunnelBar({ reachedRatio, hitRatio }: { reachedRatio: number; hitRatio: number }) {
+  const hitInReached = reachedRatio > 0 ? hitRatio / reachedRatio : 0;
+  return (
+    <span className={s.funnelTrack}>
+      <span className={s.funnelReached} style={{ width: `${reachedRatio * 100}%` }}>
+        {hitRatio > 0 ? (
+          <span className={s.funnelHit} style={{ width: `${hitInReached * 100}%` }} />
+        ) : null}
+      </span>
+    </span>
+  );
+}
+
 function Payload({ payload }: { payload: string }) {
   if (!isLogicPayload(payload)) return <>{payload}</>;
   return (
@@ -97,27 +121,36 @@ type Props = {
   extra?: RuleExtra;
   apiConfig: ClashAPIConfig;
   provider?: RuleProviderIndex;
-  maxHits: number;
+  totalEvals: number;
 };
 
-function Rule({ type, payload, proxy, id, size, extra, apiConfig, provider, maxHits }: Props) {
+function Rule({ type, payload, proxy, id, size, extra, apiConfig, provider, totalEvals }: Props) {
   const { t, i18n } = useTranslation();
   const { toggleRule, isPending } = useToggleRuleDisabled(apiConfig);
   const disabled = extra?.disabled ?? false;
   const entryCount = getEntryCount({ type, payload, size, provider });
-  const hits = extra?.hitCount ?? 0;
+  const funnel = extra ? ruleFunnel(extra, totalEvals) : null;
 
-  const hitTitle = extra
-    ? hits > 0
-      ? t('rule_hit_tip', {
-          count: hits,
-          time: formatDistanceToNow(new Date(extra.hitAt), {
-            addSuffix: true,
-            locale: getDateFnsLocale(i18n.language),
-          }),
-        })
-      : t('rule_never_hit')
-    : undefined;
+  let funnelTitle: string | undefined;
+  if (extra && funnel) {
+    const lines = [
+      t('rule_funnel_tip', {
+        reached: funnel.reached.toLocaleString(i18n.language),
+        hits: funnel.hits.toLocaleString(i18n.language),
+        share: formatShare(funnel.hitRatio),
+      }),
+      funnel.hits > 0
+        ? t('rule_last_hit', {
+            time: formatDistanceToNow(new Date(extra.hitAt), {
+              addSuffix: true,
+              locale: getDateFnsLocale(i18n.language),
+            }),
+          })
+        : t('rule_never_hit'),
+    ];
+    if (disabled) lines.push(t('rule_counts_frozen'));
+    funnelTitle = lines.join('\n');
+  }
 
   return (
     <div className={cx(s.rule, { [s.disabled]: disabled })}>
@@ -159,15 +192,11 @@ function Rule({ type, payload, proxy, id, size, extra, apiConfig, provider, maxH
         {proxy}
       </span>
 
-      {extra ? (
-        <span className={cx(s.hits, { [s.noHits]: hits === 0 })} title={hitTitle}>
-          <span className={s.hitTrack}>
-            <span
-              className={s.hitBar}
-              style={{ transform: `scaleX(${hitBarRatio(hits, maxHits)})` }}
-            />
-          </span>
-          <span className={s.hitCount}>{hits > 0 ? formatCompact(hits, i18n.language) : '0'}</span>
+      {funnel ? (
+        <span className={cx(s.hits, { [s.noHits]: funnel.hits === 0 })} title={funnelTitle}>
+          <FunnelBar reachedRatio={funnel.reachedRatio} hitRatio={funnel.hitRatio} />
+          <span className={s.hitCount}>{formatCompact(funnel.hits, i18n.language)}</span>
+          <span className={s.hitShare}>{formatShare(funnel.hitRatio)}</span>
         </span>
       ) : null}
     </div>
@@ -187,7 +216,9 @@ export function RuleListHeader() {
       <span className={s.headType}>{t('rule_col_type')}</span>
       <span className={s.payloadCell}>{t('rule_col_payload')}</span>
       <span className={s.headProxy}>{t('rule_col_policy')}</span>
-      <span className={s.hits}>{t('rule_col_hits')}</span>
+      <span className={cx(s.hits, s.headHits)} title={t('rule_funnel_legend')}>
+        {t('rule_col_hits')}
+      </span>
     </div>
   );
 }

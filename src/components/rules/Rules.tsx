@@ -20,11 +20,11 @@ function Row({
   rules,
   provider,
   apiConfig,
-  maxHits,
+  totalEvals,
 }: RowComponentProps<RulesRowProps>) {
   return (
     <div style={style} className={s.row}>
-      <Rule {...rules[index]} apiConfig={apiConfig} provider={provider} maxHits={maxHits} />
+      <Rule {...rules[index]} apiConfig={apiConfig} provider={provider} totalEvals={totalEvals} />
     </div>
   );
 }
@@ -34,12 +34,12 @@ type RulesProps = {
 };
 
 export default function Rules({ apiConfig }: RulesProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const {
     rules,
     provider,
     providerCount,
-    maxHits,
+    totalEvals,
     providerUsage,
     activeTab,
     setActiveTab,
@@ -52,8 +52,8 @@ export default function Rules({ apiConfig }: RulesProps) {
 
   // rowProps 每次渲染新建对象会让所有行跟着重渲染，虚拟列表就白做了
   const rowProps = React.useMemo<RulesRowProps>(
-    () => ({ rules, provider, apiConfig, maxHits }),
-    [rules, provider, apiConfig, maxHits],
+    () => ({ rules, provider, apiConfig, totalEvals }),
+    [rules, provider, apiConfig, totalEvals],
   );
 
   const rowHeight = isNarrow ? RULE_ROW_HEIGHT_NARROW : RULE_ROW_HEIGHT;
@@ -125,6 +125,11 @@ export default function Rules({ apiConfig }: RulesProps) {
 
           <div className={s.footer}>
             <span>{t('rules_shown', { count: rowCount })}</span>
+            {isRulesTab && totalEvals > 0 ? (
+              <span title={t('rule_funnel_legend')}>
+                {t('rules_total_evals', { total: totalEvals.toLocaleString(i18n.language) })}
+              </span>
+            ) : null}
           </div>
         </div>
       </div>

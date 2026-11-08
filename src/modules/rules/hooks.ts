@@ -11,7 +11,7 @@ import { fetchRules, updateRuleDisabledStatus } from '~/api/rules';
 import { ruleFilterText } from '~/store/rules';
 import type { ClashAPIConfig } from '~/types';
 
-import { collectProviderUsage, type RulesTabKey } from './utils';
+import { collectProviderUsage, totalEvaluations, type RulesTabKey } from './utils';
 
 const { useCallback, useMemo, useState } = React;
 
@@ -98,7 +98,7 @@ export function useRuleAndProvider(apiConfig: ClashAPIConfig) {
 
 export function useRulesPage(apiConfig: ClashAPIConfig) {
   const { rules, provider } = useRuleAndProvider(apiConfig);
-  // 下面几项都按未过滤的全集算：搜索不该让标签消失，也不该改变命中条的刻度和引用关系
+  // 下面几项都按未过滤的全集算：搜索不该让标签消失，也不该改变漏斗的刻度和引用关系
   const { data: allRules } = useSuspenseQuery({
     queryKey: ['/rules', apiConfig],
     queryFn: () => fetchRules('/rules', apiConfig),
@@ -106,10 +106,7 @@ export function useRulesPage(apiConfig: ClashAPIConfig) {
   const { data: allProviders } = useRuleProviderQuery(apiConfig);
   const providerCount = allProviders.names.length;
 
-  const maxHits = useMemo(
-    () => allRules.reduce((max, r) => Math.max(max, r.extra?.hitCount ?? 0), 0),
-    [allRules],
-  );
+  const totalEvals = useMemo(() => totalEvaluations(allRules), [allRules]);
   const providerUsage = useMemo(() => collectProviderUsage(allRules), [allRules]);
 
   const [activeTab, setActiveTab] = useState<RulesTabKey>('rules');
@@ -119,7 +116,7 @@ export function useRulesPage(apiConfig: ClashAPIConfig) {
     rules,
     provider,
     providerCount,
-    maxHits,
+    totalEvals,
     providerUsage,
     activeTab: effectiveTab,
     setActiveTab,

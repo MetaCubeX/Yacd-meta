@@ -180,6 +180,13 @@ export const data = {
   rule_col_hits: '命中',
   rule_provider_used_by: '用於',
   rule_provider_unused: '未被頂層規則引用',
+  rule_funnel_tip: '到達 {{reached}} 次，命中 {{hits}} 次，佔全部比對的 {{share}}',
+  rule_last_hit: '最近一次命中：{{time}}',
+  rule_never_hit: '從未命中',
+  rule_counts_frozen: '已停用，計數已凍結',
+  rule_funnel_legend:
+    '淺色條：輪到本條規則檢查的次數。深色段：其中命中的次數。依第一條規則的檢查次數歸一；核心啟動或重新載入設定時計數歸零。',
+  rules_total_evals: '共 {{total}} 次比對',
   search_logs_placeholder: '搜尋日誌內容',
   log_level: '日誌等級',
   logs_empty_hint: '有流量經過時會即時刷出新日誌',

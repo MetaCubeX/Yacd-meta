@@ -176,7 +176,12 @@ export const data = {
   test_latency_failed: 'Latency test failed for {{name}}: {{message}}',
   group_fixed_tip: 'This group has a manually fixed selection; run a latency test to release it',
   rule_entry_count: '{{count}} entries',
-  rule_hit_tip: 'Hit {{count}} times, last {{time}}',
+  rule_funnel_tip: 'Reached {{reached}} times, hit {{hits}} ({{share}} of all evaluations)',
+  rule_last_hit: 'Last hit {{time}}',
+  rule_counts_frozen: 'Disabled: counters are frozen',
+  rule_funnel_legend:
+    'Light bar: evaluations that reached this rule. Dark cap: the ones it hit. Scaled to the evaluations seen by the first rule; counters reset when the core starts or reloads its config.',
+  rules_total_evals: '{{total}} evaluations',
   rule_never_hit: 'Never hit',
   rule_enable: 'Enable rule',
   rule_disable: 'Disable rule',
