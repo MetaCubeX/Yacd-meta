@@ -2,6 +2,7 @@ import cx from 'clsx';
 import * as React from 'react';
 
 import { Search } from '~/components/shared/FeatherIcons';
+import { useSlidingIndicator } from '~/hooks/useSlidingIndicator';
 
 import s from './PageHeader.module.scss';
 
@@ -41,8 +42,10 @@ export function HeaderTabs({
   children: React.ReactNode;
   className?: string;
 }) {
+  const { containerRef, indicatorRef } = useSlidingIndicator('[aria-selected="true"]');
   return (
-    <div className={cx(s.tabs, className)} role="tablist" aria-label={label}>
+    <div className={cx(s.tabs, className)} role="tablist" aria-label={label} ref={containerRef}>
+      <div className={s.tabIndicator} ref={indicatorRef} aria-hidden="true" />
       {children}
     </div>
   );

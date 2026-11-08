@@ -5,6 +5,7 @@ import { FcAreaChart, FcDocument, FcGlobe, FcLink, FcRuler, FcSettings } from 'r
 import { Link, useLocation } from 'react-router-dom';
 
 import { ThemeSwitcher } from '~/components/shared/ThemeSwitcher';
+import { useSlidingIndicator } from '~/hooks/useSlidingIndicator';
 import { useVersion } from '~/hooks/useVersion';
 import { getClashAPIConfig } from '~/store/app';
 import { connect } from '~/store/StateProvider';
@@ -33,7 +34,7 @@ const SideBarRow = React.memo(function SideBarRow({
   const Comp = icons[iconId];
   const className = cx(s.row, isActive ? s.rowActive : null);
   return (
-    <Link to={to} className={className}>
+    <Link to={to} className={className} aria-current={isActive ? 'page' : undefined}>
       <Comp />
       <div className={s.label}>{labelText}</div>
     </Link>
@@ -89,12 +90,14 @@ export default connect(mapState)(SideBar);
 function SideBar(props: Props) {
   const { t } = useTranslation();
   const location = useLocation();
+  const { containerRef, indicatorRef } = useSlidingIndicator('[aria-current="page"]');
 
   const version = useVersion(props.apiConfig);
   return (
     <div className={s.root}>
       <div className={version.meta && version.premium ? s.logo_singbox : s.logo_meta} />
-      <div className={s.rows}>
+      <div className={s.rows} ref={containerRef}>
+        <div className={s.indicator} ref={indicatorRef} aria-hidden="true" />
         {pages.map(({ to, iconId, labelText }) => (
           <SideBarRow
             key={to}

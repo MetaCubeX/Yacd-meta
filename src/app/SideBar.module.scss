@@ -1,4 +1,5 @@
 @use '~/styles/utils/custom-media' as *;
+@use '~/styles/utils/sliding-indicator' as *;
 
 .root {
   // 半透明外壳色而不是纯白卡片色：纯白会和卡片撞成同一层，看不出主次
@@ -52,6 +53,9 @@
 }
 
 .rows {
+  // offsetParent for the indicator: SideBar.tsx reads row offsets relative to this box
+  position: relative;
+
   @media (max-width: 768px) {
     display: flex;
     justify-content: space-around;
@@ -67,10 +71,27 @@
   }
 }
 
+// Active background for the whole list. A gradient cannot be interpolated, so a per-row
+// background would jump between rows; one element that slides under them animates instead.
+.indicator {
+  @include sliding-indicator;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #60a5fa 0%, var(--color-focus-blue) 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.28);
+
+  @media (max-width: 768px) {
+    border-radius: 14px;
+    background: rgba(99, 160, 255, 0.18);
+    box-shadow: none;
+  }
+}
+
 /* a router link */
 .row {
   color: var(--color-text);
   text-decoration: none;
+  position: relative;
+  z-index: 1;
 
   display: flex;
   align-items: center;
@@ -86,6 +107,16 @@
   &:hover {
     background-color: rgba(176, 206, 255, 0.221);
     color: var(--color-focus-blue);
+  }
+
+  @media (hover: hover) {
+    &:not(.rowActive):hover svg {
+      transform: scale(1.1);
+    }
+  }
+
+  &:active svg {
+    transform: scale(0.92);
   }
 
   @media (--breakpoint-not-small) {
@@ -121,13 +152,13 @@
   }
 }
 
+// The background comes from .indicator, so the row itself stays transparent, hover included.
 .rowActive {
-  background: linear-gradient(135deg, #60a5fa 0%, var(--color-focus-blue) 100%);
   color: #fff;
 
   &:hover {
     color: #fff;
-    background: linear-gradient(135deg, #60a5fa 0%, var(--color-focus-blue) 100%);
+    background-color: transparent;
   }
 
   svg {
@@ -139,10 +170,11 @@
   }
 
   @media (max-width: 768px) {
-    background: rgba(99, 160, 255, 0.18);
     color: var(--color-focus-blue);
-    border-bottom: none;
-    box-shadow: none;
+
+    &:hover {
+      color: var(--color-focus-blue);
+    }
 
     svg {
       color: var(--color-focus-blue);
@@ -177,5 +209,12 @@
 @media (max-width: 768px) {
   .footer {
     display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row,
+  .row svg {
+    transition: none;
   }
 }

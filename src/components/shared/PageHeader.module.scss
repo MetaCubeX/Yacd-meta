@@ -9,6 +9,8 @@
  *          凹陷的控件（分段标签轨道、输入框）翻成浮起
  */
 
+@use '~/styles/utils/sliding-indicator' as *;
+
 .header {
   position: sticky;
   top: 0;
@@ -69,6 +71,8 @@
 /* ---------- 分段标签 ---------- */
 
 .tabs {
+  // offsetParent for .tabIndicator
+  position: relative;
   display: flex;
   align-items: center;
   gap: 2px;
@@ -86,7 +90,21 @@
   }
 }
 
+// The selected tab's raised card. It slides between tabs instead of each tab fading its own.
+.tabIndicator {
+  @include sliding-indicator(0.28s);
+  border-radius: 9px;
+  background: var(--color-card);
+  box-shadow: var(--shadow-segment);
+
+  @media (max-width: 768px) {
+    border: 1px solid var(--color-card-border);
+  }
+}
+
 .tab {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -103,8 +121,7 @@
   white-space: nowrap;
   transition:
     background-color 0.15s ease,
-    color 0.15s ease,
-    box-shadow 0.15s ease;
+    color 0.15s ease;
 
   &:hover:not(.tabActive) {
     color: var(--color-text);
@@ -123,15 +140,14 @@
   }
 }
 
+// Background, shadow and the narrow-screen border all come from .tabIndicator
 .tabActive {
-  background: var(--color-card);
   color: var(--color-text-highlight);
-  box-shadow: var(--shadow-segment);
+}
 
-  @media (max-width: 768px) {
-    border: 1px solid var(--color-card-border);
-    // 补掉边框占掉的 1px，选中和未选中的高度才对得齐
-    padding: 4px 9px;
+@media (prefers-reduced-motion: reduce) {
+  .tab {
+    transition: none;
   }
 }
 

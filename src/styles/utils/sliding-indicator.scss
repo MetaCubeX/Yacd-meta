@@ -1,0 +1,24 @@
+// Base styles for the element driven by useSlidingIndicator (src/hooks/useSlidingIndicator.ts).
+// The hook writes width/height/transform/opacity inline and sets data-animate; the caller adds
+// the look (background, radius, shadow). Items above it need `position: relative; z-index: 1`.
+@mixin sliding-indicator($duration: 0.32s) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  box-sizing: border-box;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform;
+
+  &[data-animate='true'] {
+    transition:
+      transform $duration cubic-bezier(0.22, 1, 0.36, 1),
+      width $duration cubic-bezier(0.22, 1, 0.36, 1),
+      height $duration cubic-bezier(0.22, 1, 0.36, 1);
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+}
