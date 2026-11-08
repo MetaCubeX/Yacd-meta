@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useLocation } from 'react-router-dom';
 
 import APIConfig from '~/components/backend/APIConfig';
 import {
@@ -36,11 +37,14 @@ function BackendPage({ dispatch, apiConfigs, selectedClashAPIConfigIndex }: Prop
     [dispatch],
   );
 
+  // /backend 是面板之外的独立路由，选好后端要回到面板，否则 reload 后还停在这页。
+  // 同一组件也嵌在面板里的「连接到后端」弹窗中，那时留在原路由
+  const isStandalone = useLocation().pathname === '/backend';
   const handleSelectConfig = useCallback(
     (config: ClashAPIConfig) => {
-      dispatch(selectClashAPIConfig(config));
+      dispatch(selectClashAPIConfig(config, isStandalone ? '#/' : undefined));
     },
-    [dispatch],
+    [dispatch, isStandalone],
   );
 
   const handleUpdateConfig = useCallback(

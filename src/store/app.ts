@@ -67,7 +67,10 @@ export function removeClashAPIConfig({ baseURL, secret }: ClashAPIConfig) {
   };
 }
 
-export function selectClashAPIConfig({ baseURL, secret }: ClashAPIConfig) {
+/**
+ * 选中一条后端并整页 reload。nextHash 给出时 reload 落到这个路由，不给就留在当前路由。
+ */
+export function selectClashAPIConfig({ baseURL, secret }: ClashAPIConfig, nextHash?: string) {
   return async (dispatch: DispatchFn, getState: GetStateFn) => {
     const idx = findClashAPIConfigIndex(getState, { baseURL, secret });
     if (idx === undefined) return;
@@ -83,6 +86,8 @@ export function selectClashAPIConfig({ baseURL, secret }: ClashAPIConfig) {
     // manual clean up is too complex
     // we just reload the app
     try {
+      // replaceState 不触发 popstate，路由不会在 reload 前先渲染一次目标页
+      if (nextHash) window.history.replaceState(null, '', nextHash);
       window.location.reload();
     } catch (err) {
       // ignore
