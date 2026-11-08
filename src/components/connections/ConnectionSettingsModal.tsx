@@ -1,13 +1,14 @@
-import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
-import cx from 'clsx';
+import * as Tabs from '@radix-ui/react-tabs';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Menu, Trash2, X } from '~/components/shared/FeatherIcons';
+import { Columns, Sliders, Tag, Trash2, X } from '~/components/shared/FeatherIcons';
 import Modal from '~/components/shared/Modal';
 import Switch from '~/components/shared/SwitchThemed';
+import { useSlidingIndicator } from '~/hooks/useSlidingIndicator';
 import { ConnectionColumn, ConnectionSettings, SourceMapItem } from '~/modules/connections/utils';
 
+import { ColumnsEditor } from './ColumnsEditor';
 import s from './ConnectionSettingsModal.module.scss';
 
 type Props = {
@@ -16,16 +17,234 @@ type Props = {
   settings: ConnectionSettings;
   updateSettings: (patch: Partial<ConnectionSettings>) => void;
   visibleColumns: ConnectionColumn[];
-  availableColumns: ConnectionColumn[];
   addColumn: (id: string) => void;
   removeColumn: (id: string) => void;
-  reorderColumns: (fromIndex: number, toIndex: number) => void;
+  setColumns: (ids: string[]) => void;
   resetColumns: () => void;
   sourceMap: SourceMapItem[];
   setSourceMap: (updater: React.SetStateAction<SourceMapItem[]>) => void;
 };
 
-function ToggleRow({
+type PaneId = 'general' | 'columns' | 'tags';
+
+type NavItem = { id: PaneId; label: string; icon: React.ReactNode };
+
+export default function ConnectionSettingsModal({
+  isOpen,
+  onRequestClose,
+  settings,
+  updateSettings,
+  visibleColumns,
+  addColumn,
+  removeColumn,
+  setColumns,
+  resetColumns,
+  sourceMap,
+  setSourceMap,
+}: Props) {
+  const { t } = useTranslation();
+  const [pane, setPane] = React.useState<PaneId>('general');
+  // Escape cancels a column drag; it must not also close the dialog.
+  const [isDragging, setIsDragging] = React.useState(false);
+
+  const enabledIds = React.useMemo(() => visibleColumns.map((c) => c.id), [visibleColumns]);
+
+  const setSource = (key: keyof SourceMapItem, index: number, value: string) => {
+    setSourceMap((prev) => prev.map((item, i) => (i === index ? { ...item, [key]: value } : item)));
+  };
+
+  const navItems: NavItem[] = [
+    { id: 'general', label: t('conn_settings_general'), icon: <Sliders size={15} /> },
+    { id: 'columns', label: t('custom_columns'), icon: <Columns size={15} /> },
+    { id: 'tags', label: t('client_tag'), icon: <Tag size={15} /> },
+  ];
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onRequestClose={onRequestClose}
+      shouldCloseOnEsc={!isDragging}
+      title={t('conn_settings')}
+      className={s.modal}
+      overlayClassName={s.overlay}
+    >
+      <div className={s.header}>
+        <span className={s.headerTitle}>{t('conn_settings')}</span>
+        <button
+          type="button"
+          className={s.headerClose}
+          onClick={onRequestClose}
+          aria-label={t('close')}
+        >
+          <X size={15} />
+        </button>
+      </div>
+
+      <Tabs.Root
+        className={s.layout}
+        value={pane}
+        onValueChange={(value) => setPane(value as PaneId)}
+        orientation="vertical"
+      >
+        <PaneNav label={t('conn_settings')} items={navItems} />
+
+        <Tabs.Content value="general" className={s.pane}>
+          <PaneHead title={t('conn_settings_general')} desc={t('conn_settings_general_desc')} />
+          <div className={s.settings}>
+            <div className={s.setting}>
+              <SettingHead
+                label={t('hide_conn')}
+                hint={t('hide_conn_hint')}
+                checked={settings.hideEnabled}
+                onChange={(value) => updateSettings({ hideEnabled: value })}
+              />
+              <input
+                type="text"
+                className={s.textInput}
+                value={settings.hideRegex}
+                placeholder="direct|dns-out"
+                aria-label={t('hide_conn_regex')}
+                onChange={(e) => updateSettings({ hideRegex: e.target.value })}
+              />
+            </div>
+            <div className={s.setting}>
+              <SettingHead
+                label={t('full_chain')}
+                hint={t('full_chain_hint')}
+                checked={settings.fullChain}
+                onChange={(value) => updateSettings({ fullChain: value })}
+              />
+            </div>
+          </div>
+        </Tabs.Content>
+
+        <Tabs.Content value="columns" className={s.pane}>
+          <PaneHead
+            title={t('custom_columns')}
+            desc={t('custom_columns_desc')}
+            action={
+              <button type="button" className={s.ghostBtn} onClick={resetColumns}>
+                {t('reset_default_columns')}
+              </button>
+            }
+          />
+          <ColumnsEditor
+            enabledIds={enabledIds}
+            setColumns={setColumns}
+            addColumn={addColumn}
+            removeColumn={removeColumn}
+            onDraggingChange={setIsDragging}
+          />
+        </Tabs.Content>
+
+        <Tabs.Content value="tags" className={s.pane}>
+          <PaneHead
+            title={t('client_tag')}
+            desc={
+              <>
+                {t('client_tag_desc')}
+                <br />
+                {t('sourceip_tip')}
+              </>
+            }
+            action={
+              <button
+                type="button"
+                className={s.ghostBtn}
+                onClick={() => setSourceMap((prev) => [...prev, { reg: '', name: '' }])}
+              >
+                {t('add_tag')}
+              </button>
+            }
+          />
+          {sourceMap.length === 0 ? (
+            <div className={s.empty}>{t('client_tag_empty')}</div>
+          ) : (
+            <div className={s.tagTable}>
+              <div className={s.tagHead}>
+                <span>{t('c_source')}</span>
+                <span>{t('device_name')}</span>
+              </div>
+              {sourceMap.map((item, index) => (
+                <div key={index} className={s.tagRow}>
+                  <input
+                    type="text"
+                    className={s.textInput}
+                    value={item.reg}
+                    placeholder="192.168.1.10"
+                    aria-label={t('c_source')}
+                    onChange={(e) => setSource('reg', index, e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    className={s.textInput}
+                    value={item.name}
+                    placeholder={t('device_name')}
+                    aria-label={t('device_name')}
+                    onChange={(e) => setSource('name', index, e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className={s.deleteBtn}
+                    onClick={() => setSourceMap((prev) => prev.filter((_, i) => i !== index))}
+                    title={t('delete')}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </Tabs.Content>
+      </Tabs.Root>
+
+      <div className={s.footer}>
+        <button type="button" className={s.primaryBtn} onClick={onRequestClose}>
+          {t('done')}
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+// A component of its own so its hook mounts with the dialog content: the dialog renders its
+// content a render after it opens, which the modal's own hooks would not see.
+function PaneNav({ label, items }: { label: string; items: NavItem[] }) {
+  const { containerRef, indicatorRef } = useSlidingIndicator('[data-state="active"]');
+  return (
+    <Tabs.List className={s.nav} aria-label={label} ref={containerRef}>
+      <div className={s.navIndicator} ref={indicatorRef} aria-hidden="true" />
+      {items.map((item) => (
+        <Tabs.Trigger key={item.id} value={item.id} className={s.navItem}>
+          <span className={s.navIcon}>{item.icon}</span>
+          <span className={s.navLabel}>{item.label}</span>
+        </Tabs.Trigger>
+      ))}
+    </Tabs.List>
+  );
+}
+
+function PaneHead({
+  title,
+  desc,
+  action,
+}: {
+  title: string;
+  desc: React.ReactNode;
+  action?: React.ReactNode;
+}) {
+  return (
+    <div className={s.paneHead}>
+      <div className={s.paneHeadText}>
+        <h3 className={s.paneTitle}>{title}</h3>
+        <p className={s.paneDesc}>{desc}</p>
+      </div>
+      {action ? <div className={s.paneAction}>{action}</div> : null}
+    </div>
+  );
+}
+
+function SettingHead({
   label,
   hint,
   checked,
@@ -36,217 +255,18 @@ function ToggleRow({
   checked: boolean;
   onChange: (value: boolean) => void;
 }) {
+  // The label names the switch and makes the text a click target for it too. The rule cannot
+  // see that SwitchThemed renders a <button>, which is a labelable element.
   return (
-    <div className={s.row}>
-      <span className={s.rowLabel}>{label}</span>
-      <span className={s.rowHint}>{hint}</span>
-      <div className={s.rowControl}>
+    // oxlint-disable-next-line jsx-a11y/label-has-associated-control
+    <label className={s.settingHead}>
+      <span className={s.settingText}>
+        <span className={s.settingLabel}>{label}</span>
+        <span className={s.settingHint}>{hint}</span>
+      </span>
+      <span className={s.settingControl}>
         <Switch checked={checked} onChange={onChange} />
-      </div>
-    </div>
-  );
-}
-
-export default function ConnectionSettingsModal({
-  isOpen,
-  onRequestClose,
-  settings,
-  updateSettings,
-  visibleColumns,
-  availableColumns,
-  addColumn,
-  removeColumn,
-  reorderColumns,
-  resetColumns,
-  sourceMap,
-  setSourceMap,
-}: Props) {
-  const { t } = useTranslation();
-
-  const setSource = (key: keyof SourceMapItem, index: number, value: string) => {
-    setSourceMap((prev) => prev.map((item, i) => (i === index ? { ...item, [key]: value } : item)));
-  };
-
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-    reorderColumns(result.source.index, result.destination.index);
-  };
-
-  return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
-      title={t('conn_settings')}
-      className={s.modal}
-    >
-      <div className={s.header}>
-        <span className={s.headerTitle}>{t('conn_settings')}</span>
-        <button
-          type="button"
-          className={s.headerClose}
-          onClick={onRequestClose}
-          aria-label={t('close_all_confirm_no')}
-        >
-          <X size={15} />
-        </button>
-      </div>
-
-      <div className={s.body}>
-        <div className={s.row}>
-          <span className={s.rowLabel}>{t('hide_conn_regex')}</span>
-          <div className={s.rowControl}>
-            <input
-              type="text"
-              className={s.textInput}
-              value={settings.hideRegex}
-              placeholder="direct|dns-out"
-              onChange={(e) => updateSettings({ hideRegex: e.target.value })}
-            />
-          </div>
-        </div>
-
-        <ToggleRow
-          label={t('hide_conn')}
-          hint={t('hide_conn_hint')}
-          checked={settings.hideEnabled}
-          onChange={(value) => updateSettings({ hideEnabled: value })}
-        />
-        <ToggleRow
-          label={t('full_chain')}
-          hint={t('full_chain_hint')}
-          checked={settings.fullChain}
-          onChange={(value) => updateSettings({ fullChain: value })}
-        />
-
-        <section className={s.section}>
-          <span className={s.sectionTitle}>{t('custom_columns')}</span>
-          <div className={s.columnsGrid}>
-            <div className={s.columnsPane}>
-              <div className={s.paneHead}>
-                <span>{t('columns_enabled')}</span>
-                <span className={s.paneCount}>{visibleColumns.length}</span>
-              </div>
-              <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId="enabled-columns">
-                  {(provided) => (
-                    <div
-                      className={s.paneBodyFilled}
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                    >
-                      {visibleColumns.map((column, index) => (
-                        <Draggable key={column.id} draggableId={column.id} index={index}>
-                          {(dragProvided, snapshot) => (
-                            <div
-                              ref={dragProvided.innerRef}
-                              {...dragProvided.draggableProps}
-                              className={cx(s.enabledItem, {
-                                [s.enabledItemDragging]: snapshot.isDragging,
-                              })}
-                            >
-                              <span
-                                {...dragProvided.dragHandleProps}
-                                className={s.dragHandle}
-                                title={t('drag_to_reorder')}
-                              >
-                                <Menu size={13} />
-                              </span>
-                              <span className={s.itemLabel}>{t(column.labelKey)}</span>
-                              <button
-                                type="button"
-                                className={s.removeBtn}
-                                onClick={() => removeColumn(column.id)}
-                                title={t('remove')}
-                              >
-                                <X size={13} />
-                              </button>
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
-            </div>
-
-            <div className={s.columnsPane}>
-              <div className={s.paneHead}>
-                <span>{t('columns_available')}</span>
-                <span className={s.paneCount}>{availableColumns.length}</span>
-              </div>
-              <div className={s.paneBodyOutlined}>
-                {availableColumns.map((column) => (
-                  <button
-                    key={column.id}
-                    type="button"
-                    className={s.availableItem}
-                    onClick={() => addColumn(column.id)}
-                  >
-                    <span className={s.itemLabel}>{t(column.labelKey)}</span>
-                    <span className={s.addSign} aria-hidden>
-                      ＋
-                    </span>
-                  </button>
-                ))}
-                {availableColumns.length === 0 ? (
-                  <span className={s.paneEmpty}>{t('columns_all_enabled')}</span>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className={s.section}>
-          <span className={s.sectionTitle}>{t('client_tag')}</span>
-          <span className={s.sectionHint}>{t('sourceip_tip')}</span>
-          <div className={s.tagList}>
-            {sourceMap.map((item, index) => (
-              <div key={index} className={s.tagRow}>
-                <input
-                  type="text"
-                  className={s.textInput}
-                  value={item.reg}
-                  placeholder={t('c_source')}
-                  onChange={(e) => setSource('reg', index, e.target.value)}
-                />
-                <input
-                  type="text"
-                  className={s.textInput}
-                  value={item.name}
-                  placeholder={t('device_name')}
-                  onChange={(e) => setSource('name', index, e.target.value)}
-                />
-                <button
-                  type="button"
-                  className={s.removeBtn}
-                  onClick={() => setSourceMap((prev) => prev.filter((_, i) => i !== index))}
-                  title={t('delete')}
-                >
-                  <Trash2 size={13} />
-                </button>
-              </div>
-            ))}
-          </div>
-          <button
-            type="button"
-            className={s.ghostBtn}
-            onClick={() => setSourceMap((prev) => [...prev, { reg: '', name: '' }])}
-          >
-            {t('add_tag')}
-          </button>
-        </section>
-      </div>
-
-      <div className={s.footer}>
-        <button type="button" className={s.ghostBtn} onClick={resetColumns}>
-          {t('reset_default_columns')}
-        </button>
-        <button type="button" className={s.primaryBtn} onClick={onRequestClose}>
-          {t('done')}
-        </button>
-      </div>
-    </Modal>
+      </span>
+    </label>
   );
 }

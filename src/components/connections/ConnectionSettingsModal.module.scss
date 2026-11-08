@@ -1,22 +1,59 @@
-// 选择器写两遍是为了压过 Modal.module.scss 的 .content（同为单类选择器，
-// 打包顺序不确定），确保这里的 padding / max-height / overflow 生效
+@use '~/styles/utils/sliding-indicator' as *;
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    translate: 24px 0;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+// A panel docked to the right edge, so the connection table to its left shows each change.
+// The selector is doubled to beat Modal.module.scss's .content: both are single-class
+// selectors and the bundle order between the two files is not fixed.
 .modal.modal {
   display: flex;
   flex-direction: column;
-  width: 640px;
-  max-width: calc(100vw - 48px);
-  max-height: calc(100vh - 64px);
+  top: 12px;
+  right: 12px;
+  bottom: 12px;
+  left: auto;
+  width: min(600px, calc(100vw - 24px));
+  max-height: none;
   padding: 0;
-  border-radius: 18px;
+  border-radius: 16px;
   overflow: hidden;
-
-  // Modal 默认用 translate(-50%,-50%) 居中，而带 transform/translate 的祖先会成为
-  // position: fixed 的包含块 —— dnd 拖拽中的元素正是 fixed 定位的，会整体偏移半个
-  // 弹窗。这里换成 inset + auto margin 居中，不引入任何变换。
-  inset: 0;
+  // No dimmed overlay behind this panel, so it needs its own edge against the page
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-popover);
+  // No transform at rest: a transformed ancestor becomes the containing block of
+  // position: fixed descendants, and the column DragOverlay is one, so it would be offset.
+  // The entry animation's translate is over before anyone can start a drag.
   translate: none;
-  margin: auto;
-  height: fit-content;
+
+  &[data-state='open'] {
+    animation: panelIn 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    inset: 0;
+    width: 100vw;
+    border: none;
+    border-radius: 0;
+  }
+}
+
+// Transparent so the connection table stays visible while settings change it.
+// Doubled for the same reason as .modal.modal, to beat Modal.module.scss's .overlay.
+.overlay.overlay {
+  background: transparent;
 }
 
 .header {
@@ -52,46 +89,201 @@
   }
 }
 
-.body {
+/* ---------- 主从布局 ---------- */
+
+.layout {
+  display: grid;
+  grid-template-columns: 164px minmax(0, 1fr);
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  padding: 4px 22px 20px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
 }
 
-/* ---------- 单行设置 ---------- */
+.nav {
+  // offsetParent for .navIndicator
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 10px;
+  border-right: 1px solid var(--color-separator);
+  background: var(--color-track);
 
-.row {
+  @media (max-width: 640px) {
+    flex-direction: row;
+    padding: 8px 12px;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--color-separator);
+  }
+}
+
+.navIndicator {
+  @include sliding-indicator(0.28s);
+  border-radius: 10px;
+  background: var(--color-card);
+  box-shadow: var(--shadow-segment);
+}
+
+.navItem {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--color-separator);
-}
-
-.rowLabel {
-  font-size: 0.85rem;
-  color: var(--color-text);
-  white-space: nowrap;
-}
-
-.rowHint {
-  font-size: 0.72rem;
+  gap: 10px;
+  flex-shrink: 0;
+  height: 38px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
   color: var(--color-text-secondary);
+  font: inherit;
+  font-size: 0.82rem;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover:not([data-state='active']) {
+    background: var(--color-hover-soft);
+    color: var(--color-text);
+  }
+
+  &[data-state='active'] {
+    color: var(--color-text-highlight);
+    font-weight: 500;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-blue);
+    outline-offset: -2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.navIcon {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.navLabel {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.rowControl {
+.pane {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+  min-height: 0;
+  padding: 20px 24px;
+  overflow-y: auto;
+  outline: none;
+
+  // Radix keeps inactive panels in the DOM with `hidden`, which display: flex would override
+  &[hidden] {
+    display: none;
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-focus-blue);
+  }
+
+  @media (max-width: 640px) {
+    padding: 16px;
+  }
+}
+
+.paneHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.paneHeadText {
+  min-width: 0;
+}
+
+.paneTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-highlight);
+}
+
+.paneDesc {
+  margin: 4px 0 0;
+  font-size: 0.75rem;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+}
+
+.paneAction {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* ---------- 常规 ---------- */
+
+.settings {
+  display: flex;
+  flex-direction: column;
+}
+
+.setting {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 0;
+  border-top: 1px solid var(--color-separator);
+}
+
+.settingHead {
   display: flex;
   align-items: center;
+  gap: 16px;
+  cursor: pointer;
+}
+
+.settingText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.settingLabel {
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.settingHint {
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+}
+
+.settingControl {
+  display: flex;
+  flex-shrink: 0;
   margin-left: auto;
 }
 
 .textInput {
-  width: 240px;
-  max-width: 100%;
+  width: 100%;
+  min-width: 0;
   height: 34px;
   padding: 0 11px;
   border-radius: 9px;
@@ -107,238 +299,79 @@
   }
 }
 
-/* ---------- 分区 ---------- */
-
-.section {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 18px 0 0;
-}
-
-.sectionTitle {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--color-text-highlight);
-}
-
-.sectionHint {
-  font-size: 0.72rem;
-  color: var(--color-text-secondary);
-  margin-top: -6px;
-}
-
-/* ---------- 列管理 ---------- */
-
-.columnsGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.columnsPane {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-
-.paneHead {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.72rem;
-  color: var(--color-text-secondary);
-}
-
-.paneCount {
-  margin-left: auto;
-  padding: 1px 8px;
-  border-radius: 6px;
-  background: var(--color-badge-bg);
-  color: var(--color-badge-fg);
-  font-variant-numeric: tabular-nums;
-}
-
-.paneBodyFilled,
-.paneBodyOutlined {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 10px;
-  border-radius: 12px;
-  min-height: 120px;
-  max-height: 240px;
-  overflow-y: auto;
-}
-
-.paneBodyFilled {
-  background: var(--color-track);
-}
-
-.paneBodyOutlined {
-  border: 1px solid var(--color-card-border);
-}
-
-.enabledItem {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  border-radius: 9px;
-  background: var(--color-card);
-  border: 1px solid var(--color-card-border);
-}
-
-.enabledItemDragging {
-  border-color: var(--color-focus-blue);
-  box-shadow: var(--shadow-popover);
-}
-
-.dragHandle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  color: var(--color-text-secondary);
-  cursor: grab;
-
-  &:hover {
-    background: var(--color-hover-soft);
-    color: var(--color-text-highlight);
-  }
-
-  &:active {
-    cursor: grabbing;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--color-focus-blue);
-    outline-offset: 1px;
-  }
-}
-
-.availableItem {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 7px 10px;
-  border: none;
-  border-radius: 9px;
-  background: transparent;
-  color: var(--color-text);
-  font: inherit;
-  cursor: pointer;
-  text-align: left;
-
-  &:hover {
-    background: var(--color-hover-soft);
-  }
-}
-
-.itemLabel {
-  flex: 1;
-  min-width: 0;
-  font-size: 0.78rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.addSign {
-  flex-shrink: 0;
-  color: var(--color-text-secondary);
-}
-
-.removeBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-
-  &:hover:not(:disabled) {
-    background: var(--color-hover-soft);
-    color: var(--color-text-highlight);
-  }
-
-  &:disabled {
-    opacity: 0.35;
-    cursor: default;
-  }
-}
-
-.removeBtn:hover {
-  color: var(--color-danger);
-}
-
-.paneEmpty {
-  padding: 34px 0;
-  text-align: center;
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-  opacity: 0.7;
-}
-
 /* ---------- 客户端标签 ---------- */
 
-.tagList {
+.tagTable {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
+.tagHead,
 .tagRow {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 30px;
   align-items: center;
   gap: 8px;
+}
 
-  .textInput {
-    flex: 1;
-    width: auto;
-    min-width: 0;
+.tagHead {
+  padding: 0 2px;
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+}
+
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-hover-soft);
+    color: var(--color-danger);
   }
 }
 
-/* ---------- 页脚 ---------- */
+.empty {
+  padding: 36px 16px;
+  border: 1px dashed var(--color-card-border);
+  border-radius: 12px;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+}
+
+/* ---------- 按钮 / 页脚 ---------- */
 
 .footer {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: flex-end;
   flex-shrink: 0;
-  padding: 14px 22px;
+  padding: 12px 22px;
   border-top: 1px solid var(--color-separator);
-  background: var(--color-track);
 }
 
 .ghostBtn {
-  height: 36px;
-  padding: 0 15px;
-  border-radius: 10px;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 9px;
   border: 1px solid var(--color-card-border);
   background: var(--color-card);
   color: var(--color-text);
   font: inherit;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 500;
+  white-space: nowrap;
   cursor: pointer;
-  align-self: flex-start;
 
   &:hover {
     border-color: var(--color-focus-blue);
@@ -348,7 +381,6 @@
 
 .primaryBtn {
   height: 36px;
-  margin-left: auto;
   padding: 0 20px;
   border-radius: 10px;
   border: none;

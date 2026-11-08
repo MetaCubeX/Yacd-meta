@@ -1,0 +1,169 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    flex: none;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.listHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+}
+
+.count {
+  margin-left: auto;
+  padding: 1px 8px;
+  border-radius: 6px;
+  background: var(--color-badge-bg);
+  color: var(--color-badge-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+.listBody {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-height: 120px;
+  padding: 8px;
+  border-radius: 12px;
+  overflow-y: auto;
+
+  @media (max-width: 640px) {
+    flex: none;
+    max-height: 260px;
+  }
+}
+
+.listBodyEnabled {
+  background: var(--color-track);
+}
+
+.listBodyAvailable {
+  border: 1px solid var(--color-card-border);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 6px 8px 6px 6px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  color: var(--color-text);
+  // Pointer drags start anywhere on the row; keep a drag from selecting the label text.
+  user-select: none;
+}
+
+.rowEnabled {
+  background: var(--color-card);
+  border-color: var(--color-card-border);
+}
+
+.rowAvailable:hover {
+  background: var(--color-hover-soft);
+}
+
+// The row's own slot while it is dragged; the overlay follows the pointer instead.
+.rowPlaceholder {
+  opacity: 0.35;
+}
+
+.rowOverlay {
+  background: var(--color-card);
+  border-color: var(--color-focus-blue);
+  box-shadow: var(--shadow-popover);
+  cursor: grabbing;
+
+  .handle {
+    cursor: grabbing;
+  }
+}
+
+.handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  color: var(--color-text-secondary);
+  cursor: grab;
+  // Touch scrolling of the list still works on the rest of the row; the handle drags.
+  touch-action: none;
+
+  &:hover {
+    background: var(--color-hover-soft);
+    color: var(--color-text-highlight);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-blue);
+    outline-offset: 1px;
+  }
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.78rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-hover-soft);
+    color: var(--color-text-highlight);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-blue);
+    outline-offset: 1px;
+  }
+}
+
+.rowEnabled .action:hover {
+  color: var(--color-danger);
+}
+
+.empty {
+  margin: auto 0;
+  padding: 24px 8px;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}

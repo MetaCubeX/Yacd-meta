@@ -39,14 +39,8 @@ export default function Connections({ apiConfig }: Props) {
 
   const { sourceMap, setSourceMap } = useSourceMapState();
   const { settings, updateSettings } = useConnectionSettings();
-  const {
-    visibleColumns,
-    availableColumns,
-    addColumn,
-    removeColumn,
-    reorderColumns,
-    resetColumns,
-  } = useConnectionColumns();
+  const { visibleColumns, addColumn, removeColumn, setColumns, resetColumns } =
+    useConnectionColumns();
 
   const { conns, closedConns, total, isRefreshPaused, toggleIsRefreshPaused, closeAllConnections } =
     useConnectionsStream(apiConfig, sourceMap);
@@ -150,10 +144,9 @@ export default function Connections({ apiConfig }: Props) {
         settings={settings}
         updateSettings={updateSettings}
         visibleColumns={visibleColumns}
-        availableColumns={availableColumns}
         addColumn={addColumn}
         removeColumn={removeColumn}
-        reorderColumns={reorderColumns}
+        setColumns={setColumns}
         resetColumns={resetColumns}
         sourceMap={sourceMap}
         setSourceMap={setSourceMap}

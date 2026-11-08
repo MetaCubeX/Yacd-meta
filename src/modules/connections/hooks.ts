@@ -18,7 +18,6 @@ import {
   arrayToIdKv,
   buildHideRegExp,
   CONNECTION_COLUMN_MAP,
-  CONNECTION_COLUMNS,
   CONNECTION_COLUMNS_DEFAULT,
   ConnectionSettings,
   filterConns,
@@ -132,7 +131,7 @@ export function useConnectionsStream(apiConfig: ClashAPIConfig, sourceMap: Sourc
   };
 }
 
-/** 已启用列（有序）与可添加列的增删改查 */
+/** 已启用列（有序）的读写，写入时同步存到 localStorage */
 export function useConnectionColumns() {
   const [columns, setColumnsState] = useState<string[]>(() => getInitialColumns());
 
@@ -151,17 +150,6 @@ export function useConnectionColumns() {
     [columns, setColumns],
   );
 
-  const reorderColumns = useCallback(
-    (fromIndex: number, toIndex: number) => {
-      if (fromIndex === toIndex) return;
-      const next = [...columns];
-      const [moved] = next.splice(fromIndex, 1);
-      next.splice(toIndex, 0, moved);
-      setColumns(next);
-    },
-    [columns, setColumns],
-  );
-
   const resetColumns = useCallback(() => setColumns([...CONNECTION_COLUMNS_DEFAULT]), [setColumns]);
 
   const visibleColumns = useMemo(
@@ -169,18 +157,12 @@ export function useConnectionColumns() {
     [columns],
   );
 
-  const availableColumns = useMemo(
-    () => CONNECTION_COLUMNS.filter((column) => !columns.includes(column.id)),
-    [columns],
-  );
-
   return {
     columns,
     visibleColumns,
-    availableColumns,
     addColumn,
     removeColumn,
-    reorderColumns,
+    setColumns,
     resetColumns,
   };
 }

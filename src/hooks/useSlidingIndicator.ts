@@ -33,12 +33,17 @@ export function useSlidingIndicator(activeSelector: string) {
       // container's padding box, hence the clientLeft/clientTop (border width) correction.
       const box = container.getBoundingClientRect();
       const rect = active.getBoundingClientRect();
-      const x = rect.left - box.left - container.clientLeft;
-      const y = rect.top - box.top - container.clientTop;
+      // Rects include ancestor transforms and offsets do not. Inside a dialog that scales in,
+      // the first placement happens mid-animation and no resize follows to correct it, so
+      // convert the rects back to layout pixels.
+      const scaleX = container.offsetWidth ? box.width / container.offsetWidth : 1;
+      const scaleY = container.offsetHeight ? box.height / container.offsetHeight : 1;
+      const x = (rect.left - box.left) / scaleX - container.clientLeft;
+      const y = (rect.top - box.top) / scaleY - container.clientTop;
       indicator.dataset.animate = String(animate && placedRef.current);
       indicator.style.opacity = '1';
-      indicator.style.width = `${rect.width}px`;
-      indicator.style.height = `${rect.height}px`;
+      indicator.style.width = `${rect.width / scaleX}px`;
+      indicator.style.height = `${rect.height / scaleY}px`;
       indicator.style.transform = `translate(${x}px, ${y}px)`;
       placedRef.current = true;
     },
