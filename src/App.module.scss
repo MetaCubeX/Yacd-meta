@@ -19,6 +19,9 @@
   min-width: 0;
   overflow-y: auto;
   overflow-x: auto;
+  // 始终给竖向滚动条留位：展开提供商等操作让页面变得可滚动时，滚动条（8px）
+  // 会挤窄内容，卡在 auto-fill 阈值边上的网格就会少一列
+  scrollbar-gutter: stable;
 
   @media (max-width: 768px) {
     padding-bottom: 0;
