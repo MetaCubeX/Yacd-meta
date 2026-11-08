@@ -29,11 +29,15 @@ const routes = [
 ].filter(Boolean) as RouteObject[];
 
 function DashboardRouter() {
+  const page = useRoutes(routes);
   return (
     <>
       <APIDiscoveryContainer />
       <SideBar />
-      <div className={styles.content}>{useRoutes(routes)}</div>
+      {/* 页面数据在等后端时只挂起内容区，侧边栏要留着能点，才能切到别的后端 */}
+      <div className={styles.content}>
+        <Suspense fallback={<Loading />}>{page}</Suspense>
+      </div>
     </>
   );
 }

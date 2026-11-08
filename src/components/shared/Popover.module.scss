@@ -18,6 +18,10 @@
   animation: popoverIn 0.14s ease-out;
 }
 
+.above {
+  animation-name: popoverInAbove;
+}
+
 /* 首帧先渲染出来量宽高，定位算完之前不要让用户看到 */
 .measuring {
   top: 0;
@@ -29,6 +33,17 @@
   from {
     opacity: 0;
     transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes popoverInAbove {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
   }
   to {
     opacity: 1;

@@ -1,3 +1,4 @@
+import { useQueries } from '@tanstack/react-query';
 import * as React from 'react';
 
 import { fetchConfigs } from '~/store/configs';
@@ -186,6 +187,29 @@ export function useBackendConfigForm({
     onTest,
     onConfirm,
   };
+}
+
+// 打开切换菜单时的探测结果在这段时间内复用，来回开关菜单不会反复打每个后端
+const REACHABILITY_STALE_MS = 30_000;
+
+/**
+ * useBackendReachability tests every saved backend with GET /version while enabled.
+ * The result array lines up with apiConfigs; an entry is undefined until its test finishes.
+ */
+export function useBackendReachability(
+  apiConfigs: ClashAPIConfig[],
+  enabled: boolean,
+): Array<ConnectionTestResult | undefined> {
+  return useQueries({
+    queries: apiConfigs.map(({ baseURL, secret }) => ({
+      queryKey: ['backend-reachability', baseURL, secret] as const,
+      queryFn: () => testAPIConfig({ baseURL, secret }),
+      enabled,
+      staleTime: REACHABILITY_STALE_MS,
+      retry: false,
+    })),
+    combine: (results) => results.map((r) => r.data),
+  });
 }
 
 export function useBackendDiscovery({

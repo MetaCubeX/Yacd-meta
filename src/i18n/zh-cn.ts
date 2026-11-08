@@ -70,6 +70,8 @@ export const data = {
   current_backend: '当前后端',
   Active: '活动',
   switch_backend: '切换后端',
+  manage_backends: '管理后端',
+  backend_checking: '检测中…',
   Closed: '已断开',
   switch_theme: '切换主题',
   theme: '主题',

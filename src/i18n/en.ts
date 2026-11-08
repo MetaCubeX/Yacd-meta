@@ -70,6 +70,8 @@ export const data = {
   current_backend: 'Current Backend',
   Active: 'Active',
   switch_backend: 'Switch backend',
+  manage_backends: 'Manage backends',
+  backend_checking: 'Checking…',
   Closed: 'Closed',
   switch_theme: 'Switch theme',
   theme: 'theme',

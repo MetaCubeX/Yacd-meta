@@ -1,0 +1,170 @@
+.anchor {
+  display: flex;
+  width: 100%;
+}
+
+.trigger {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: var(--color-hover-soft);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+
+  &:hover,
+  &.open {
+    border-color: var(--color-separator);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-blue);
+    outline-offset: 2px;
+  }
+}
+
+.host {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+
+.chevron {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-secondary);
+}
+
+.dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.ok {
+  background: var(--color-success);
+}
+
+.fail {
+  background: var(--color-danger);
+}
+
+.pending {
+  background: var(--color-text-secondary);
+  opacity: 0.4;
+}
+
+.menu {
+  width: 260px;
+  max-width: 100%;
+}
+
+.heading {
+  padding: 0 10px 6px;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* 列表项和底部的「管理后端」链接共用 */
+.item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  appearance: none;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.875rem;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-hover-soft);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-blue);
+    outline-offset: -2px;
+  }
+}
+
+.selected,
+.selected:hover {
+  background: var(--color-node-active-bg);
+}
+
+.itemBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.itemHost,
+.itemStatus {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemHost {
+  font-variant-numeric: tabular-nums;
+}
+
+.itemStatus {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.itemStatusFail {
+  color: var(--color-danger);
+}
+
+.check {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--color-focus-blue);
+}
+
+.footer {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--color-separator);
+}
+
+.manageIcon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-secondary);
+}

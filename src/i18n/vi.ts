@@ -60,6 +60,8 @@ export const data = {
   current_backend: 'Backend hiện tại',
   Active: 'Hoạt động',
   switch_backend: 'Chuyển đổi backend',
+  manage_backends: 'Quản lý backend',
+  backend_checking: 'Đang kiểm tra…',
   Closed: 'Đã đóng',
   switch_theme: 'Chuyển đổi giao diện',
   theme: 'Giao diện',

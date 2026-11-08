@@ -11,7 +11,12 @@ const VIEWPORT_MARGIN = 12;
 // 弹层与触发器的间距
 const ANCHOR_GAP = 8;
 
-type Position = { top: number; left: number; maxWidth: number; maxHeight: number };
+// 向上弹出时用 bottom 定位，面板内容变高时往上长，不会盖住触发器
+type Position = ({ top: number; bottom?: undefined } | { top?: undefined; bottom: number }) & {
+  left: number;
+  maxWidth: number;
+  maxHeight: number;
+};
 
 type Props = {
   isOpen: boolean;
@@ -21,6 +26,10 @@ type Props = {
   children: React.ReactNode;
   /** 面板与触发器的对齐边 */
   align?: 'left' | 'right';
+  /** 面板在触发器的上方还是下方，贴着视口底部的触发器用 top */
+  placement?: 'top' | 'bottom';
+  /** 加在包住触发器的锚点元素上，触发器要撑满宽度时用 */
+  className?: string;
   label?: string;
 };
 
@@ -32,7 +41,16 @@ type Props = {
  * 成为 fixed 定位的包含块，所以 fixed 也救不了。挂到 body 上再按触发器的位置
  * 算坐标，顺便把面板夹在视口内，窄屏下就不会溢出到屏幕外。
  */
-export function Popover({ isOpen, onClose, trigger, children, align = 'right', label }: Props) {
+export function Popover({
+  isOpen,
+  onClose,
+  trigger,
+  children,
+  align = 'right',
+  placement = 'bottom',
+  className,
+  label,
+}: Props) {
   const anchorRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<Position | null>(null);
@@ -50,15 +68,25 @@ export function Popover({ isOpen, onClose, trigger, children, align = 'right', l
     const preferredLeft = align === 'right' ? anchor.right - width : anchor.left;
     // 夹在视口内，窄屏上触发器靠中间时也不会溢出到屏幕外
     const left = Math.min(Math.max(VIEWPORT_MARGIN, preferredLeft), vw - VIEWPORT_MARGIN - width);
-    const top = anchor.bottom + ANCHOR_GAP;
 
+    if (placement === 'top') {
+      setPosition({
+        bottom: vh - anchor.top + ANCHOR_GAP,
+        left,
+        maxWidth,
+        maxHeight: Math.max(160, anchor.top - ANCHOR_GAP - VIEWPORT_MARGIN),
+      });
+      return;
+    }
+
+    const top = anchor.bottom + ANCHOR_GAP;
     setPosition({
       top,
       left,
       maxWidth,
       maxHeight: Math.max(160, vh - top - VIEWPORT_MARGIN),
     });
-  }, [align]);
+  }, [align, placement]);
 
   // 定位要在绘制前完成，否则会看到面板从左上角跳过来
   useLayoutEffect(() => {
@@ -97,19 +125,23 @@ export function Popover({ isOpen, onClose, trigger, children, align = 'right', l
   }, [isOpen, onClose, updatePosition]);
 
   return (
-    <div className={s.anchor} ref={anchorRef}>
+    <div className={cx(s.anchor, className)} ref={anchorRef}>
       {trigger}
       {isOpen
         ? createPortal(
             <div
               ref={panelRef}
-              className={cx(s.panel, { [s.measuring]: position === null })}
+              className={cx(s.panel, {
+                [s.above]: placement === 'top',
+                [s.measuring]: position === null,
+              })}
               role="dialog"
               aria-label={label}
               style={
                 position
                   ? {
                       top: position.top,
+                      bottom: position.bottom,
                       left: position.left,
                       maxWidth: position.maxWidth,
                       maxHeight: position.maxHeight,

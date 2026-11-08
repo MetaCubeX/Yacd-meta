@@ -13,6 +13,9 @@ export function requestVersion(apiConfig: ClashAPIConfig, signal?: AbortSignal) 
   return fetch(url + '/version', { ...init, signal });
 }
 
+// 丢包型的不可达地址要等系统 TCP 连接超时才失败，Windows 上实测约 21 秒
+const FETCH_VERSION_TIMEOUT_MS = 5000;
+
 export async function fetchVersion(
   endpoint: string,
   apiConfig: ClashAPIConfig,
@@ -20,7 +23,10 @@ export async function fetchVersion(
   let json = {};
   try {
     const { url, init } = getURLAndInit(apiConfig);
-    const res = await fetch(url + endpoint, init);
+    const res = await fetch(url + endpoint, {
+      ...init,
+      signal: AbortSignal.timeout(FETCH_VERSION_TIMEOUT_MS),
+    });
     if (res.ok) {
       json = await res.json();
     }

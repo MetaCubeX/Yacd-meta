@@ -66,6 +66,8 @@ export const data = {
   current_backend: 'Текущий бэкенд',
   Active: 'Активные',
   switch_backend: 'Сменить бэкенд',
+  manage_backends: 'Управление бэкендами',
+  backend_checking: 'Проверка…',
   Closed: 'Закрытые',
   switch_theme: 'Сменить тему',
   theme: 'тема',

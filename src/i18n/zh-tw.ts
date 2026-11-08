@@ -66,6 +66,8 @@ export const data = {
   current_backend: '當前後端',
   Active: '活動中',
   switch_backend: '切換後端',
+  manage_backends: '管理後端',
+  backend_checking: '檢測中…',
   Closed: '已斷線',
   switch_theme: '切換主題',
   theme: '主題',
