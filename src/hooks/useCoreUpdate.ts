@@ -27,7 +27,7 @@ function parseCoreVersion(version: string | undefined): CoreVersion | null {
  */
 export function useCoreUpdate(apiConfig: ClashAPIConfig): CoreUpdate | null {
   const version = useVersion(apiConfig);
-  const current = version.meta && !version.premium ? parseCoreVersion(version.version) : null;
+  const current = version.core === 'mihomo' ? parseCoreVersion(version.version) : null;
   const channel = current?.channel;
 
   const { data: latest } = useQuery({

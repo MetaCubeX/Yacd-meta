@@ -5,7 +5,7 @@ import { ClashAPIConfig } from '~/types';
 
 export const versionQueryKey = (apiConfig: ClashAPIConfig) => ['/version', apiConfig] as const;
 
-/** 内核版本信息。侧边栏和代理组都要用它区分 meta / premium，共用同一份缓存 */
+/** 内核版本信息。侧边栏和代理组都要用它区分 mihomo / sing-box，共用同一份缓存 */
 export function useVersion(apiConfig: ClashAPIConfig) {
   const { data } = useSuspenseQuery({
     queryKey: versionQueryKey(apiConfig),

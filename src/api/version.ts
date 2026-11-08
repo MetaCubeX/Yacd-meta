@@ -1,11 +1,20 @@
 import { getURLAndInit } from '~/misc/request-helper';
 import { ClashAPIConfig } from '~/types';
 
-type VersionData = {
+/** VersionData is GET /version reduced to what the UI needs. `version` is absent when the request failed. */
+export type VersionData = {
   version?: string;
-  premium?: boolean;
-  meta?: boolean;
+  core: 'mihomo' | 'sing-box';
 };
+
+/**
+ * toVersionData classifies a raw /version body. sing-box's clash API answers
+ * `{ version: "sing-box …", premium: true, meta: true }`; mihomo never sets `premium`, so that
+ * flag alone tells them apart. Any other body, including `{}`, is treated as mihomo.
+ */
+export function toVersionData(raw: { version?: string; premium?: boolean }): VersionData {
+  return { version: raw.version, core: raw.premium === true ? 'sing-box' : 'mihomo' };
+}
 
 /** Raw GET /version, for callers that need the status and error body rather than a fallback. */
 export function requestVersion(apiConfig: ClashAPIConfig, signal?: AbortSignal) {
@@ -35,5 +44,5 @@ export async function fetchVersion(
 
     console.log(`failed to fetch ${endpoint}`, err);
   }
-  return json;
+  return toVersionData(json);
 }

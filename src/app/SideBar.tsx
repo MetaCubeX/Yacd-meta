@@ -117,7 +117,7 @@ function SideBar(props: Props) {
   );
   return (
     <div className={s.root}>
-      <div className={version?.meta && version.premium ? s.logo_singbox : s.logo_meta} />
+      <div className={version?.core === 'sing-box' ? s.logo_singbox : s.logo_meta} />
       <div className={s.rows} ref={containerRef}>
         <div className={s.indicator} ref={indicatorRef} aria-hidden="true" />
         {pages.map(({ to, iconId, labelText }) => (

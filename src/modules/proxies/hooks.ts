@@ -336,44 +336,24 @@ async function healthcheckProvider(apiConfig: ClashAPIConfig, name: string, time
   });
 }
 
-/**
- * 整组测速。Meta 后端有 /group/{name}/delay，一次请求测完整组；老后端只能逐个节点测。
- */
+/** 整组测速：/group/{name}/delay 一次请求测完整组，mihomo 和 sing-box 都支持 */
 export function useTestGroupLatency(
   apiConfig: ClashAPIConfig,
   appConfig: ProxiesAppConfig,
-): [(opts: { groupName: string; isMeta: boolean; memberNames: string[] }) => void, boolean] {
+): [(groupName: string) => void, boolean] {
   const { getData } = useProxiesCache(apiConfig);
   const { snapshot, refresh } = useRefreshAfterLatencyTest(apiConfig, appConfig.autoCloseOldConns);
-  const testProxy = useTestProxyLatency(apiConfig, appConfig);
   const { latencyTestTimeout, latencyTestExpectedStatus } = appConfig;
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async ({
-      groupName,
-      isMeta,
-      memberNames,
-    }: {
-      groupName: string;
-      isMeta: boolean;
-      memberNames: string[];
-    }) => {
-      if (isMeta) {
-        const group = getData()?.proxies[groupName];
-        await proxiesAPI.requestDelayForProxyGroup(
-          apiConfig,
-          groupName,
-          resolveGroupTestUrl(group, appConfig),
-          latencyTestTimeout,
-          latencyTestExpectedStatus,
-        );
-        return;
-      }
-      const dangle = getData()?.dangleProxyNames ?? [];
-      await Promise.all(
-        memberNames
-          .filter((name) => dangle.indexOf(name) > -1)
-          .map((name) => testProxy(name, undefined, { silent: true })),
+    mutationFn: async (groupName: string) => {
+      const group = getData()?.proxies[groupName];
+      await proxiesAPI.requestDelayForProxyGroup(
+        apiConfig,
+        groupName,
+        resolveGroupTestUrl(group, appConfig),
+        latencyTestTimeout,
+        latencyTestExpectedStatus,
       );
     },
     onMutate: snapshot,

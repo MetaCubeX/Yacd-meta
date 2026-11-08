@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import * as configsAPI from '~/api/configs';
 import type { UpgradeChannel } from '~/api/configs';
 import * as logsApi from '~/api/logs';
-import { fetchVersion, requestVersion } from '~/api/version';
+import { fetchVersion, requestVersion, toVersionData, type VersionData } from '~/api/version';
 import { useCoreUpdate } from '~/hooks/useCoreUpdate';
 import { versionQueryKey } from '~/hooks/useVersion';
 import { readErrorMessage } from '~/misc/request-helper';
@@ -89,14 +89,14 @@ const CORE_RESTART_POLL_INTERVAL_MS = 1000;
 const CORE_RESTART_POLL_ATTEMPTS = 30;
 
 // 内核更新后回 200 再重启，重启前旧进程还会应答 /version，所以要等到版本号变了才算数。
-// 不能直接 invalidate：fetchVersion 在重启窗口内会吞掉错误返回 {}，把 meta 标记冲掉
+// 不能直接 invalidate：fetchVersion 在重启窗口内会吞掉错误，缓存里的版本号会被冲成空
 async function waitForUpgradedVersion(apiConfig: ClashAPIConfig, previous: string | undefined) {
   for (let i = 0; i < CORE_RESTART_POLL_ATTEMPTS; i++) {
     await new Promise((resolve) => setTimeout(resolve, CORE_RESTART_POLL_INTERVAL_MS));
     try {
       const res = await requestVersion(apiConfig);
       if (!res.ok) continue;
-      const data: Awaited<ReturnType<typeof fetchVersion>> = await res.json();
+      const data = toVersionData(await res.json());
       if (data.version !== previous) return data;
     } catch {
       // 内核还在重启
@@ -245,7 +245,7 @@ export function useConfigPage({
       if (action === 'upgrade_ui') setTimeout(unregisterAndReload, UI_RELOAD_DELAY_MS);
       if (action === 'upgrade_core') {
         const key = versionQueryKey(apiConfig);
-        const previous = queryClient.getQueryData<{ version?: string }>(key)?.version;
+        const previous = queryClient.getQueryData<VersionData>(key)?.version;
         void waitForUpgradedVersion(apiConfig, previous).then((data) => {
           if (!data) return;
           queryClient.setQueryData(key, data);
