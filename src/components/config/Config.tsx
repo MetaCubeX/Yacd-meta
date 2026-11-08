@@ -29,10 +29,11 @@ import {
   TUN_STACK_OPTIONS,
 } from '~/modules/config/utils';
 import { useStoreActions } from '~/store/StateProvider';
-import { ClashGeneralConfig, DispatchFn } from '~/store/types';
+import { ClashGeneralConfig, DispatchFn, TabTitleConfig } from '~/store/types';
 import { ClashAPIConfig } from '~/types';
 
 import s0 from './Config.module.scss';
+import { TabTitleSettings } from './TabTitleSettings';
 
 const YACD_REPO_URL = 'https://github.com/metacubex/yacd';
 
@@ -41,9 +42,16 @@ type Props = {
   configs: ClashGeneralConfig;
   selectedChartStyleIndex: number;
   apiConfig: ClashAPIConfig;
+  tabTitle: TabTitleConfig;
 };
 
-export default function Config({ dispatch, configs, selectedChartStyleIndex, apiConfig }: Props) {
+export default function Config({
+  dispatch,
+  configs,
+  selectedChartStyleIndex,
+  apiConfig,
+  tabTitle,
+}: Props) {
   const { t, i18n } = useTranslation();
 
   const { selectChartStyleIndex, updateAppConfig } = useStoreActions();
@@ -346,6 +354,14 @@ export default function Config({ dispatch, configs, selectedChartStyleIndex, api
                 start={<LogOut size={16} />}
                 label={t('switch_backend')}
                 onClick={openAPIConfigModal}
+              />
+            </div>
+
+            <div className={s0.fullRow}>
+              <div className={s0.label}>{t('tab_title')}</div>
+              <TabTitleSettings
+                config={tabTitle}
+                onChange={(next) => updateAppConfig('tabTitle', next)}
               />
             </div>
           </div>

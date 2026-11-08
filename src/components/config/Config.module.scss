@@ -22,6 +22,12 @@
   }
 }
 
+// 横跨整行的设置项，内容太宽放不进单列
+.fullRow {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
 // 同一项下并排的多个按钮（如内核更新的稳定版 / Alpha 版）
 .buttonGroup {
   display: flex;

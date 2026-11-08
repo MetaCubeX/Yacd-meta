@@ -1,35 +1,24 @@
-import * as React from 'react';
-
-import { getClashAPIConfig, getClashAPIConfigs } from '~/store/app';
+import { useTabTitle } from '~/modules/title/hooks';
+import { getClashAPIConfig, getTabTitle } from '~/store/app';
 import { connect } from '~/store/StateProvider';
-import type { State } from '~/store/types';
+import type { State, TabTitleConfig } from '~/store/types';
+import type { ClashAPIConfig } from '~/types';
 
 const mapState = (s: State) => ({
   apiConfig: getClashAPIConfig(s),
-  apiConfigs: getClashAPIConfigs(s),
+  tabTitle: getTabTitle(s),
 });
 
+/** Head writes the document title from the tab title settings. */
 function HeadImpl({
   apiConfig,
-  apiConfigs,
+  tabTitle,
 }: {
-  apiConfig: { baseURL: string };
-  apiConfigs: any[];
+  apiConfig: ClashAPIConfig;
+  tabTitle: TabTitleConfig;
 }) {
-  React.useEffect(() => {
-    let title = 'yacd';
-    if (apiConfigs.length > 1) {
-      try {
-        const host = new URL(apiConfig.baseURL).host;
-        title = `${host} - yacd`;
-      } catch (e) {
-        // ignore
-      }
-    }
-    document.title = title;
-  });
-
-  return <></>;
+  useTabTitle(apiConfig, tabTitle);
+  return null;
 }
 
 export const Head = connect(mapState)(HeadImpl);

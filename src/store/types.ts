@@ -1,6 +1,33 @@
 import type { ClashAPIConfig } from '~/types';
 
 export type ClashAPIConfigWithAddedAt = ClashAPIConfig & { addedAt?: number };
+
+export const TITLE_SEGMENT_KINDS = [
+  'upload',
+  'download',
+  'uploadTotal',
+  'downloadTotal',
+  'connections',
+  'memory',
+  'backend',
+  'version',
+  'appTitle',
+  'text',
+] as const;
+
+export type TitleSegmentKind = (typeof TITLE_SEGMENT_KINDS)[number];
+
+/** One piece of the tab title. `id` equals `kind`, except for text pieces, which can repeat. */
+export type TitleSegment = { id: string; kind: TitleSegmentKind; text?: string };
+
+export type TabTitleConfig = {
+  /** When false the tab shows the static page title. */
+  enabled: boolean;
+  segments: TitleSegment[];
+  /** Placed between consecutive segments. */
+  separator: string;
+  refreshSeconds: number;
+};
 export type StateApp = {
   selectedClashAPIConfigIndex: number;
   clashAPIConfigs: ClashAPIConfigWithAddedAt[];
@@ -24,6 +51,7 @@ export type StateApp = {
   logStreamingPaused: boolean;
   proxiesLayout: string;
   proxyGroupByProvider: boolean;
+  tabTitle: TabTitleConfig;
 };
 
 export type ClashTunConfig = {
