@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import Collapsible from '~/components/shared/Collapsible';
 import { RotateIcon } from '~/components/shared/RotateIcon';
+import { getDateFnsLocale } from '~/misc/date-locale';
 import {
   useFilterAwareCollapse,
   useFilteredAndSorted,
@@ -51,7 +52,7 @@ export const ProxyProvider = memo(function ProxyProvider({
   apiConfig,
   appConfig,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   // 提供商名本身命中搜索时，旗下节点原样展示，不再逐个过滤
   const filterSegments = useFilterSegments();
   const nameMatched = matchesFilter(name, filterSegments);
@@ -90,7 +91,9 @@ export const ProxyProvider = memo(function ProxyProvider({
     onTestLatency,
   };
 
-  const timeAgo = updatedAt ? formatDistance(new Date(updatedAt), new Date()) : null;
+  const timeAgo = updatedAt
+    ? formatDistance(new Date(updatedAt), new Date(), { locale: getDateFnsLocale(i18n.language) })
+    : null;
   const used = subscriptionInfo
     ? formatBytes(subscriptionInfo.Download + subscriptionInfo.Upload)
     : null;
