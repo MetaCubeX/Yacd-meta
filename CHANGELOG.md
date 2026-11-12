@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.1](https://github.com/MetaCubeX/Yacd-meta/compare/v0.7.0...v0.7.1) (2026-11-12)
+
+
+### Bug Fixes
+
+* **connections:** apply client tags to connections that are already open ([5e8a135](https://github.com/MetaCubeX/Yacd-meta/commit/5e8a135e000278d4a9e5d80b4b8e9eaa40b170a0))
+* **package:** update bun package manager version to 1.4.4 ([3c42a0b](https://github.com/MetaCubeX/Yacd-meta/commit/3c42a0bd316822dc9f119d22d9b32b244e91c9c8))
+* **ui:** drop copy that restates its controls and translate config labels ([7a9e7c1](https://github.com/MetaCubeX/Yacd-meta/commit/7a9e7c16a3d6ef621fc2019c65e2a9694a8e3ebf))
+
 ## [0.7.0](https://github.com/MetaCubeX/Yacd-meta/compare/v0.6.0...v0.7.0) (2026-11-08)
 
 
