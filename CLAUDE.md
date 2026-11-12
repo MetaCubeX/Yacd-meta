@@ -55,7 +55,7 @@ every published version — including canary — still declares `peerDependencie
   suppressions should use the `oxlint-` prefix.
 
 `trustedDependencies` in `package.json` replaces pnpm's `allowBuilds`: only listed packages may run
-install scripts, so `core-js` and `@parcel/watcher` stay blocked.
+install scripts, so `@parcel/watcher` stays blocked.
 
 ## Architecture
 
