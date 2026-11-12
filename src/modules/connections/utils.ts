@@ -233,7 +233,7 @@ export function filterConns(
     result = result.filter((conn) =>
       [
         conn.host,
-        conn.sourceIP,
+        conn.source,
         conn.sourcePort,
         conn.destinationIP,
         conn.chains,
@@ -267,13 +267,19 @@ export function sortConns(conns: FormattedConn[], sort: SortState): FormattedCon
 
 // getNameFromSource runs per connection per second; compile each pattern once.
 // No `g` flag: a cached RegExp with `g` would make `.test` stateful (lastIndex).
-const sourceRegExpCache = new Map<string, RegExp>();
-function getSourceRegExp(reg: string): RegExp {
-  let regExp = sourceRegExpCache.get(reg);
-  if (!regExp) {
-    regExp = new RegExp(reg.replace('/', ''));
-    sourceRegExpCache.set(reg, regExp);
+// An invalid pattern (e.g. half-typed in the settings form) caches as null and
+// matches nothing instead of throwing during render.
+const sourceRegExpCache = new Map<string, RegExp | null>();
+function getSourceRegExp(reg: string): RegExp | null {
+  const cached = sourceRegExpCache.get(reg);
+  if (cached !== undefined) return cached;
+  let regExp: RegExp | null;
+  try {
+    regExp = new RegExp(reg.slice(1));
+  } catch {
+    regExp = null;
   }
+  sourceRegExpCache.set(reg, regExp);
   return regExp;
 }
 
@@ -288,7 +294,7 @@ export function getNameFromSource(
     if (!reg) return;
 
     if (reg.startsWith('/')) {
-      if (getSourceRegExp(reg).test(source) && name) {
+      if (name && getSourceRegExp(reg)?.test(source)) {
         sourceName = `${name}(${source})`;
       }
     } else if (source === reg && name) {
@@ -297,6 +303,22 @@ export function getNameFromSource(
   });
 
   return sourceName;
+}
+
+// applySourceNames labels each connection's `source` with the client tag that
+// matches its sourceIP. The stream keeps `source` as the raw `ip:port` and
+// reuses it across ticks, so tags must be applied here to reach connections
+// that were already open when a tag was added or edited.
+export function applySourceNames(
+  conns: FormattedConn[],
+  sourceMap: SourceMapItem[],
+): FormattedConn[] {
+  if (!sourceMap.some((item) => item.reg && item.name)) return conns;
+  return conns.map((conn) => {
+    const raw = `${conn.sourceIP}:${conn.sourcePort}`;
+    const source = getNameFromSource(conn.sourceIP, sourceMap, raw);
+    return source === raw ? conn : { ...conn, source };
+  });
 }
 
 // formatDistance's output only depends on the elapsed time rounded to whole
@@ -342,7 +364,6 @@ export function formatConnectionDataItem(
   item: ConnectionItem,
   prevKv: Record<string, FormattedConn>,
   now: number,
-  sourceMap: SourceMapItem[],
 ): FormattedConn {
   const { id, upload, download, start, chains, rule, rulePayload, metadata } = item;
   const prev = prevKv[id];
@@ -371,7 +392,6 @@ export function formatConnectionDataItem(
     sniffHost,
   } = metadata;
   const host2 = host || destinationIP;
-  const source = `${sourceIP}:${sourcePort}`;
   const startTime = new Date(start).valueOf();
   const chainList = Array.isArray(chains) ? chains : [];
   const chainNode = chainList[0] ?? '';
@@ -393,7 +413,7 @@ export function formatConnectionDataItem(
     host: `${host2}:${destinationPort}`,
     sniffHost: sniffHost || '-',
     type: `${type}(${network})`,
-    source: getNameFromSource(sourceIP, sourceMap, source),
+    source: `${sourceIP}:${sourcePort}`,
     downloadSpeedCurr: 0,
     uploadSpeedCurr: 0,
     process: process || '-',

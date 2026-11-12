@@ -15,6 +15,7 @@ import { ClashAPIConfig } from '~/types';
 
 import {
   ALL_SOURCE_IP,
+  applySourceNames,
   arrayToIdKv,
   buildHideRegExp,
   CONNECTION_COLUMN_MAP,
@@ -48,7 +49,7 @@ export function useSourceMapState() {
   return { sourceMap, setSourceMap };
 }
 
-export function useConnectionsStream(apiConfig: ClashAPIConfig, sourceMap: SourceMapItem[]) {
+export function useConnectionsStream(apiConfig: ClashAPIConfig) {
   const [conns, setConns] = useAtom(connectionsState);
   const [closedConns, setClosedConns] = useAtom(closedConnectionsState);
   const [isRefreshPaused, setIsRefreshPaused] = useAtom(isRefreshPausedState);
@@ -85,7 +86,7 @@ export function useConnectionsStream(apiConfig: ClashAPIConfig, sourceMap: Sourc
       const now = Date.now();
       const nextConnections =
         connections?.map((item: ConnectionItem) =>
-          formatConnectionDataItem(item, prevConnsKv, now, sourceMap),
+          formatConnectionDataItem(item, prevConnsKv, now),
         ) ?? [];
 
       const nextIds = new Set<string>();
@@ -110,7 +111,7 @@ export function useConnectionsStream(apiConfig: ClashAPIConfig, sourceMap: Sourc
         setConns(nextConnections);
       }
     },
-    [isRefreshPaused, setClosedConns, setConns, setTotal, sourceMap],
+    [isRefreshPaused, setClosedConns, setConns, setTotal],
   );
 
   useEffect(() => {
@@ -214,13 +215,19 @@ export function useConnectionFilters({
 
   const hideRegExp = useMemo(() => buildHideRegExp(settings), [settings]);
 
+  const namedConns = useMemo(() => applySourceNames(conns, sourceMap), [conns, sourceMap]);
+  const namedClosedConns = useMemo(
+    () => applySourceNames(closedConns, sourceMap),
+    [closedConns, sourceMap],
+  );
+
   const filteredConns = useMemo(
-    () => filterConns(conns, filterKeyword, filterSourceIpStr, hideRegExp),
-    [conns, filterKeyword, filterSourceIpStr, hideRegExp],
+    () => filterConns(namedConns, filterKeyword, filterSourceIpStr, hideRegExp),
+    [namedConns, filterKeyword, filterSourceIpStr, hideRegExp],
   );
   const filteredClosedConns = useMemo(
-    () => filterConns(closedConns, filterKeyword, filterSourceIpStr, hideRegExp),
-    [closedConns, filterKeyword, filterSourceIpStr, hideRegExp],
+    () => filterConns(namedClosedConns, filterKeyword, filterSourceIpStr, hideRegExp),
+    [namedClosedConns, filterKeyword, filterSourceIpStr, hideRegExp],
   );
 
   const connIpSet = useMemo(() => {
