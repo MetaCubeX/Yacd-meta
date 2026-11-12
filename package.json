@@ -5,7 +5,7 @@
   "author": "MetaCubeX (https://github.com/MetaCubeX)",
   "license": "MIT",
   "private": true,
-  "packageManager": "bun@1.4",
+  "packageManager": "bun@1.4.4",
   "keywords": [
     "react",
     "clash"
