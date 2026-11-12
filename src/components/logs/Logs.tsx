@@ -72,9 +72,9 @@ export default function Logs({ dispatch, logLevel, apiConfig, logStreamingPaused
                 <span className={s.emptyTitle}>
                   {logs.length === 0 ? t('no_logs') : t('logs_no_match')}
                 </span>
-                <span className={s.emptyHint}>
-                  {logs.length === 0 ? t('logs_empty_hint') : t('rules_empty_hint')}
-                </span>
+                {logs.length === 0 ? (
+                  <span className={s.emptyHint}>{t('logs_empty_hint')}</span>
+                ) : null}
               </div>
             ) : (
               visibleLogs.map((log, index) => <LogLine {...log} key={log.id || index} />)

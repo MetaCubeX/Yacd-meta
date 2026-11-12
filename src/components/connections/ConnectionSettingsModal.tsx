@@ -89,7 +89,7 @@ export default function ConnectionSettingsModal({
         <PaneNav label={t('conn_settings')} items={navItems} />
 
         <Tabs.Content value="general" className={s.pane}>
-          <PaneHead title={t('conn_settings_general')} desc={t('conn_settings_general_desc')} />
+          <PaneHead title={t('conn_settings_general')} />
           <div className={s.settings}>
             <div className={s.setting}>
               <SettingHead
@@ -110,7 +110,6 @@ export default function ConnectionSettingsModal({
             <div className={s.setting}>
               <SettingHead
                 label={t('full_chain')}
-                hint={t('full_chain_hint')}
                 checked={settings.fullChain}
                 onChange={(value) => updateSettings({ fullChain: value })}
               />
@@ -121,7 +120,6 @@ export default function ConnectionSettingsModal({
         <Tabs.Content value="columns" className={s.pane}>
           <PaneHead
             title={t('custom_columns')}
-            desc={t('custom_columns_desc')}
             action={
               <button type="button" className={s.ghostBtn} onClick={resetColumns}>
                 {t('reset_default_columns')}
@@ -140,13 +138,7 @@ export default function ConnectionSettingsModal({
         <Tabs.Content value="tags" className={s.pane}>
           <PaneHead
             title={t('client_tag')}
-            desc={
-              <>
-                {t('client_tag_desc')}
-                <br />
-                {t('sourceip_tip')}
-              </>
-            }
+            desc={t('sourceip_tip')}
             action={
               <button
                 type="button"
@@ -230,14 +222,14 @@ function PaneHead({
   action,
 }: {
   title: string;
-  desc: React.ReactNode;
+  desc?: string;
   action?: React.ReactNode;
 }) {
   return (
     <div className={s.paneHead}>
       <div className={s.paneHeadText}>
         <h3 className={s.paneTitle}>{title}</h3>
-        <p className={s.paneDesc}>{desc}</p>
+        {desc ? <p className={s.paneDesc}>{desc}</p> : null}
       </div>
       {action ? <div className={s.paneAction}>{action}</div> : null}
     </div>
@@ -251,7 +243,7 @@ function SettingHead({
   onChange,
 }: {
   label: string;
-  hint: string;
+  hint?: string;
   checked: boolean;
   onChange: (value: boolean) => void;
 }) {
@@ -262,7 +254,7 @@ function SettingHead({
     <label className={s.settingHead}>
       <span className={s.settingText}>
         <span className={s.settingLabel}>{label}</span>
-        <span className={s.settingHint}>{hint}</span>
+        {hint ? <span className={s.settingHint}>{hint}</span> : null}
       </span>
       <span className={s.settingControl}>
         <Switch checked={checked} onChange={onChange} />

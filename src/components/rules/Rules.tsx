@@ -70,7 +70,6 @@ export default function Rules({ apiConfig }: RulesProps) {
         <span className={s.emptyTitle}>
           {t(isRulesTab ? 'rules_empty_title' : 'rule_providers_empty_title')}
         </span>
-        <span className={s.emptyHint}>{t('rules_empty_hint')}</span>
       </div>
     );
   } else if (isRulesTab) {

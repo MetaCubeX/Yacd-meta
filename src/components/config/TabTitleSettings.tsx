@@ -99,7 +99,7 @@ export function TabTitleSettings({ config, onChange }: Props) {
   return (
     <div className={s.root}>
       <div className={s.toggleRow}>
-        <span className={s.desc}>{t('tab_title_desc')}</span>
+        <span className={s.label}>{t('tab_title')}</span>
         <Switch
           checked={config.enabled}
           onChange={(enabled: boolean) => onChange({ ...config, enabled })}

@@ -261,7 +261,7 @@ export default function Config({
               </div>
             )}
             <div>
-              <div className={s0.label}>Reload</div>
+              <div className={s0.label}>{t('label_reload')}</div>
               <Button
                 start={<RotateCw size={16} />}
                 label={t('reload_config_file')}
@@ -272,7 +272,7 @@ export default function Config({
             </div>
             {isMihomo && (
               <div>
-                <div className={s0.label}>GEO Databases</div>
+                <div className={s0.label}>{t('label_geo_databases')}</div>
                 <Button
                   start={<DownloadCloud size={16} />}
                   label={t('upgrade_geo')}
@@ -283,7 +283,7 @@ export default function Config({
               </div>
             )}
             <div>
-              <div className={s0.label}>FakeIP</div>
+              <div className={s0.label}>{t('label_fake_ip')}</div>
               <Button
                 start={<Trash2 size={16} />}
                 label={t('flush_fake_ip_pool')}
@@ -294,7 +294,7 @@ export default function Config({
             </div>
             {isMihomo && (
               <div>
-                <div className={s0.label}>Restart</div>
+                <div className={s0.label}>{t('label_restart')}</div>
                 <Button
                   start={<RotateCw size={16} />}
                   label={t('restart_core')}
@@ -349,7 +349,6 @@ export default function Config({
               {!isMihomo && version.version ? (
                 <VersionLine version={version.version} link={coreMeta.link} />
               ) : null}
-              <div className={s0.label}>Action</div>
               <Button
                 start={<LogOut size={16} />}
                 label={t('switch_backend')}
@@ -358,7 +357,6 @@ export default function Config({
             </div>
 
             <div className={s0.fullRow}>
-              <div className={s0.label}>{t('tab_title')}</div>
               <TabTitleSettings
                 config={tabTitle}
                 onChange={(next) => updateAppConfig('tabTitle', next)}

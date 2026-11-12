@@ -18,7 +18,6 @@ export default function Home({ apiConfig, selectedChartStyleIndex }: Props) {
   return (
     <div className={s.page}>
       <header className={s.pageHeader}>
-        <p className={s.eyebrow}>{t('overview_eyebrow')}</p>
         <h1 className={s.pageTitle}>{t('Overview')}</h1>
       </header>
       <div className={s.grid}>

@@ -498,9 +498,7 @@ export default function ConnectionTable({
             })}
           </span>
         ) : null}
-        <span className={s.footerNote}>
-          {isClosed ? t('conn_note_closed') : t('conn_note_active')}
-        </span>
+        {isClosed ? <span className={s.footerNote}>{t('conn_note_closed')}</span> : null}
       </div>
     </div>
   );
