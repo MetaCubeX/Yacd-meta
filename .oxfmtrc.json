@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 100,
+  "singleQuote": true,
+  "sortPackageJson": false,
+  "sortImports": {
+    "customGroups": [
+      { "groupName": "effect", "selector": "side_effect" },
+      { "groupName": "effect-style", "selector": "side_effect_style" },
+      { "groupName": "alias", "elementNamePattern": ["~/**"] },
+      { "groupName": "parent-dir", "elementNamePattern": ["../**"] },
+      { "groupName": "same-dir", "elementNamePattern": ["./**"] }
+    ],
+    "groups": [
+      ["effect-style", "effect"],
+      "builtin",
+      "external",
+      "alias",
+      "parent-dir",
+      "same-dir",
+      "unknown"
+    ]
+  },
+  "ignorePatterns": []
+}

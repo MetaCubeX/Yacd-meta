@@ -1,3 +1,7 @@
+# oxfmt 不支持 endOfLine: auto,固定输出 LF。工作区也统一成 LF,
+# 否则 Windows 上 core.autocrlf=true 检出的 CRLF 文件全部过不了 oxfmt --check
+* text=auto eol=lf
+
 # Shell 脚本必须保持 LF 行尾：它们在 Linux 容器里执行，
 # CRLF 会让内核把 shebang 解析成 `/bin/sh\r`，报 "no such file or directory"
 *.sh text eol=lf

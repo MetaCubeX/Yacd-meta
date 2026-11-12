@@ -16,12 +16,13 @@ bun start        # dev server at http://127.0.0.1:3000 (alias: bun dev)
 bun run build    # production build, output goes to ./public (not ./dist, see vite.config.mts)
 bun serve        # preview a production build
 bun lint         # oxlint src (bun lint:fix to autofix)
-bun format       # prettier --write (bun format:check to verify)
+bun format       # oxfmt src (bun format:check to verify)
 bun typecheck    # tsc --noEmit
 ```
 
 Use `bun run build` rather than `bun build` — the latter is Bun's own bundler command, not the
-`build` script.
+`build` script. Likewise `bun fmt` is Bun's own formatter, not the `format` script; this repo
+formats with oxfmt only.
 
 There is no test suite in this repo (no test runner configured, no `*.test.*` files) — do not add
 a `test` script or assume one exists. `bun test` would run Bun's built-in test runner, which this
@@ -41,9 +42,11 @@ every published version — including canary — still declares `peerDependencie
 
 `.oxlintrc.json` mirrors the old `eslint.config.mjs` rule-for-rule. Two deltas worth knowing:
 
-- oxlint has no `import/order`. Import grouping/ordering moved into Prettier via
-  `@ianvs/prettier-plugin-sort-imports` (`importOrder` in `.prettierrc`) — it is a *formatting*
-  concern now, fixed by `bun format`, not reported by `bun lint`.
+- oxlint has no `import/order`. Import grouping/ordering is a *formatting* concern now, done by
+  oxfmt's `sortImports` in `.oxfmtrc.json`, fixed by `bun format`, not reported by `bun lint`.
+  The groups there are all custom groups on purpose: oxfmt's predefined selectors would pull
+  `../X.module.scss` into a separate `style` group and side-effect imports like
+  `import '~/styles/main.scss'` into `alias`, both of which reorder existing files.
 - oxlint enables `jsx-a11y/prefer-tag-over-role` and `jsx-a11y/control-has-associated-label` by
   default; both were off/absent in eslint-plugin-jsx-a11y's `recommended`, so `.oxlintrc.json`
   turns them off to keep parity. oxlint is also stricter than ESLint about `role={cond ? … : …}`
