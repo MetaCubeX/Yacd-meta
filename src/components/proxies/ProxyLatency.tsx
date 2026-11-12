@@ -79,8 +79,6 @@ export function ProxyLatency({ number, color, isTesting, onClick }: ProxyLatency
   );
 
   return (
-    // role 是条件表达式，oxlint 静态分析不出来
-    // oxlint-disable-next-line jsx-a11y/no-static-element-interactions
     <span
       className={className}
       style={{ color: hasNumber ? color : undefined }}

@@ -83,7 +83,6 @@ export function ProxyCardHeader({
       {type ? <span className={s.typeBadge}>{type}</span> : null}
       {badges}
       <span className={s.headerSpacer} />
-      {/* oxlint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
       <div className={s.headerActions} onClick={(e) => e.stopPropagation()}>
         {extraActions}
         {onTest ? (

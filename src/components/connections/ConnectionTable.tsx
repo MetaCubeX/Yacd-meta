@@ -427,8 +427,6 @@ export default function ConnectionTable({
                 const sortable = column.sortable !== false;
                 const active = sortable && sort.key === column.id;
                 return (
-                  // role 是条件表达式，oxlint 静态分析不出来
-                  // oxlint-disable-next-line jsx-a11y/no-static-element-interactions
                   <div
                     key={column.id}
                     className={cx(s.headCell, {

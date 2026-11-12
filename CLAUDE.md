@@ -40,19 +40,20 @@ every published version — including canary — still declares `peerDependencie
 `typescript-eslint` again will fail at startup with `Cannot read properties of undefined (reading
 'Cjs')`.
 
-`.oxlintrc.json` mirrors the old `eslint.config.mjs` rule-for-rule. Two deltas worth knowing:
+`.oxlintrc.json` turns the `correctness` category off and lists each rule explicitly, keeping only
+rules that catch bugs `tsc` (strict) misses. Add a rule there by name rather than re-enabling a
+category: oxlint upgrades add rules to categories, and 1.93 put the React Compiler rules
+(`react/immutability`, `react/refs`, …) into `correctness`. Those rules misfire on this codebase
+(e.g. `ref.current` writes inside callbacks), and the project doesn't use React Compiler.
+jsx-a11y is limited to ARIA/markup validity; the keyboard-interaction rules are not enabled.
+Type-aware rules (`no-floating-promises`, …) only run with `oxlint-tsgolint` installed and
+`--type-aware`, neither of which this repo has. New suppressions should use the `oxlint-` prefix.
 
-- oxlint has no `import/order`. Import grouping/ordering is a *formatting* concern now, done by
-  oxfmt's `sortImports` in `.oxfmtrc.json`, fixed by `bun format`, not reported by `bun lint`.
-  The groups there are all custom groups on purpose: oxfmt's predefined selectors would pull
-  `../X.module.scss` into a separate `style` group and side-effect imports like
-  `import '~/styles/main.scss'` into `alias`, both of which reorder existing files.
-- oxlint enables `jsx-a11y/prefer-tag-over-role` and `jsx-a11y/control-has-associated-label` by
-  default; both were off/absent in eslint-plugin-jsx-a11y's `recommended`, so `.oxlintrc.json`
-  turns them off to keep parity. oxlint is also stricter than ESLint about `role={cond ? … : …}`
-  expressions under `no-static-element-interactions`; those sites carry
-  `// oxlint-disable-next-line`. oxlint honours `eslint-disable*` comments too, but new
-  suppressions should use the `oxlint-` prefix.
+oxlint has no `import/order`. Import grouping/ordering is a *formatting* concern, done by oxfmt's
+`sortImports` in `.oxfmtrc.json`, fixed by `bun format`, not reported by `bun lint`. The groups
+there are all custom groups on purpose: oxfmt's predefined selectors would pull `../X.module.scss`
+into a separate `style` group and side-effect imports like `import '~/styles/main.scss'` into
+`alias`, both of which reorder existing files.
 
 `trustedDependencies` in `package.json` replaces pnpm's `allowBuilds`: only listed packages may run
 install scripts, so `@parcel/watcher` stays blocked.

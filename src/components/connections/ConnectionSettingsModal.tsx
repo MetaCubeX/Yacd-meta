@@ -250,7 +250,6 @@ function SettingHead({
   // The label names the switch and makes the text a click target for it too. The rule cannot
   // see that SwitchThemed renders a <button>, which is a labelable element.
   return (
-    // oxlint-disable-next-line jsx-a11y/label-has-associated-control
     <label className={s.settingHead}>
       <span className={s.settingText}>
         <span className={s.settingLabel}>{label}</span>

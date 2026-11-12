@@ -102,8 +102,6 @@ export const ProxySmall = memo(function ProxySmall({
     : { background: color };
 
   return (
-    // role 是条件表达式，oxlint 静态分析不出来
-    // oxlint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       title={title}
       className={cx(s0.proxySmall, {
@@ -198,8 +196,6 @@ export const Proxy = memo(function Proxy({
   const udpLabel = formatUdpType(proxy.udp, proxy.xudp);
 
   return (
-    // role 是条件表达式，oxlint 静态分析不出来
-    // oxlint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       tabIndex={0}
       className={className}

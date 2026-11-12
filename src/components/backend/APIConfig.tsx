@@ -73,7 +73,6 @@ export default function APIConfig({
   const SecretIcon = showSecret ? EyeOff : Eye;
 
   return (
-    // oxlint-disable-next-line jsx-a11y/no-static-element-interactions
     <div className={s.root} onKeyDown={handleContentOnKeyDown}>
       <header className={s.hero}>
         <div className={s.logo}>
