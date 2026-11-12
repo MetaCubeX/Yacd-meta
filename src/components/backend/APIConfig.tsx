@@ -1,4 +1,5 @@
 import cx from 'clsx';
+import type { TFunction } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -24,10 +25,7 @@ type Props = {
   onUpdateConfig: (prev: ClashAPIConfig, next: ClashAPIConfig) => void;
 };
 
-function describeTestFailure(
-  result: Exclude<ConnectionTestResult, { ok: true }>,
-  t: (key: string, options?: Record<string, string>) => string,
-) {
+function describeTestFailure(result: Exclude<ConnectionTestResult, { ok: true }>, t: TFunction) {
   switch (result.reason) {
     case 'unreachable':
       return t('backend_test_unreachable');

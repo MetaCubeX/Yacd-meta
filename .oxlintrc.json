@@ -30,6 +30,20 @@
     "typescript/no-use-before-define": ["error", { "functions": false }],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
+    // 与原来 eslint-plugin-react-hooks 的配置保持一致：只开上面两条。
+    // 下面这些是 React Compiler 规则，oxlint 1.93 起归入 correctness 默认开启
+    "react/error-boundaries": "off",
+    "react/globals": "off",
+    "react/immutability": "off",
+    "react/incompatible-library": "off",
+    "react/preserve-manual-memoization": "off",
+    "react/purity": "off",
+    "react/refs": "off",
+    "react/set-state-in-effect": "off",
+    "react/set-state-in-render": "off",
+    "react/static-components": "off",
+    "react/use-memo": "off",
+    "react/void-use-memo": "off",
     // 与原来 eslint-plugin-jsx-a11y 的 recommended 保持一致：
     // 这两条在 recommended 里本来就是 off / 未收录，oxlint 默认把它们打开了
     "jsx-a11y/prefer-tag-over-role": "off",

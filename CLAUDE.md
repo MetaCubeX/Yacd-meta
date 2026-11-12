@@ -54,9 +54,8 @@ every published version — including canary — still declares `peerDependencie
   `// oxlint-disable-next-line`. oxlint honours `eslint-disable*` comments too, but new
   suppressions should use the `oxlint-` prefix.
 
-Dependency pins that used to live in `pnpm-workspace.yaml` now live in `package.json`:
-`overrides` (replaces pnpm `overrides`) and `trustedDependencies` (replaces pnpm `allowBuilds` —
-only listed packages may run install scripts, so `core-js` and `@parcel/watcher` stay blocked).
+`trustedDependencies` in `package.json` replaces pnpm's `allowBuilds`: only listed packages may run
+install scripts, so `core-js` and `@parcel/watcher` stay blocked.
 
 ## Architecture
 

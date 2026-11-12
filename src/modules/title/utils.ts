@@ -1,3 +1,5 @@
+import type { TFunction } from 'i18next';
+
 import prettyBytes from '~/misc/pretty-bytes';
 import type { TabTitleConfig, TitleSegment, TitleSegmentKind } from '~/store/types';
 
@@ -64,11 +66,9 @@ export type LiveValues = Partial<
 
 export type StaticValues = { backend: string; version?: string; appTitle: string };
 
-type Translate = (key: string, options?: Record<string, unknown>) => string;
-
 const MISSING = '–';
 
-function formatSegment(seg: TitleSegment, live: LiveValues, fixed: StaticValues, t: Translate) {
+function formatSegment(seg: TitleSegment, live: LiveValues, fixed: StaticValues, t: TFunction) {
   const bytes = (n: number | undefined) => (n === undefined ? MISSING : prettyBytes(n));
   const rate = (n: number | undefined) => (n === undefined ? MISSING : `${prettyBytes(n)}/s`);
   switch (seg.kind) {
@@ -104,7 +104,7 @@ export function formatTabTitle(
   config: TabTitleConfig,
   live: LiveValues,
   fixed: StaticValues,
-  t: Translate,
+  t: TFunction,
 ) {
   if (!config.enabled) return fixed.appTitle;
   const liveSegments = config.segments.filter((s) => SEGMENT_META[s.kind]?.source);
