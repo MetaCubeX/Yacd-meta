@@ -14,6 +14,12 @@
   }
 }
 
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
 .content {
   flex-grow: 1;
   min-width: 0;
@@ -22,6 +28,13 @@
   // 始终给竖向滚动条留位：展开提供商等操作让页面变得可滚动时，滚动条（8px）
   // 会挤窄内容，卡在 auto-fill 阈值边上的网格就会少一列
   scrollbar-gutter: stable;
+  // 换页淡入（router 里按路径给它 key，换页即重新挂载）。只动 opacity：
+  // 加 transform 会让页内 position: fixed 的元素改以这一层为参照
+  animation: page-fade-in 0.2s ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 
   @media (max-width: 768px) {
     padding-bottom: 0;
