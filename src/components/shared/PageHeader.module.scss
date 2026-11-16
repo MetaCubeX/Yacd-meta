@@ -262,6 +262,41 @@
   }
 }
 
+/* ---------- 骨架（PageHeaderSkeleton），尺寸跟着上面真控件的断点走 ---------- */
+
+.tabsSkeleton {
+  width: 180px;
+  height: 40px;
+  border-radius: 12px;
+
+  @media (max-width: 768px) {
+    width: 140px;
+    height: 30px;
+    border-radius: 9px;
+  }
+}
+
+.searchSkeleton {
+  width: 100%;
+  height: 38px;
+  border-radius: 10px;
+
+  @media (max-width: 768px) {
+    height: 34px;
+  }
+}
+
+.btnSkeleton {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+
+  @media (max-width: 768px) {
+    width: 34px;
+    height: 34px;
+  }
+}
+
 /* ---------- 操作按钮 ---------- */
 
 .actions {

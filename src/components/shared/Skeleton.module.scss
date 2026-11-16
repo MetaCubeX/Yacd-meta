@@ -1,0 +1,29 @@
+// 基础样式包在 :where() 里，特异性为 0：调用方用 className 覆盖尺寸和圆角时
+// 一定生效，不取决于两份模块 CSS 谁先加载。
+// 底色用 --color-separator：它在卡片底色和页面底色上都看得见；--color-track
+// 在深色主题下就是页面底色，铺在窄屏顶栏上会整块消失
+:where(.skeleton) {
+  display: block;
+  flex-shrink: 0;
+  max-width: 100%;
+  border-radius: 6px;
+  background: var(--color-separator);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+:where(.text) {
+  height: 0.9em;
+  border-radius: 4px;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}

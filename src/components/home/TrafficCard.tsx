@@ -2,9 +2,10 @@ import cx from 'clsx';
 import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { Skeleton, SkeletonText } from '~/components/shared/Skeleton';
 import { chartStyles } from '~/misc/chart';
 import { CHART_WINDOW, useTraffic } from '~/modules/home/hooks';
-import { splitTrafficRate } from '~/modules/home/utils';
+import { hasSample, splitTrafficRate } from '~/modules/home/utils';
 import { ClashAPIConfig } from '~/types';
 
 import s from './Home.module.scss';
@@ -15,7 +16,17 @@ type Props = {
   selectedChartStyleIndex: number;
 };
 
-function Legend({ label, color, rate }: { label: string; color: string; rate: number }) {
+function Legend({
+  label,
+  color,
+  rate,
+  isLoading,
+}: {
+  label: string;
+  color: string;
+  rate: number;
+  isLoading: boolean;
+}) {
   const { value, unit } = splitTrafficRate(rate);
   return (
     <div className={s.legendItem}>
@@ -24,8 +35,14 @@ function Legend({ label, color, rate }: { label: string; color: string; rate: nu
         {label}
       </span>
       <span className={s.legendValue}>
-        <span>{value}</span>
-        <em className={s.unit}>{unit}</em>
+        {isLoading ? (
+          <SkeletonText width={88} className={s.legendSkeleton} />
+        ) : (
+          <>
+            <span>{value}</span>
+            <em className={s.unit}>{unit}</em>
+          </>
+        )}
       </span>
     </div>
   );
@@ -35,6 +52,7 @@ export default function TrafficCard({ apiConfig, selectedChartStyleIndex }: Prop
   const { t } = useTranslation();
   const traffic = useTraffic(apiConfig);
   const style = chartStyles[selectedChartStyleIndex] || chartStyles[0];
+  const isLoading = !hasSample(traffic.down);
 
   const downLabel = t('Download');
   const upLabel = t('Upload');
@@ -51,23 +69,29 @@ export default function TrafficCard({ apiConfig, selectedChartStyleIndex }: Prop
             label={downLabel}
             color={style.down.borderColor}
             rate={traffic.down[traffic.down.length - 1] || 0}
+            isLoading={isLoading}
           />
           <Legend
             label={upLabel}
             color={style.up.borderColor}
             rate={traffic.up[traffic.up.length - 1] || 0}
+            isLoading={isLoading}
           />
         </div>
       </div>
       <div className={s.chart}>
-        <Suspense fallback={null}>
-          <TrafficChart
-            traffic={traffic}
-            styleIndex={selectedChartStyleIndex}
-            downLabel={downLabel}
-            upLabel={upLabel}
-          />
-        </Suspense>
+        {isLoading ? (
+          <Skeleton height="100%" radius={8} />
+        ) : (
+          <Suspense fallback={<Skeleton height="100%" radius={8} />}>
+            <TrafficChart
+              traffic={traffic}
+              styleIndex={selectedChartStyleIndex}
+              downLabel={downLabel}
+              upLabel={upLabel}
+            />
+          </Suspense>
+        )}
       </div>
     </section>
   );

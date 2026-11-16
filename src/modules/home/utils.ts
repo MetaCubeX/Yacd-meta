@@ -77,6 +77,11 @@ export function rangeOf(values: number[], count: number, padRatio: number) {
 }
 
 /** 末尾一个有效采样点 */
+/** 窗口里是否已有推送来的数据。窗口按时间顺序追加，看最后一格就够了 */
+export function hasSample(values: number[]) {
+  return isSample(values[values.length - 1]);
+}
+
 export function latestOf(values: number[]) {
   for (let i = values.length - 1; i >= 0; i--) {
     if (isSample(values[i])) return values[i];

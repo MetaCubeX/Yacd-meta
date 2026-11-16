@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { RuleExtra } from '~/api/rules';
 import { FileText, Globe, Hash, Link, Shield, Zap } from '~/components/shared/FeatherIcons';
+import { Skeleton, SkeletonText } from '~/components/shared/Skeleton';
 import SwitchThemed from '~/components/shared/SwitchThemed';
 import { getDateFnsLocale } from '~/misc/date-locale';
 import { useToggleRuleDisabled } from '~/modules/rules/hooks';
@@ -207,6 +208,26 @@ function Rule({ type, payload, proxy, id, size, extra, apiConfig, provider, tota
 export default React.memo(Rule);
 
 /** 宽屏下规则列表的表头，列宽和 .rule 共用同一套网格 */
+/** RuleSkeleton 是规则列表加载前的一行占位，沿用 .rule 的网格，窄屏两行布局也一致 */
+export function RuleSkeleton({ payloadWidth }: { payloadWidth: string }) {
+  return (
+    <div className={s.rule}>
+      <span className={s.index}>
+        <SkeletonText width={14} className={s.indexSkeleton} />
+      </span>
+      <span className={s.headType}>
+        <Skeleton width={64} height={18} radius={5} />
+      </span>
+      <span className={s.payloadCell}>
+        <SkeletonText width={payloadWidth} />
+      </span>
+      <span className={s.headProxy}>
+        <SkeletonText width={72} />
+      </span>
+    </div>
+  );
+}
+
 export function RuleListHeader() {
   const { t } = useTranslation();
   return (

@@ -80,6 +80,15 @@
   color: var(--color-text-highlight);
 }
 
+// 骨架块高 0.9em，上下补齐到数字的行高，数据到了不跳
+.valueSkeleton {
+  margin-block: 0.1em;
+}
+
+.legendSkeleton {
+  margin-block: 0.15em;
+}
+
 .unit {
   font-size: 0.875rem;
   font-weight: 600;

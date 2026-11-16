@@ -2,6 +2,7 @@ import cx from 'clsx';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { SkeletonText } from '~/components/shared/Skeleton';
 import prettyBytes from '~/misc/pretty-bytes';
 
 import s from './ConnectionStats.module.scss';
@@ -13,6 +14,7 @@ function splitBytes(n: number): [string, string] {
 }
 
 type Props = {
+  isLoading: boolean;
   activeCount: number;
   downloadSpeed: number;
   uploadSpeed: number;
@@ -26,33 +28,42 @@ function Stat({
   unit,
   hint,
   tone,
+  isLoading,
 }: {
   label: string;
   value: string;
   unit: string;
   hint?: string;
   tone?: 'download' | 'upload';
+  isLoading: boolean;
 }) {
   return (
     <div className={s.card}>
       <span className={s.label}>{label}</span>
       <div className={s.valueRow}>
-        <span
-          className={cx(s.value, {
-            [s.download]: tone === 'download',
-            [s.upload]: tone === 'upload',
-          })}
-        >
-          {value}
-        </span>
-        <span className={s.unit}>{unit}</span>
+        {isLoading ? (
+          <SkeletonText width={64} className={s.value} />
+        ) : (
+          <>
+            <span
+              className={cx(s.value, {
+                [s.download]: tone === 'download',
+                [s.upload]: tone === 'upload',
+              })}
+            >
+              {value}
+            </span>
+            <span className={s.unit}>{unit}</span>
+          </>
+        )}
       </div>
-      <span className={s.hint}>{hint ?? ''}</span>
+      <span className={s.hint}>{isLoading ? '' : (hint ?? '')}</span>
     </div>
   );
 }
 
 export function ConnectionStats({
+  isLoading,
   activeCount,
   downloadSpeed,
   uploadSpeed,
@@ -67,10 +78,28 @@ export function ConnectionStats({
 
   return (
     <div className={s.grid}>
-      <Stat label={t('Active Connections')} value={String(activeCount)} unit={t('conn_unit')} />
-      <Stat label={t('c_dl_speed')} value={dlValue} unit={`${dlUnit}/s`} tone="download" />
-      <Stat label={t('c_ul_speed')} value={ulValue} unit={`${ulUnit}/s`} tone="upload" />
       <Stat
+        label={t('Active Connections')}
+        value={String(activeCount)}
+        unit={t('conn_unit')}
+        isLoading={isLoading}
+      />
+      <Stat
+        label={t('c_dl_speed')}
+        value={dlValue}
+        unit={`${dlUnit}/s`}
+        tone="download"
+        isLoading={isLoading}
+      />
+      <Stat
+        label={t('c_ul_speed')}
+        value={ulValue}
+        unit={`${ulUnit}/s`}
+        tone="upload"
+        isLoading={isLoading}
+      />
+      <Stat
+        isLoading={isLoading}
         label={t('total_traffic')}
         value={totalValue}
         unit={totalUnit}

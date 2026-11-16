@@ -1,16 +1,19 @@
+import cx from 'clsx';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { RowComponentProps, List as VirtualList } from 'react-window';
 
+import { PageHeaderSkeleton } from '~/components/shared/PageHeader';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useRulesPage, useUpdateAllRuleProviderItems } from '~/modules/rules/hooks';
 import { RULE_ROW_HEIGHT, RULE_ROW_HEIGHT_NARROW, type RulesRowProps } from '~/modules/rules/utils';
 import { ClashAPIConfig } from '~/types';
 
-import Rule, { RuleListHeader } from './Rule';
+import Rule, { RuleListHeader, RuleSkeleton } from './Rule';
 import { RuleProviderItem } from './RuleProviderItem';
 import s from './Rules.module.scss';
 import { RulesHeader } from './RulesHeader';
+import sh from './RulesHeader.module.scss';
 
 const NO_USAGE: string[] = [];
 
@@ -33,7 +36,50 @@ type RulesProps = {
   apiConfig: ClashAPIConfig;
 };
 
-export default function Rules({ apiConfig }: RulesProps) {
+export default function Rules(props: RulesProps) {
+  return (
+    <React.Suspense fallback={<RulesSkeleton />}>
+      <RulesContent {...props} />
+    </React.Suspense>
+  );
+}
+
+const SKELETON_PAYLOAD_WIDTHS = ['46%', '31%', '58%', '24%', '39%', '52%', '28%', '44%'];
+const SKELETON_ROW_COUNT = 16;
+
+function RulesSkeleton() {
+  const { t } = useTranslation();
+  const isNarrow = useMediaQuery('(max-width: 768px)');
+  const rowHeight = isNarrow ? RULE_ROW_HEIGHT_NARROW : RULE_ROW_HEIGHT;
+
+  return (
+    <div className={s.page} aria-busy>
+      <PageHeaderSkeleton
+        title={t('Rules')}
+        actionCount={0}
+        searchClassName={sh.search}
+        actionsClassName={sh.actions}
+      />
+      <div className={s.listArea}>
+        <div className={s.card}>
+          <RuleListHeader />
+          <div className={cx(s.listWrap, s.skeletonList)}>
+            {Array.from({ length: SKELETON_ROW_COUNT }, (_, i) => (
+              <div key={i} className={s.row} style={{ height: rowHeight }}>
+                <RuleSkeleton
+                  payloadWidth={SKELETON_PAYLOAD_WIDTHS[i % SKELETON_PAYLOAD_WIDTHS.length]}
+                />
+              </div>
+            ))}
+          </div>
+          <div className={s.footer} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RulesContent({ apiConfig }: RulesProps) {
   const { t, i18n } = useTranslation();
   const {
     rules,

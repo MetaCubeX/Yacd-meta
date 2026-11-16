@@ -16,6 +16,7 @@ import {
 import Input from '~/components/shared/Input';
 import Select from '~/components/shared/Select';
 import { Selection2 } from '~/components/shared/Selection';
+import { Skeleton, SkeletonText } from '~/components/shared/Skeleton';
 import Switch from '~/components/shared/SwitchThemed';
 import TrafficChartSample from '~/components/shared/TrafficChartSample';
 import { useConfigPage } from '~/modules/config/hooks';
@@ -45,13 +46,50 @@ type Props = {
   tabTitle: TabTitleConfig;
 };
 
+/**
+ * configs 在首次拉取前是 store 里的硬编码默认值（端口 7890 之类），
+ * 先拿它渲染表单会闪出一组假数据，所以等 haveFetchedConfig 再换成真表单
+ */
 export default function Config({
-  dispatch,
-  configs,
-  selectedChartStyleIndex,
-  apiConfig,
-  tabTitle,
-}: Props) {
+  haveFetchedConfig,
+  ...props
+}: Props & { haveFetchedConfig: boolean }) {
+  if (!haveFetchedConfig) return <ConfigSkeleton />;
+  return (
+    <React.Suspense fallback={<ConfigSkeleton />}>
+      <ConfigContent {...props} />
+    </React.Suspense>
+  );
+}
+
+const SKELETON_FIELD_COUNTS = [6, 4, 6];
+
+function ConfigSkeleton() {
+  return (
+    <div className={s0.root} aria-busy>
+      {SKELETON_FIELD_COUNTS.map((fieldCount, i) => (
+        <div key={i} className={s0.card}>
+          <div className={s0.sectionTitle}>
+            <Skeleton width={20} height={20} radius={5} />
+            <SkeletonText width={96} />
+          </div>
+          <div className={s0.section}>
+            {Array.from({ length: fieldCount }, (_, j) => (
+              <div key={j}>
+                <div className={s0.label}>
+                  <SkeletonText width={j % 2 ? 72 : 104} />
+                </div>
+                <Skeleton height={36} radius={8} />
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ConfigContent({ dispatch, configs, selectedChartStyleIndex, apiConfig, tabTitle }: Props) {
   const { t, i18n } = useTranslation();
 
   const { selectChartStyleIndex, updateAppConfig } = useStoreActions();

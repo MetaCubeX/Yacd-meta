@@ -6,6 +6,7 @@ import * as connAPI from '~/api/connections';
 import {
   closedConnectionsState,
   connectionsState,
+  connectionsReceivedState,
   connectionsTotalState,
   FormattedConn,
   isRefreshPausedState,
@@ -54,6 +55,7 @@ export function useConnectionsStream(apiConfig: ClashAPIConfig) {
   const [closedConns, setClosedConns] = useAtom(closedConnectionsState);
   const [isRefreshPaused, setIsRefreshPaused] = useAtom(isRefreshPausedState);
   const [total, setTotal] = useAtom(connectionsTotalState);
+  const [isReceived, setIsReceived] = useAtom(connectionsReceivedState);
   const [reConnectCount, setReConnectCount] = useState(0);
   const prevConnsRef = useRef<FormattedConn[]>(conns);
 
@@ -82,6 +84,7 @@ export function useConnectionsStream(apiConfig: ClashAPIConfig) {
       // spans the whole gap)
       if (isRefreshPaused || document.hidden) return;
 
+      setIsReceived(true);
       const prevConnsKv = arrayToIdKv(prevConnsRef.current);
       const now = Date.now();
       const nextConnections =
@@ -111,7 +114,7 @@ export function useConnectionsStream(apiConfig: ClashAPIConfig) {
         setConns(nextConnections);
       }
     },
-    [isRefreshPaused, setClosedConns, setConns, setTotal],
+    [isRefreshPaused, setClosedConns, setConns, setTotal, setIsReceived],
   );
 
   useEffect(() => {
@@ -126,6 +129,8 @@ export function useConnectionsStream(apiConfig: ClashAPIConfig) {
     conns,
     closedConns,
     total,
+    /** 首条消息之前为 true；暂停或页面在后台时消息被跳过，也算没到 */
+    isLoading: !isReceived,
     isRefreshPaused,
     toggleIsRefreshPaused,
     closeAllConnections,

@@ -24,8 +24,9 @@ export type ConnTabKey = 'active' | 'closed';
 type Props = {
   activeTab: ConnTabKey;
   setActiveTab: (tab: ConnTabKey) => void;
-  activeCount: number;
-  closedCount: number;
+  /** 省略则标签不显示计数，用于首条消息到达前 */
+  activeCount?: number;
+  closedCount?: number;
   connIpSet: string[][];
   filterSourceIpStr: string;
   setFilterSourceIpStr: (value: string) => void;

@@ -69,6 +69,8 @@ export function useScrollingChart(chartRef: React.RefObject<any>, getRange: () =
 }
 
 type ConnectionSummary = {
+  /** 首条消息到达前为 true，其余字段此时都是 0 */
+  isLoading: boolean;
   /** 自内核启动累计上传，单位 byte */
   upTotal: number;
   /** 自内核启动累计下载，单位 byte */
@@ -79,6 +81,7 @@ type ConnectionSummary = {
 };
 
 const initialSummary: ConnectionSummary = {
+  isLoading: true,
   upTotal: 0,
   dlTotal: 0,
   connNumber: 0,
@@ -100,6 +103,7 @@ export function useConnectionSummary(apiConfig: ClashAPIConfig): ConnectionSumma
       }
     }
     setState({
+      isLoading: false,
       upTotal: uploadTotal || 0,
       dlTotal: downloadTotal || 0,
       connNumber: connections ? connections.length : 0,
@@ -117,13 +121,13 @@ export function useConnectionSummary(apiConfig: ClashAPIConfig): ConnectionSumma
   return state;
 }
 
-/** 规则条数，和规则页共用同一份缓存 */
-export function useRulesCount(apiConfig: ClashAPIConfig) {
+/** 规则条数，和规则页共用同一份缓存。请求完成前返回 undefined */
+export function useRulesCount(apiConfig: ClashAPIConfig): number | undefined {
   const { data } = useQuery({
     queryKey: ['/rules', apiConfig],
     queryFn: () => fetchRules('/rules', apiConfig),
   });
-  return data ? data.length : 0;
+  return data?.length;
 }
 
 /** 流量曲线：订阅 /traffic 的共享数据源，每次推送把窗口内的数组复制出来触发渲染 */

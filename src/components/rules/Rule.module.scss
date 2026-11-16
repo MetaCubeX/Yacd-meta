@@ -77,6 +77,15 @@
   }
 }
 
+// .index 宽屏右对齐、窄屏左对齐，骨架块是 block，只能靠 margin 跟着走
+.indexSkeleton {
+  margin-left: auto;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+  }
+}
+
 .typeTag {
   grid-area: type;
   justify-self: start;

@@ -2,6 +2,7 @@ import cx from 'clsx';
 import * as React from 'react';
 
 import { Search } from '~/components/shared/FeatherIcons';
+import { Skeleton } from '~/components/shared/Skeleton';
 import { useSlidingIndicator } from '~/hooks/useSlidingIndicator';
 
 import s from './PageHeader.module.scss';
@@ -195,6 +196,43 @@ export function HeaderIconButton({
     >
       {icon}
     </button>
+  );
+}
+
+/**
+ * PageHeaderSkeleton 是页面数据到达前的顶栏：标题照常显示，分段标签、搜索、
+ * 操作钮换成同尺寸的灰块，数据到了换成真顶栏时高度不跳。
+ *
+ * searchClassName / actionsClassName 传页面自己顶栏用的那两个类，
+ * 窄屏下的 order 重排才和真顶栏一致。
+ */
+export function PageHeaderSkeleton({
+  title,
+  actionCount,
+  searchClassName,
+  actionsClassName,
+}: {
+  title: string;
+  actionCount: number;
+  searchClassName?: string;
+  actionsClassName?: string;
+}) {
+  return (
+    <PageHeader>
+      <HeaderTitle>{title}</HeaderTitle>
+      <Skeleton className={s.tabsSkeleton} />
+      <div className={cx(s.search, searchClassName)}>
+        <Skeleton className={s.searchSkeleton} />
+      </div>
+      {/* 空的操作区也会多占一个 gap，把搜索往左推 */}
+      {actionCount > 0 ? (
+        <HeaderActions className={actionsClassName}>
+          {Array.from({ length: actionCount }, (_, i) => (
+            <Skeleton key={i} className={s.btnSkeleton} />
+          ))}
+        </HeaderActions>
+      ) : null}
+    </PageHeader>
   );
 }
 

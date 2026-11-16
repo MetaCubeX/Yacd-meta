@@ -2,6 +2,7 @@ import cx from 'clsx';
 import * as React from 'react';
 
 import { ProxiesHeader } from '~/components/proxies/ProxiesHeader';
+import { ProxiesSkeleton } from '~/components/proxies/ProxiesSkeleton';
 import { ProxyGroup } from '~/components/proxies/ProxyGroup';
 import { ProxyProvider } from '~/components/proxies/ProxyProvider';
 import {
@@ -25,7 +26,15 @@ type Props = {
   appConfig: ProxiesAppConfig;
 };
 
-export default function Proxies({ collapsibleIsOpen, apiConfig, appConfig }: Props) {
+export default function Proxies(props: Props) {
+  return (
+    <React.Suspense fallback={<ProxiesSkeleton proxiesLayout={props.appConfig.proxiesLayout} />}>
+      <ProxiesContent {...props} />
+    </React.Suspense>
+  );
+}
+
+function ProxiesContent({ collapsibleIsOpen, apiConfig, appConfig }: Props) {
   // the panel's configured test URL only feeds the latency-color threshold here;
   // the actual URL used per request is resolved in the mutation hooks
   const httpsLatencyTest = appConfig.latencyTestUrl.startsWith('https://');

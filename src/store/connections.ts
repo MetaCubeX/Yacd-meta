@@ -38,6 +38,10 @@ export const connectionsState = atom<FormattedConn[]>([]);
 // 已关闭连接
 export const closedConnectionsState = atom<FormattedConn[]>([]);
 
+// 是否已收到过 /connections 的首条消息。之前 connectionsState 的空数组只是初始值，
+// 不能当成「没有连接」显示空态
+export const connectionsReceivedState = atom<boolean>(false);
+
 // 连接刷新暂停状态
 export const isRefreshPausedState = atom<boolean>(false);
 

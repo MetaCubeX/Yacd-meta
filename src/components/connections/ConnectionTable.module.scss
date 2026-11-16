@@ -104,6 +104,26 @@
   overflow-x: hidden;
 }
 
+// 骨架行数按高屏取的，矮屏上多出来的裁掉
+.skeletonList {
+  height: 100%;
+  overflow: hidden;
+}
+
+// 同 .row 的网格和行高，但不可点
+.skeletonRow {
+  display: grid;
+  align-items: center;
+  height: 44px;
+}
+
+// 同 ConnectionCard 的 .card 外框尺寸
+.cardSkeleton {
+  height: 112px;
+  margin-bottom: 8px;
+  border-radius: 14px;
+}
+
 .rowWrap {
   border-bottom: 1px solid var(--color-separator);
 }

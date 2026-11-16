@@ -1,0 +1,32 @@
+// 尺寸对着 ProxyCard.module.scss 的 .cardHeader / .statusRow 取，
+// 数据到了换成真卡片时高度基本不跳
+.head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+}
+
+.name {
+  font-size: 0.98rem;
+}
+
+.latency {
+  margin-left: auto;
+  font-size: 0.8rem;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  min-height: 22px;
+  font-size: 0.8rem;
+}
+
+.dots {
+  flex: 1 1 0;
+  max-width: 220px;
+  margin-left: auto;
+}
