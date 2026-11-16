@@ -42,7 +42,6 @@
     "use-asset": "1.0.4"
   },
   "devDependencies": {
-    "@fontsource/inter": "5.3.0",
     "@fontsource/roboto-mono": "5.3.0",
     "@types/invariant": "2.2.37",
     "@types/lodash-es": "4.17.12",
