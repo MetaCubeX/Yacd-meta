@@ -1,0 +1,46 @@
+// 字体的 @font-face 声明和字体变量都在这里，组件只用 --font-sans / --font-mono。
+//
+// 字体栈分层，每层一个变量：
+//   --font-ui     面板字体。设置里填了字体名时，modules/fonts 往 <html> 上写内联的
+//                 --font-ui-custom，否则落到这里的系统界面字体
+//   --font-cjk    中文字体
+//   --font-emoji  emoji 字体。设置里选的值写在 <html data-emoji-font>，按属性切换
+// 运行时只改 --font-ui-custom 和 data-emoji-font，字体名全部留在这个文件里。
+
+@import '@fontsource/roboto-mono/latin-400.css';
+
+// Windows 的 Segoe UI Emoji 没有国旗字形，国旗会显示成两个字母，而节点名里到处是国旗。
+// 这是从 Twemoji 里裁出的国旗子集（区域指示符，以及英格兰这类分区旗的 🏴 加标签字符），
+// 码位范围要和子集一致，其余 emoji 仍走系统字体
+@font-face {
+  font-family: 'Twemoji Flags';
+  src: url('../../assets/twemoji-flags.woff2') format('woff2');
+  unicode-range: U+1F1E6-1F1FF, U+1F3F4, U+E0020-E007F;
+}
+
+// 完整的 Twemoji。只有 data-emoji-font='twemoji' 时字体栈才引用它，浏览器才会下载
+@font-face {
+  font-family: 'Twemoji';
+  src: url('../../assets/twemoji.woff2') format('woff2');
+}
+
+:root {
+  --font-ui: var(--font-ui-custom, system-ui, -apple-system, 'Segoe UI', Roboto);
+  --font-cjk: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC';
+
+  // 自带国旗的系统 emoji 字体（Apple、Noto）排在 Twemoji Flags 前面，只有 Windows 落到它上面。
+  // 不列 Segoe UI Symbol：它会把区域指示符画成带框字母，抢在国旗字体前面
+  --font-emoji-system: 'Apple Color Emoji', 'Noto Color Emoji', 'Twemoji Flags', 'Segoe UI Emoji';
+  --font-emoji: var(--font-emoji-system);
+
+  // emoji 字体排在 sans-serif 之后：emoji 字体也带数字和 #、* 的字形，排前面会抢走正文
+  --font-sans: var(--font-ui), var(--font-cjk), sans-serif, var(--font-emoji);
+  // 等宽文字里也有中文（如节点数「6 个」）。中文字体不排在 monospace 之前的话，
+  // 浏览器要在系统里逐个搜能显示它的字体，首次排版要几十毫秒
+  --font-mono:
+    'Roboto Mono', ui-monospace, Menlo, Consolas, var(--font-cjk), monospace, var(--font-emoji);
+}
+
+:root[data-emoji-font='twemoji'] {
+  --font-emoji: 'Twemoji', var(--font-emoji-system);
+}

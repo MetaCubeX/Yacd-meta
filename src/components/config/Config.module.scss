@@ -80,6 +80,13 @@
   }
 }
 
+// 输入框下方的提示，比如填写的字体本机找不到
+.fieldHint {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: var(--color-warn);
+}
+
 .updateHint {
   display: inline-flex;
   margin-bottom: 10px;

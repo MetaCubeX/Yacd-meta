@@ -34,6 +34,7 @@ import { ClashGeneralConfig, DispatchFn, TabTitleConfig } from '~/store/types';
 import { ClashAPIConfig } from '~/types';
 
 import s0 from './Config.module.scss';
+import { FontSettings } from './FontSettings';
 import { TabTitleSettings } from './TabTitleSettings';
 
 const YACD_REPO_URL = 'https://github.com/metacubex/yacd';
@@ -371,6 +372,8 @@ function ConfigContent({ dispatch, configs, selectedChartStyleIndex, apiConfig, 
                 onChange={selectChartStyleIndex}
               />
             </div>
+
+            <FontSettings />
 
             {isMihomo ? null : (
               <div>
