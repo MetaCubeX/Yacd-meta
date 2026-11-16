@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 import * as configsAPI from '~/api/configs';
 import type { UpgradeChannel } from '~/api/configs';
 import * as logsApi from '~/api/logs';
-import { fetchVersion, requestVersion, toVersionData, type VersionData } from '~/api/version';
+import { requestVersion, toVersionData, type VersionData } from '~/api/version';
 import { useCoreUpdate } from '~/hooks/useCoreUpdate';
-import { versionQueryKey } from '~/hooks/useVersion';
+import { versionQueryKey, versionQueryOptions } from '~/hooks/useVersion';
 import { readErrorMessage } from '~/misc/request-helper';
 import { fetchConfigs, updateConfigs } from '~/store/configs';
 import { openModal } from '~/store/modals';
@@ -79,10 +79,7 @@ const CONFIG_ACTIONS: Record<
 type UpdateAppConfigFn = (name: string, value: unknown) => void;
 
 function useConfigVersionQuery(apiConfig: ClashAPIConfig) {
-  return useSuspenseQuery({
-    queryKey: versionQueryKey(apiConfig),
-    queryFn: () => fetchVersion('/version', apiConfig),
-  });
+  return useSuspenseQuery(versionQueryOptions(apiConfig));
 }
 
 const CORE_RESTART_POLL_INTERVAL_MS = 1000;
