@@ -147,13 +147,6 @@ than falling back to `res.statusText`. When an optimistic UI update fails, roll 
 `~/*` maps to `src/*` (configured in both `tsconfig.json` and `vite.config.mts`) — use `~/...`
 imports for anything outside the current directory rather than long relative paths.
 
-### TypeScript strictness
-
-`strict` is enabled except `noImplicitAny` and `strictNullChecks`, which are intentionally left off
-for now (~180 and ~87 pre-existing violations respectively, per the comment in `tsconfig.json`) and
-are being turned on incrementally. Don't add code that only typechecks because these two flags are
-off — write it as if they were on.
-
 ### i18n
 
 UI strings go through `i18next`/`react-i18next`; translations live in `src/i18n/`. Add new strings
