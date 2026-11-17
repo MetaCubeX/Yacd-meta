@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.8.0](https://github.com/MetaCubeX/Yacd-meta/compare/v0.7.0...v0.8.0) (2026-11-16)
+
+
+### Features
+
+* **config:** add panel font and emoji font settings ([4865a48](https://github.com/MetaCubeX/Yacd-meta/commit/4865a48072a09bd701f402fceb8e75e06e7c0bab))
+* **router:** fade in page content on route change ([96da548](https://github.com/MetaCubeX/Yacd-meta/commit/96da54835aa4fa60aa2bbf1b7450aef744acfe8d))
+* **ui:** show loading skeletons while page data is pending ([64162bc](https://github.com/MetaCubeX/Yacd-meta/commit/64162bcac0160c5ffa9aa395674ba8ad9abf0dc8))
+
+
+### Bug Fixes
+
+* **connections:** apply client tags to connections that are already open ([5e8a135](https://github.com/MetaCubeX/Yacd-meta/commit/5e8a135e000278d4a9e5d80b4b8e9eaa40b170a0))
+* **package:** update bun package manager version to 1.4.4 ([3c42a0b](https://github.com/MetaCubeX/Yacd-meta/commit/3c42a0bd316822dc9f119d22d9b32b244e91c9c8))
+* **ui:** drop copy that restates its controls and translate config labels ([7a9e7c1](https://github.com/MetaCubeX/Yacd-meta/commit/7a9e7c16a3d6ef621fc2019c65e2a9694a8e3ebf))
+
+
+### Performance Improvements
+
+* **proxies:** unmount collapsed card content ([2c0daad](https://github.com/MetaCubeX/Yacd-meta/commit/2c0daad1d4ea4bff2301f1243e8f820065507f9c))
+* **ui:** trim font fallback stacks ([d4deb8d](https://github.com/MetaCubeX/Yacd-meta/commit/d4deb8d4a02d7ef37539dfb5085918e71ba7340b))
+* **version:** stop refetching /version on every proxy group mount ([629f8f0](https://github.com/MetaCubeX/Yacd-meta/commit/629f8f04a821f89dc8a5bd05d6b8e7d4ec91b405))
+
 ## [0.7.0](https://github.com/MetaCubeX/Yacd-meta/compare/v0.6.0...v0.7.0) (2026-11-08)
 
 
