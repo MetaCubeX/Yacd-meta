@@ -32,3 +32,58 @@
 .select option {
   background-color: var(--color-background);
 }
+
+// 可定制 select（Chromium 135+）：展开的列表换成和 Popover 一致的浮层。
+// 不支持的浏览器走上面的 appearance: none，列表仍是系统原生样式。
+// ::picker(select) 必须单独成规则：和不认识它的浏览器共用选择器列表时，整条规则会作废。
+@supports (appearance: base-select) {
+  .select,
+  .select::picker(select) {
+    appearance: base-select;
+  }
+
+  // base-select 会变成 display: flex 并带上 UA 的上下 padding，文字不再自动垂直居中
+  .select {
+    align-items: center;
+    padding-block: 0;
+  }
+
+  // 箭头已经由 background-image 画了
+  .select::picker-icon {
+    display: none;
+  }
+
+  .select::picker(select) {
+    margin-top: 4px;
+    padding: 4px;
+    max-height: min(60vh, 420px);
+    background: var(--color-card);
+    border: 1px solid var(--color-card-border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-popover);
+    overscroll-behavior: contain;
+  }
+
+  .select option {
+    padding: 6px 10px;
+    border-radius: 6px;
+    background-color: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+  }
+
+  .select option::checkmark {
+    display: none;
+  }
+
+  .select option:hover,
+  .select option:focus-visible {
+    background-color: var(--color-track);
+    outline: none;
+  }
+
+  .select option:checked {
+    background-color: var(--color-accent-soft-bg);
+    color: var(--color-text-highlight);
+  }
+}
