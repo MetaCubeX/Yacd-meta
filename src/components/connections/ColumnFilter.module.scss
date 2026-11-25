@@ -40,23 +40,40 @@
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  width: 260px;
+  gap: 6px;
+  width: 240px;
   max-width: 100%;
 }
 
-.search {
-  height: 32px;
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+// 面板里控件密，聚焦只换边框色，不要外圈光晕
+.search.search {
+  flex: 1;
+  min-width: 0;
+  height: 30px;
   padding: 0 10px;
+
+  &:focus {
+    box-shadow: none;
+  }
 }
 
 .list {
   display: flex;
   flex-direction: column;
-  max-height: 300px;
-  margin: 0 -6px;
+  max-height: 288px;
+  margin: 0 -8px;
+  padding: 0 2px;
   overflow-y: auto;
   overscroll-behavior: contain;
+  // 全局滚动条是 8px 的蓝色，放在小弹层里太抢眼；标准属性在 Chromium 121+ 会盖过 ::-webkit-scrollbar
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-card-border) transparent;
 }
 
 .sectionTitle {
@@ -74,10 +91,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 30px;
+  flex-shrink: 0;
+  height: 30px;
   padding: 0 6px;
   border-radius: 6px;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--color-text);
   cursor: pointer;
 
@@ -86,11 +104,39 @@
   }
 }
 
+.optionChecked {
+  color: var(--color-text-highlight);
+  font-weight: 500;
+}
+
+// 原生复选框在深浅两套主题下都是系统灰，和面板对不上，自己画
 .checkbox {
   flex-shrink: 0;
+  width: 14px;
+  height: 14px;
   margin: 0;
-  accent-color: var(--color-focus-blue);
+  appearance: none;
+  border: 1.5px solid var(--color-text-secondary);
+  border-radius: 4px;
+  background: transparent center / 10px no-repeat;
+  opacity: 0.6;
   cursor: pointer;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease;
+
+  &:checked {
+    opacity: 1;
+    border-color: var(--color-focus-blue);
+    background-color: var(--color-focus-blue);
+    // 白色对勾
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6.2 5 8.5l4.5-5' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-blue);
+    outline-offset: 1px;
+  }
 }
 
 .optionLabel {
@@ -114,28 +160,19 @@
   color: var(--color-text-secondary);
 }
 
-.footer {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .clearBtn {
-  padding: 4px 10px;
+  flex-shrink: 0;
+  height: 30px;
+  padding: 0 8px;
   border: none;
   border-radius: 6px;
   background: none;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--color-focus-blue);
   cursor: pointer;
 
-  &:hover:not(:disabled) {
+  &:hover {
     background-color: var(--color-accent-soft-bg);
-  }
-
-  &:disabled {
-    color: var(--color-text-secondary);
-    opacity: 0.5;
-    cursor: default;
   }
 }
 
@@ -176,7 +213,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  width: 260px;
+  width: 240px;
   max-width: 100%;
   margin-bottom: 10px;
 }

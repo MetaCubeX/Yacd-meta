@@ -55,14 +55,21 @@ function ColumnFilterPanel({
 
   return (
     <div className={s.panel}>
-      <Input
-        ref={inputRef}
-        className={s.search}
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder={t('Search')}
-        aria-label={t('Search')}
-      />
+      <div className={s.toolbar}>
+        <Input
+          ref={inputRef}
+          className={s.search}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t('Search')}
+          aria-label={t('Search')}
+        />
+        {selected.length > 0 ? (
+          <button type="button" className={s.clearBtn} onClick={() => onChange([])}>
+            {t('Clear')}
+          </button>
+        ) : null}
+      </div>
       <div className={s.list}>
         {visible.length === 0 ? (
           <div className={s.empty}>{t('filter_no_values')}</div>
@@ -71,6 +78,7 @@ function ColumnFilterPanel({
             const showSection = option.section !== undefined && option.section !== prevSection;
             prevSection = option.section;
             const label = option.label ?? option.value;
+            const checked = selectedSet.has(option.value);
             return (
               <React.Fragment key={option.value}>
                 {showSection ? (
@@ -78,11 +86,11 @@ function ColumnFilterPanel({
                     {t(option.section === 'group' ? 'proxy_groups' : 'c_node')}
                   </div>
                 ) : null}
-                <label className={s.option}>
+                <label className={cx(s.option, { [s.optionChecked]: checked })}>
                   <input
                     type="checkbox"
                     className={s.checkbox}
-                    checked={selectedSet.has(option.value)}
+                    checked={checked}
                     onChange={() => toggle(option.value)}
                   />
                   <span className={s.optionLabel} title={label}>
@@ -94,16 +102,6 @@ function ColumnFilterPanel({
             );
           })
         )}
-      </div>
-      <div className={s.footer}>
-        <button
-          type="button"
-          className={s.clearBtn}
-          disabled={selected.length === 0}
-          onClick={() => onChange([])}
-        >
-          {t('Clear')}
-        </button>
       </div>
     </div>
   );
