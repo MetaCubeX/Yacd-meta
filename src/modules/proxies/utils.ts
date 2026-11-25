@@ -14,6 +14,18 @@ export const PROXY_SORT_OPTIONS = [
   ['NameDesc', 'order_name_desc'],
 ] as const;
 
+/**
+ * policy：成员里至少有一个别的组，用来给规则选出口（如「节点选择」「Google」）。
+ * node：成员全是节点或 DIRECT/REJECT 这类内置出站，用来管一批节点（如「香港服务器」）。
+ * mihomo 的 API 不区分这两种，只能看成员。
+ */
+export type GroupKind = 'policy' | 'node';
+
+export function groupKindOf(group: ProxyItem, proxies: ProxiesMapping): GroupKind {
+  const hasGroupMember = (group.all ?? []).some((name) => Array.isArray(proxies[name]?.all));
+  return hasGroupMember ? 'policy' : 'node';
+}
+
 /** 搜索框分词：空格分隔，任一词命中即算命中 */
 export function parseFilterSegments(filterText: string): string[] {
   if (typeof filterText !== 'string') return [];

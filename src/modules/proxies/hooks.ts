@@ -1,12 +1,17 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import * as React from 'react';
 
 import * as connAPI from '~/api/connections';
 import * as proxiesAPI from '~/api/proxies';
 import i18n from '~/misc/i18n';
 import { readErrorMessage } from '~/misc/request-helper';
-import { delayPatchesAtom, proxyFilterText, setDelayPatch } from '~/store/proxies';
+import {
+  delayPatchesAtom,
+  proxyFilterText,
+  proxyGroupKindFilter,
+  setDelayPatch,
+} from '~/store/proxies';
 import { useStoreActions } from '~/store/StateProvider';
 import { toast } from '~/store/toast';
 import { DelayMapping, FormattedProxyProvider, ProxiesMapping, ProxyItem } from '~/store/types';
@@ -15,6 +20,8 @@ import { ClashAPIConfig } from '~/types';
 import {
   findReselectedGroups,
   formatProxyProviders,
+  GroupKind,
+  groupKindOf,
   GroupNows,
   matchesFilter,
   mergeDelayMapping,
@@ -559,6 +566,62 @@ export function useVisibleGroupNames(groupNames: string[], proxies: ProxiesMappi
       return (group?.all ?? []).some((n) => matchesFilter(n, segments));
     });
   }, [groupNames, proxies, segments]);
+}
+
+export type GroupKindFilter = 'all' | GroupKind;
+
+/**
+ * 按组类型（策略组 / 节点组）再筛一遍搜索后的组。
+ *
+ * 配置里只有一类组时筛选没有意义，`available` 为 false，返回的 filter 也恒为 all，
+ * 免得之前选的类型在换了后端配置后把所有组都藏起来。`available` 看的是全部组，
+ * 搜索不会让筛选栏消失；`counts` 看的是搜索后的组。
+ */
+export function useGroupKindFilter(
+  groupNames: string[],
+  visibleGroupNames: string[],
+  proxies: ProxiesMapping,
+) {
+  const [storedFilter, setFilter] = useAtom(proxyGroupKindFilter);
+
+  const kinds = useMemo(() => {
+    const map = new Map<string, GroupKind>();
+    for (const name of groupNames) {
+      const group = proxies[name];
+      if (group) map.set(name, groupKindOf(group, proxies));
+    }
+    return map;
+  }, [groupNames, proxies]);
+
+  const available = useMemo(() => {
+    const values = [...kinds.values()];
+    return values.includes('policy') && values.includes('node');
+  }, [kinds]);
+
+  const counts = useMemo(() => {
+    const c: Record<GroupKindFilter, number> = {
+      all: visibleGroupNames.length,
+      policy: 0,
+      node: 0,
+    };
+    for (const name of visibleGroupNames) {
+      const kind = kinds.get(name);
+      if (kind) c[kind] += 1;
+    }
+    return c;
+  }, [visibleGroupNames, kinds]);
+
+  const filter: GroupKindFilter = available ? storedFilter : 'all';
+
+  const filteredGroupNames = useMemo(
+    () =>
+      filter === 'all'
+        ? visibleGroupNames
+        : visibleGroupNames.filter((name) => kinds.get(name) === filter),
+    [filter, visibleGroupNames, kinds],
+  );
+
+  return { available, filter, setFilter, counts, groupNames: filteredGroupNames };
 }
 
 /** 提供商：同上，名称命中或旗下有节点命中 */

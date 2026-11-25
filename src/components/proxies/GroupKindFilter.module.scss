@@ -1,0 +1,70 @@
+// 水平留白跟 Proxies.module.scss 的 .groupsContainer 对齐，卡片左边缘和第一个选项对齐
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 32px 0;
+
+  @media (max-width: 1024px) {
+    padding: 12px 16px 0;
+  }
+
+  @media (max-width: 768px) {
+    padding: 8px 12px 0;
+  }
+}
+
+.option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  appearance: none;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover:not(.selected) {
+    color: var(--color-text);
+    background: var(--color-hover-soft);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-blue);
+    outline-offset: -1px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 5px 8px;
+    font-size: 0.8rem;
+  }
+}
+
+// 栏本身直接坐在页面底色上，凹陷的 --color-track 在这里看不出来，所以选中项改成浮起的卡片
+.selected {
+  color: var(--color-text-highlight);
+  background: var(--color-card);
+  box-shadow: var(--shadow-segment);
+}
+
+.count {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option {
+    transition: none;
+  }
+}

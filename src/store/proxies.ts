@@ -5,6 +5,9 @@ import type { DelayMapping } from './types';
 /** 代理页搜索词。过滤在 modules/proxies/hooks 里做 */
 export const proxyFilterText = atom('');
 
+/** 代理页只看哪类组。放 atom 而不是组件 state，切去别的页面再回来时还在 */
+export const proxyGroupKindFilter = atom<'all' | 'policy' | 'node'>('all');
+
 /**
  * 本地测速结果。服务端那份延迟数据在 /proxies 的 history 里，这里只放前端发起的
  * 测速产生的东西：进行中的 testing 标志、失败标志、以及后端数据回来之前的临时值。

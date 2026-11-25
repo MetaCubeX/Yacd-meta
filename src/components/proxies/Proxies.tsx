@@ -1,6 +1,7 @@
 import cx from 'clsx';
 import * as React from 'react';
 
+import { GroupKindFilter } from '~/components/proxies/GroupKindFilter';
 import { ProxiesHeader } from '~/components/proxies/ProxiesHeader';
 import { ProxiesSkeleton } from '~/components/proxies/ProxiesSkeleton';
 import { ProxyGroup } from '~/components/proxies/ProxyGroup';
@@ -8,6 +9,7 @@ import { ProxyProvider } from '~/components/proxies/ProxyProvider';
 import {
   useCollapseAll,
   useDelayMapping,
+  useGroupKindFilter,
   useProxiesPage,
   useProxiesQuery,
   useTestAllLatency,
@@ -44,8 +46,10 @@ function ProxiesContent({ collapsibleIsOpen, apiConfig, appConfig }: Props) {
   const delay = useDelayMapping(proxies, dataUpdatedAt);
 
   // 搜索同时作用于代理组/提供商本身和它们旗下的节点
-  const visibleGroupNames = useVisibleGroupNames(groupNames, proxies);
+  const searchedGroupNames = useVisibleGroupNames(groupNames, proxies);
   const visibleProviders = useVisibleProviders(proxyProviders);
+  const kindFilter = useGroupKindFilter(groupNames, searchedGroupNames, proxies);
+  const visibleGroupNames = kindFilter.groupNames;
 
   const {
     isSettingsOpen,
@@ -89,25 +93,34 @@ function ProxiesContent({ collapsibleIsOpen, apiConfig, appConfig }: Props) {
 
   const content =
     activeTab === 'proxies' ? (
-      <div className={containerClassName}>
-        {proxyGroups.map((column, i) => (
-          <div key={i} className={s0.column}>
-            {column.map(({ name, i: originalIndex }) => (
-              <div className={s0.group} key={name} style={{ order: originalIndex }}>
-                <ProxyGroup
-                  name={name}
-                  delay={delay}
-                  apiConfig={apiConfig}
-                  appConfig={appConfig}
-                  proxies={proxies}
-                  isOpen={Boolean(collapsibleIsOpen[`proxyGroup:${name}`])}
-                  httpsLatencyTest={httpsLatencyTest}
-                />
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+      <>
+        {kindFilter.available ? (
+          <GroupKindFilter
+            value={kindFilter.filter}
+            onChange={kindFilter.setFilter}
+            counts={kindFilter.counts}
+          />
+        ) : null}
+        <div className={containerClassName}>
+          {proxyGroups.map((column, i) => (
+            <div key={i} className={s0.column}>
+              {column.map(({ name, i: originalIndex }) => (
+                <div className={s0.group} key={name} style={{ order: originalIndex }}>
+                  <ProxyGroup
+                    name={name}
+                    delay={delay}
+                    apiConfig={apiConfig}
+                    appConfig={appConfig}
+                    proxies={proxies}
+                    isOpen={Boolean(collapsibleIsOpen[`proxyGroup:${name}`])}
+                    httpsLatencyTest={httpsLatencyTest}
+                  />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </>
     ) : (
       <div className={containerClassName}>
         {providers.map((column, i) => (
@@ -140,7 +153,7 @@ function ProxiesContent({ collapsibleIsOpen, apiConfig, appConfig }: Props) {
       <ProxiesHeader
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        groupCount={visibleGroupNames.length}
+        groupCount={searchedGroupNames.length}
         providerCount={proxyProviders.length}
         visibleProviderCount={visibleProviders.length}
         appConfig={appConfig}
