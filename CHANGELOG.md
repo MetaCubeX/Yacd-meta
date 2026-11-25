@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.9.0](https://github.com/MetaCubeX/Yacd-meta/compare/v0.8.0...v0.9.0) (2026-11-25)
+
+
+### Features
+
+* **connections:** filter connections by column values from the table header ([4b98a45](https://github.com/MetaCubeX/Yacd-meta/commit/4b98a457d4a7bb318dde19a21609981f1a41b210))
+* **proxies:** filter proxy groups by policy and node kind ([8e3d28b](https://github.com/MetaCubeX/Yacd-meta/commit/8e3d28b52702d1e0d47573e889ab089edd6f5316))
+
+
+### Bug Fixes
+
+* **ui:** keep search input in sync with the persisted filter text ([2f7bac0](https://github.com/MetaCubeX/Yacd-meta/commit/2f7bac07273230638219d02bd61d766c58a2da34))
+
 ## [0.8.0](https://github.com/MetaCubeX/Yacd-meta/compare/v0.7.0...v0.8.0) (2026-11-16)
 
 
