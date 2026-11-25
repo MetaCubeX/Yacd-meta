@@ -16,6 +16,7 @@ export {
   Eye,
   EyeOff,
   FileText,
+  Filter,
   GitHub,
   Globe,
   Grid,

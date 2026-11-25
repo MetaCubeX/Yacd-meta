@@ -5,10 +5,7 @@ import s0 from './Input.module.scss';
 
 const { useState, useRef, useEffect, useCallback } = React;
 
-export default function Input({
-  className,
-  ...props
-}: React.InputHTMLAttributes<HTMLInputElement>) {
+export default function Input({ className, ...props }: React.ComponentProps<'input'>) {
   return <input className={cx(s0.input, className)} {...props} />;
 }
 

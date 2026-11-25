@@ -1,26 +1,9 @@
 /**
  * 只放连接页特有的东西，顶栏本身的样式在 shared/PageHeader.module.scss。
  *
- * DOM 顺序就是桌面端的视觉顺序（标题 · 标签 · 来源 · 搜索 · 操作），
- * 窄屏要把操作钮提到第一行、搜索和来源并排到第二行，所以这里只拨 order。
+ * DOM 顺序就是桌面端的视觉顺序（标题 · 标签 · 搜索 · 操作），
+ * 窄屏要把操作钮提到第一行、搜索放到第二行，所以这里只拨 order。
  */
-
-.sourceSelect {
-  min-width: 132px;
-  max-width: 190px;
-
-  @media (max-width: 1024px) {
-    flex: 1 1 auto;
-    max-width: none;
-  }
-
-  @media (max-width: 768px) {
-    order: 4;
-    flex: 0 0 auto;
-    min-width: 96px;
-    max-width: 130px;
-  }
-}
 
 .search {
   @media (max-width: 768px) {

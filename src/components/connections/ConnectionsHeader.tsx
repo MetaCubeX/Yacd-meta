@@ -9,13 +9,11 @@ import {
   HeaderRowBreak,
   HeaderSearch,
   headerSearchInlineClass,
-  headerSelectClass,
   HeaderTab,
   HeaderTabs,
   HeaderTitle,
   PageHeader,
 } from '~/components/shared/PageHeader';
-import Select from '~/components/shared/Select';
 
 import s from './ConnectionsHeader.module.scss';
 
@@ -27,9 +25,6 @@ type Props = {
   /** 省略则标签不显示计数，用于首条消息到达前 */
   activeCount?: number;
   closedCount?: number;
-  connIpSet: string[][];
-  filterSourceIpStr: string;
-  setFilterSourceIpStr: (value: string) => void;
   filterKeyword: string;
   setFilterKeyword: (value: string) => void;
   isRefreshPaused: boolean;
@@ -45,9 +40,6 @@ export function ConnectionsHeader({
   setActiveTab,
   activeCount,
   closedCount,
-  connIpSet,
-  filterSourceIpStr,
-  setFilterSourceIpStr,
   filterKeyword,
   setFilterKeyword,
   isRefreshPaused,
@@ -77,14 +69,6 @@ export function ConnectionsHeader({
           onClick={() => setActiveTab('closed')}
         />
       </HeaderTabs>
-
-      <Select
-        options={connIpSet}
-        selected={filterSourceIpStr}
-        className={`${headerSelectClass} ${s.sourceSelect}`}
-        aria-label={t('c_source')}
-        onChange={(e) => setFilterSourceIpStr(e.target.value)}
-      />
 
       <HeaderSearch
         className={`${headerSearchInlineClass} ${s.search}`}
@@ -129,7 +113,7 @@ export function ConnectionsHeader({
         />
       </HeaderActions>
 
-      {/* 窄屏下强制换行，让搜索和来源筛选独占第二行 */}
+      {/* 窄屏下强制换行，让搜索独占第二行 */}
       <HeaderRowBreak className={s.rowBreak} />
     </PageHeader>
   );

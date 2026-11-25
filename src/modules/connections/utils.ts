@@ -28,9 +28,19 @@ export type ConnectionColumn = {
   numeric?: boolean;
   /** 首次点该列时的方向，缺省为 asc */
   defaultSortDir?: SortDir;
+  /** 排序时读的 FormattedConn 字段，缺省为列 id */
+  sortKey?: keyof FormattedConn;
+  /**
+   * 有它的列可以在列头按取值筛选。返回这条连接在该列上的取值，命中任一个即算命中；
+   * 节点链每一跳都是一个取值，其余列只有一个。
+   */
+  filterValues?: (conn: FormattedConn) => string[];
+  /** 筛选面板里把取值分段显示，目前只有节点链区分代理组和末端节点 */
+  filterSection?: (value: string, conn: FormattedConn) => FilterSection;
 };
 
-export const ALL_SOURCE_IP = 'ALL_SOURCE_IP';
+export type FilterSection = 'group' | 'node';
+
 export const SOURCE_MAP_STORAGE_KEY = 'sourceMap';
 export const COLUMNS_STORAGE_KEY = 'connColumns';
 export const SETTINGS_STORAGE_KEY = 'connSettings';
@@ -40,11 +50,42 @@ export const SORT_STORAGE_KEY = 'connSort';
 export const CONNECTION_COLUMNS: ConnectionColumn[] = [
   { id: 'ctrl', labelKey: 'c_ctrl', width: 34, kind: 'ctrl', sortable: false },
   { id: 'start', labelKey: 'c_time', width: 84, kind: 'text', numeric: true },
-  { id: 'type', labelKey: 'c_type', width: 120, kind: 'chip' },
-  { id: 'source', labelKey: 'c_source', width: 120, kind: 'text' },
+  {
+    id: 'type',
+    labelKey: 'c_type',
+    width: 120,
+    kind: 'chip',
+    filterValues: (conn) => [conn.type],
+  },
+  {
+    id: 'source',
+    labelKey: 'c_source',
+    width: 120,
+    kind: 'text',
+    // 单元格显示 ip:port，按端口筛没有意义，按 IP 筛
+    filterValues: (conn) => [conn.sourceIP],
+  },
   { id: 'host', labelKey: 'c_host', width: 100, grow: 1.6, max: 380, kind: 'host' },
-  { id: 'rule', labelKey: 'c_rule', width: 70, grow: 1, max: 220, kind: 'chip' },
-  { id: 'chains', labelKey: 'c_chains', width: 140, grow: 1.15, max: 280, kind: 'chain' },
+  {
+    id: 'rule',
+    labelKey: 'c_rule',
+    width: 70,
+    grow: 1,
+    max: 220,
+    kind: 'chip',
+    filterValues: (conn) => [conn.rule],
+  },
+  {
+    id: 'chains',
+    labelKey: 'c_chains',
+    width: 140,
+    grow: 1.15,
+    max: 280,
+    kind: 'chain',
+    sortKey: 'chainsFull',
+    filterValues: (conn) => conn.chains,
+    filterSection: (value, conn) => (value === conn.chainNode ? 'node' : 'group'),
+  },
   {
     id: 'downloadSpeedCurr',
     labelKey: 'c_dl_speed',
@@ -81,8 +122,20 @@ export const CONNECTION_COLUMNS: ConnectionColumn[] = [
     numeric: true,
     defaultSortDir: 'desc',
   },
-  { id: 'process', labelKey: 'c_process', width: 110, kind: 'text' },
-  { id: 'chainNode', labelKey: 'c_node', width: 110, kind: 'text' },
+  {
+    id: 'process',
+    labelKey: 'c_process',
+    width: 110,
+    kind: 'text',
+    filterValues: (conn) => [conn.process ?? '-'],
+  },
+  {
+    id: 'chainNode',
+    labelKey: 'c_node',
+    width: 110,
+    kind: 'text',
+    filterValues: (conn) => [conn.chainNode],
+  },
   {
     id: 'sourcePort',
     labelKey: 'c_source_port',
@@ -92,9 +145,22 @@ export const CONNECTION_COLUMNS: ConnectionColumn[] = [
     numeric: true,
   },
   { id: 'destinationIP', labelKey: 'c_destination_ip', width: 130, kind: 'text' },
-  { id: 'network', labelKey: 'c_network', width: 70, kind: 'text' },
+  {
+    id: 'network',
+    labelKey: 'c_network',
+    width: 70,
+    kind: 'text',
+    // 单元格显示的是大写
+    filterValues: (conn) => [conn.network.toUpperCase()],
+  },
   { id: 'sniffHost', labelKey: 'c_sni', width: 130, kind: 'text' },
-  { id: 'outboundType', labelKey: 'c_outbound_type', width: 84, kind: 'text' },
+  {
+    id: 'outboundType',
+    labelKey: 'c_outbound_type',
+    width: 84,
+    kind: 'text',
+    filterValues: (conn) => [conn.outboundType],
+  },
 ];
 
 export const CONNECTION_COLUMN_MAP: Record<string, ConnectionColumn> = Object.fromEntries(
@@ -217,16 +283,14 @@ export function buildHideRegExp(settings: ConnectionSettings): RegExp | null {
   }
 }
 
-export function filterConns(
-  conns: FormattedConn[],
-  keyword: string,
-  sourceIp: string,
-  hideRegExp: RegExp | null,
-) {
+/** 隐藏正则和关键字。列筛选另外在 applyColumnFilters 里做 */
+export function filterConns(conns: FormattedConn[], keyword: string, hideRegExp: RegExp | null) {
   let result = conns;
 
   if (hideRegExp) {
-    result = result.filter((conn) => !(hideRegExp.test(conn.chains) || hideRegExp.test(conn.rule)));
+    result = result.filter(
+      (conn) => !(conn.chains.some((hop) => hideRegExp.test(hop)) || hideRegExp.test(conn.rule)),
+    );
   }
 
   if (keyword !== '') {
@@ -236,7 +300,7 @@ export function filterConns(
         conn.source,
         conn.sourcePort,
         conn.destinationIP,
-        conn.chains,
+        conn.chainsFull,
         conn.rule,
         conn.type,
         conn.network,
@@ -245,21 +309,99 @@ export function filterConns(
     );
   }
 
-  if (sourceIp !== ALL_SOURCE_IP) {
-    result = result.filter((conn) => conn.sourceIP === sourceIp);
+  return result;
+}
+
+/** 列 id 到选中取值的映射。没有键或空数组都表示这一列不筛选 */
+export type ColumnFilters = Record<string, string[]>;
+
+/** 生效中的列筛选，取值转成 Set 方便每秒对整张表做匹配 */
+export type ActiveColumnFilter = {
+  column: ConnectionColumn;
+  values: Set<string>;
+};
+
+export function toActiveColumnFilters(
+  filters: ColumnFilters,
+  columns: ConnectionColumn[],
+): ActiveColumnFilter[] {
+  const result: ActiveColumnFilter[] = [];
+  for (const column of columns) {
+    const values = filters[column.id];
+    if (column.filterValues && values && values.length > 0) {
+      result.push({ column, values: new Set(values) });
+    }
+  }
+  return result;
+}
+
+/** 列与列之间是「且」，同一列的多个取值之间是「或」。skipColumnId 用来算该列自己的候选项 */
+export function applyColumnFilters(
+  conns: FormattedConn[],
+  filters: ActiveColumnFilter[],
+  skipColumnId?: string,
+): FormattedConn[] {
+  const list = skipColumnId ? filters.filter((f) => f.column.id !== skipColumnId) : filters;
+  if (list.length === 0) return conns;
+  return conns.filter((conn) =>
+    list.every(({ column, values }) => column.filterValues!(conn).some((v) => values.has(v))),
+  );
+}
+
+export type ColumnFilterOption = {
+  value: string;
+  /** 显示文字，缺省为 value。来源列用它显示客户端标签 */
+  label?: string;
+  count: number;
+  section?: FilterSection;
+};
+
+const SECTION_ORDER: Record<FilterSection, number> = { group: 0, node: 1 };
+// 计数为 0 的已选项不知道属于哪一段，排在最后
+const sectionRank = (o: ColumnFilterOption) => (o.section ? SECTION_ORDER[o.section] : 2);
+
+/**
+ * 列筛选面板的候选项：conns 里该列出现过的取值及连接数，先按分段再按名字排序。
+ * 按数量排序的话，实时数据每秒都会让列表跳动。已选中但当前没有连接的取值也列出来（计数为 0），
+ * 否则用户没法取消勾选它。
+ */
+export function collectFilterOptions(
+  conns: FormattedConn[],
+  column: ConnectionColumn,
+  selected: string[],
+): ColumnFilterOption[] {
+  const { filterValues, filterSection } = column;
+  if (!filterValues) return [];
+
+  const options = new Map<string, ColumnFilterOption>();
+  for (const conn of conns) {
+    for (const value of filterValues(conn)) {
+      const option = options.get(value);
+      if (option) {
+        option.count += 1;
+      } else {
+        options.set(value, { value, count: 1, section: filterSection?.(value, conn) });
+      }
+    }
+  }
+  for (const value of selected) {
+    if (!options.has(value)) options.set(value, { value, count: 0 });
   }
 
-  return result;
+  return [...options.values()].sort(
+    (a, b) => sectionRank(a) - sectionRank(b) || a.value.localeCompare(b.value),
+  );
 }
 
 export function sortConns(conns: FormattedConn[], sort: SortState): FormattedConn[] {
   const column = CONNECTION_COLUMN_MAP[sort.key];
   if (!column || column.sortable === false) return conns;
 
+  const key = column.sortKey ?? sort.key;
   const factor = sort.dir === 'desc' ? -1 : 1;
   return [...conns].sort((a, b) => {
-    const x = (a as any)[sort.key];
-    const y = (b as any)[sort.key];
+    const x = (a as any)[key];
+    const y = (b as any)[key];
     if (column.numeric) return (Number(x) - Number(y)) * factor;
     return String(x ?? '').localeCompare(String(y ?? '')) * factor;
   });
@@ -336,21 +478,8 @@ export function formatElapsed(ms: number, locale: Locale): string {
   return text;
 }
 
-export function modifyChains(chains: string[]): string {
-  if (!Array.isArray(chains) || chains.length === 0) {
-    return '';
-  }
-
-  if (chains.length === 1) {
-    return chains[0];
-  }
-
-  return `${chains[chains.length - 1]} -> ${chains[0]}`;
-}
-
 /** chains 数组是从末端节点往外层策略组排的，展示时反过来读更顺 */
 export function formatFullChain(chains: string[]): string {
-  if (!Array.isArray(chains) || chains.length === 0) return '';
   return [...chains].reverse().join(' → ');
 }
 
@@ -403,7 +532,7 @@ export function formatConnectionDataItem(
     download,
     start: now - startTime,
     startTime,
-    chains: modifyChains(chainList),
+    chains: chainList,
     chainNode,
     chainGroup,
     chainsFull: formatFullChain(chainList),

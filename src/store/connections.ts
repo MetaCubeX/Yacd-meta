@@ -6,8 +6,8 @@ export type FormattedConn = {
   download: number;
   start: number;
   startTime: number;
-  /** 简写代理链：「策略组 -> 末端节点」 */
-  chains: string;
+  /** 后端原样给出的代理链，从末端节点往外层策略组排 */
+  chains: string[];
   /** 末端出站节点 */
   chainNode: string;
   /** 最外层策略组，单跳时为空 */

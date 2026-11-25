@@ -15,12 +15,16 @@ import {
 import { ClashAPIConfig } from '~/types';
 
 import {
-  ALL_SOURCE_IP,
+  applyColumnFilters,
   applySourceNames,
   arrayToIdKv,
   buildHideRegExp,
+  collectFilterOptions,
+  ColumnFilterOption,
+  ColumnFilters,
   CONNECTION_COLUMN_MAP,
   CONNECTION_COLUMNS_DEFAULT,
+  ConnectionColumn,
   ConnectionSettings,
   filterConns,
   formatConnectionDataItem,
@@ -32,6 +36,7 @@ import {
   saveSettings,
   saveSourceMap,
   SourceMapItem,
+  toActiveColumnFilters,
 } from './utils';
 
 const { useCallback, useEffect, useMemo, useRef, useState } = React;
@@ -188,35 +193,58 @@ export function useConnectionSettings() {
   return { settings, updateSettings };
 }
 
+/**
+ * 关键字、隐藏正则和列头筛选。
+ *
+ * 列筛选只对 columns（当前显示的列）生效；某列被隐藏时，它的筛选会被清掉，
+ * 免得留下一个看不见的筛选条件。
+ */
 export function useConnectionFilters({
   conns,
   closedConns,
+  isClosedTab,
+  columns,
   sourceMap,
   settings,
   t,
 }: {
   conns: FormattedConn[];
   closedConns: FormattedConn[];
+  isClosedTab: boolean;
+  columns: ConnectionColumn[];
   sourceMap: SourceMapItem[];
   settings: ConnectionSettings;
   t: (key: string) => string;
 }) {
   const [filterKeyword, setFilterKeyword] = useState('');
-  const [filterSourceIpStr, setFilterSourceIpStr] = useState(ALL_SOURCE_IP);
+  const [columnFilters, setColumnFilters] = useState<ColumnFilters>({});
 
-  // conns changes identity every second, but the set of source IPs rarely
-  // does — keep the previous array when the contents are unchanged so the
-  // connIpSet memo below (and the Select consuming it) doesn't churn
-  const sortedIpsRef = useRef<string[]>([]);
-  const sourceIps = useMemo(() => {
-    const next = Array.from(new Set(conns.map((x) => x.sourceIP))).sort();
-    const prev = sortedIpsRef.current;
-    if (prev.length === next.length && prev.every((ip, i) => ip === next[i])) {
-      return prev;
-    }
-    sortedIpsRef.current = next;
-    return next;
-  }, [conns]);
+  const filterableColumns = useMemo(() => columns.filter((c) => c.filterValues), [columns]);
+
+  useEffect(() => {
+    const visible = new Set(filterableColumns.map((c) => c.id));
+    setColumnFilters((prev) => {
+      const stale = Object.keys(prev).filter((id) => !visible.has(id));
+      if (stale.length === 0) return prev;
+      const next = { ...prev };
+      for (const id of stale) delete next[id];
+      return next;
+    });
+  }, [filterableColumns]);
+
+  const setColumnFilter = useCallback((columnId: string, values: string[]) => {
+    setColumnFilters((prev) => {
+      const next = { ...prev };
+      if (values.length > 0) next[columnId] = values;
+      else delete next[columnId];
+      return next;
+    });
+  }, []);
+
+  const activeColumnFilters = useMemo(
+    () => toActiveColumnFilters(columnFilters, filterableColumns),
+    [columnFilters, filterableColumns],
+  );
 
   const hideRegExp = useMemo(() => buildHideRegExp(settings), [settings]);
 
@@ -226,35 +254,57 @@ export function useConnectionFilters({
     [closedConns, sourceMap],
   );
 
+  // 只过了关键字和隐藏正则的行，列筛选的候选项从这里算
+  const baseConns = useMemo(
+    () => filterConns(namedConns, filterKeyword, hideRegExp),
+    [namedConns, filterKeyword, hideRegExp],
+  );
+  const baseClosedConns = useMemo(
+    () => filterConns(namedClosedConns, filterKeyword, hideRegExp),
+    [namedClosedConns, filterKeyword, hideRegExp],
+  );
+
   const filteredConns = useMemo(
-    () => filterConns(namedConns, filterKeyword, filterSourceIpStr, hideRegExp),
-    [namedConns, filterKeyword, filterSourceIpStr, hideRegExp],
+    () => applyColumnFilters(baseConns, activeColumnFilters),
+    [baseConns, activeColumnFilters],
   );
   const filteredClosedConns = useMemo(
-    () => filterConns(namedClosedConns, filterKeyword, filterSourceIpStr, hideRegExp),
-    [namedClosedConns, filterKeyword, filterSourceIpStr, hideRegExp],
+    () => applyColumnFilters(baseClosedConns, activeColumnFilters),
+    [baseClosedConns, activeColumnFilters],
   );
 
-  const connIpSet = useMemo(() => {
-    return [
-      [ALL_SOURCE_IP, t('All')],
-      ...sourceIps.map((value) => [
-        value,
-        getNameFromSource(value, sourceMap).trim() || t('internel'),
-      ]),
-    ];
-  }, [sourceIps, sourceMap, t]);
+  const tabBaseConns = isClosedTab ? baseClosedConns : baseConns;
 
-  const isFiltering = filterKeyword !== '' || filterSourceIpStr !== ALL_SOURCE_IP;
+  /**
+   * 某列筛选面板的候选项。和 Excel 一样，候选来自经过其他列筛选后的行，
+   * 不受这一列自己的筛选影响，否则勾了一项之后其余项就全消失了。
+   */
+  const getFilterOptions = useCallback(
+    (columnId: string): ColumnFilterOption[] => {
+      const column = CONNECTION_COLUMN_MAP[columnId];
+      if (!column) return [];
+      const rows = applyColumnFilters(tabBaseConns, activeColumnFilters, columnId);
+      const options = collectFilterOptions(rows, column, columnFilters[columnId] ?? []);
+      if (columnId !== 'source') return options;
+      return options.map((o) => ({
+        ...o,
+        label: getNameFromSource(o.value, sourceMap).trim() || t('internel'),
+      }));
+    },
+    [tabBaseConns, activeColumnFilters, columnFilters, sourceMap, t],
+  );
+
+  const isFiltering = filterKeyword !== '' || activeColumnFilters.length > 0;
 
   return {
     filterKeyword,
     setFilterKeyword,
-    filterSourceIpStr,
-    setFilterSourceIpStr,
+    columnFilters,
+    setColumnFilter,
+    filterableColumns,
+    getFilterOptions,
     filteredConns,
     filteredClosedConns,
-    connIpSet,
     isFiltering,
   };
 }

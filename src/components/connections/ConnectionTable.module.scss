@@ -54,15 +54,32 @@
   color: var(--color-text-secondary);
   white-space: nowrap;
   user-select: none;
+}
+
+/*
+ * 列头里负责排序的那部分。不撑满列宽：漏斗要紧跟在标题后面，放到列的右边缘会挨着
+ * 下一列的标题，看起来像是下一列的
+ */
+.headSort {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  align-self: stretch;
+  gap: 3px;
+  min-width: 0;
 
   &:focus-visible {
     outline: 2px solid var(--color-focus-blue);
     outline-offset: -2px;
     border-radius: 4px;
   }
+
+  .cellRight > & {
+    justify-content: flex-end;
+  }
 }
 
-.headCellSortable {
+.headCellSortable .headSort {
   cursor: pointer;
 
   &:hover {
@@ -73,7 +90,7 @@
 .headCellActive {
   color: var(--color-focus-blue);
 
-  &:hover {
+  .headSort:hover {
     color: var(--color-focus-blue);
   }
 }
